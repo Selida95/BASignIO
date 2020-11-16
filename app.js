@@ -11,6 +11,10 @@
  const cookieParser = require('cookie-parser');
  const logger = require('morgan');
 
+ /* --- Config --- */
+ const config = require('./app/config');
+ /* -------------- */
+
  /* --- Routers --- */
  const indexRouter = require('./routes/app/index');
  const usersRouter = require('./routes/app/users');
