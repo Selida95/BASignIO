@@ -16,9 +16,14 @@
  const config = require('./app/config');
  /* -------------- */
 
+
+
  /* --- Routers --- */
  const indexRouter = require('./routes/app/index');
+ const adminRouter = require('./routes/app/admin');
  const usersRouter = require('./routes/app/users');
+ const reportRouter = require('./routes/app/report');
+ const registerRouter = require('./routes/app/registers');
  /* --------------- */
 
  const app = express();
