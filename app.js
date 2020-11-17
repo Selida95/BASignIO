@@ -72,5 +72,38 @@
    res.render('error');
  });
 
+
+ /* --- Create Default Admin User --- */
+ var accounts = require('./app/models/accounts');
+
+ accounts.findOne({'username' : 'admin'}, (error, doc) => {
+   if (error) {
+     console.error(error);
+     return;
+   }
+
+   if (doc) {
+     console.log("Admin user exists. Moving on...")
+   } else {
+     console.log("Creating Admin user...")
+     var account = new accounts({
+       username: 'admin',
+       surname: '',
+       forenames: '',
+       password: crypto.createHmac('sha256', config.crypto.secret).update(config.admin.password).digest('hex'),
+       role: 'admin'
+     })
+
+     account.save((error) => {
+       if (error) {
+         console.error(error);
+         return;
+       }
+       console.log('Created Admin account.')
+     })
+   }
+ })
+ /* ------------------------- */
+
  // Export module
  module.exports = app;
