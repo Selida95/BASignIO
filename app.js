@@ -12,6 +12,8 @@
  const logger = require('morgan');
  const mongoose = require('mongoose');
  const favicon = require('serve-favicon');
+ const session = require('express-session');
+ const flash = require('connect-flash');
  const crypto = require('crypto');
 
  /* --- Config --- */
@@ -50,7 +52,19 @@
  app.use(express.json());
  app.use(express.urlencoded({ extended: false }));
  app.use(cookieParser());
+ app.use(session({
+   secret : config.http.session.secret,
+   resave : false,
+   saveUninitialized : true
+ }));
  app.use(express.static(path.join(__dirname, 'app', 'public')));
+ app.use(flash());
+ app.use((req, res, next) => {
+   res.locals.success = req.flash('success');
+   res.locals.error = req.flash('error');
+   res.locals.warning = req.flash('warning');
+   next();
+ })
 
  app.use('/', indexRouter);
  app.use('/admin', adminRouter);
