@@ -1,9 +1,15 @@
-var express = require('express');
-var router = express.Router();
+/*
+ * -------------------------
+ * BASignIO - Routes: Index
+ * -------------------------
+ */
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+ // Dependencies
+ const router = require('express').Router();
 
-module.exports = router;
+ router.get('/', (req, res, next) => {
+   res.redirect('/admin');
+ });
+
+ // Export Routes
+ module.exports = router
