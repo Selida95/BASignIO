@@ -12,7 +12,10 @@
  // HTTP Config
  config.http = {}
  config.http.port = 3000; // HTTP Server Port
- config.http.cookie_life = 60*60*24*1000*365*5; // Maximum Cookie Life - Default: 5 Years
+ config.http.cookie = {}
+ config.http.cookie.max_life = 60*60*24*1000*365*5; // Maximum Cookie Life - Default: 5 Years
+ config.http.session = {}
+ config.http.session.secret = '' // Secret for sessions
 
  // Database Config
  config.db = {}
