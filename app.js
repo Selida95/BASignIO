@@ -1,7 +1,7 @@
 /*
- * ----
+ * --------------
  * BASignIO: App
- * ----
+ * --------------
  */
 
  // Dependencies
@@ -72,6 +72,9 @@
    res.render('error');
  });
 
+ app.locals.ucfirst = (value) => {
+   return value.charAt(0).toUpperCase() + value.slice(1);
+ }
 
  /* --- Create Default Admin User --- */
  var accounts = require('./app/models/accounts');
