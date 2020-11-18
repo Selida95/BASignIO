@@ -11,6 +11,7 @@
  const cookieParser = require('cookie-parser');
  const logger = require('morgan');
  const mongoose = require('mongoose');
+ const favicon = require('serve-favicon');
  const crypto = require('crypto');
 
  /* --- Config --- */
@@ -44,6 +45,7 @@
  app.set('views', path.join(__dirname, 'app', 'views'));
  app.set('view engine', 'pug');
 
+ app.use(favicon(path.join(__dirname, 'app', 'public', 'img', 'favicon.ico')));
  app.use(logger('dev'));
  app.use(express.json());
  app.use(express.urlencoded({ extended: false }));
