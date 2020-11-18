@@ -149,5 +149,5 @@
    res.redirect('/');
  });
 
- // Export Module
+ // Export Routes
  module.exports = router;
