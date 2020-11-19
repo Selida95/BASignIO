@@ -109,7 +109,7 @@ router.post('/:user', function(req, res, next) {
 			mailer.send({
 				receiver: req.session.user.username + '@battleabbeyschool.com',
 				subject: 'BASignIO: Reset Password',
-				text: 'Hi ' + name + ', <br><br> Please click the link below to change your password: <br><br> <a href="http://victoria:' + process.env.PORT + '/admin/reset/'+ req.session.user.password + '" > Reset Password </a> <br><br> Best Regards, <br>IT Department'
+				text: 'Hi ' + name + ', <br><br> Please click the link below to change your password: <br><br> <a href="http://victoria:' + config.http.port + '/admin/reset/'+ req.session.user.password + '" > Reset Password </a> <br><br> Best Regards, <br>IT Department'
 			}, function(err, mail){
 			    if (err) {
 			        console.log(err);
