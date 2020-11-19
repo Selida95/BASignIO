@@ -778,3 +778,6 @@
      }
    }
  });
+
+ // Export Routes
+ module.exports = router;
