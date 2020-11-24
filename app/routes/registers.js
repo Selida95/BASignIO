@@ -9,6 +9,7 @@
  const moment = require('moment');
  const functions = require('../lib/functions');
  const mailer = require('../lib/email');
+ const student_manager = require('../lib/student_manager');
 
  // Config
  const config = require('../config');
