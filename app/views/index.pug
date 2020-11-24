@@ -1,5 +1,26 @@
-extends layout
+extends layouts/baseLayout
 
 block content
-  h1= title
-  p Welcome to #{title}
+	.container-fluid
+		.col-md-4.row
+			.col-sm-4
+				form(method='POST' action='/admin' id="login_form" name="login").panel.panel-default
+					.panel-body
+						h1
+							| Login
+						if !msg
+						else
+							div( id="msgAlert" role='alert').alert.alert-danger
+								| #{msg}
+						input(type='text' id='login-uname_input' name='uname' placeholder='Username').form-control
+						br
+						input(type='password' id='login-pword_input' name='pword' placeholder='Password').form-control
+						br
+						input(type='submit' value='Submit').btn.btn-primary
+					.panel-footer.form-inline
+						.checkbox
+							label(for='login-rememberme_input')
+								input(type='checkbox' id='login-rememberme_input' name='rememberme').form-control
+								| Remember Me
+			.col-sm-4
+		.col-md-4

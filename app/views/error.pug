@@ -1,6 +1,6 @@
-extends layout
+extends layouts/baseLayout
 
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+	h1(style='color: white;')= message
+	h2(style='color: white;')= error.status
+	pre(style='color: white;') #{error.stack}

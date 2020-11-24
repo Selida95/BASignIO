@@ -1,0 +1,54 @@
+extends layouts/adminLayout
+
+block content
+	div.row
+		div.col-md-2
+			if sort == 'live'
+				ul#regMenu.nav.nav-pills
+					li( class="active")
+						a(href='/users/' + user.username + '/registers?page=1&sort=live') Live
+					li
+						a(href='/users/' + user.username + '/registers?page=1&sort=all&sortDate=' + cDate) All
+					br
+			else
+				ul#regMenu.nav.nav-pills
+					li
+						a(href='/users/' + user.username + '/registers?page=1&sort=live') Live
+					li( class="active")
+						a(href='/users/' + user.username + '/registers?page=1&sort=all&sortDate=' + cDate) All
+
+		div-col-md-8
+		div-col-md-2
+			button(id="filter" type="button" class="btn btn-primary" data-toggle="modal" data-target="#regFilterModal")
+				span.glyphicon.glyphicon-filter(aria-hidden="true")
+				| Filter
+
+
+	table(id='regTable').table.table-hover
+		thead
+			tr.header
+				th.center Surname
+				th.center Forenames
+				th.center Year Group
+				th.center Location
+				th.center Time In
+				th.center Time Out
+				th.center Date
+		tbody(class='table-striped')
+			each register in registers
+				tr
+					td= register.surname
+					td= register.forenames
+					if register.yearGroup == null
+						td.center
+							| Staff
+					else
+						td.center= register.yearGroup
+					td.center= ucfirst(register.loc)
+					td.center= register.timeIn
+					td.center= register.timeOut
+					td.center= register.date
+
+
+
+	include ./pagination/regPaginate

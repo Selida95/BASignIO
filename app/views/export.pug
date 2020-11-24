@@ -1,0 +1,29 @@
+extends layouts/adminLayout
+
+block content
+		script.
+			export();
+
+		div.col-md-4
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title
+						|Export Options
+				div.panel-body.exportMenu
+					|Choose Date to export:
+					br
+					div.form-group
+						form(method='POST' action='/users/' + user.username + '/export' target="_blank" name='exportReg' id='exportReg')
+							input(name="date" type="text" id="datepicker").form-control
+							br
+							br
+							|Choose Export type:
+
+							label.radio.expRadio
+								input(type="radio" name="expTypeAns" id="exTypPDF" value="PDF" class="radio-inline" checked="checked")
+								| PDF
+							label.radio.expRadio
+								input(type="radio" name="expTypeAns" id="exTypExcel" value="xlsx" class="radio-inline")
+								| Excel
+
+							input(type="submit" name="exportSub").btn.btn-primary

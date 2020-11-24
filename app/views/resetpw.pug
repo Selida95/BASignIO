@@ -1,0 +1,11 @@
+extends layouts/nonadminLayout
+
+block content
+		if !msg
+		else
+			div( id="msgAlert" role='alert').alert.alert-danger
+				| #{msg}
+		form(method="POST" action="/admin/reset/" + token)
+			input(type="password" name="rPword" placeholder="Password" style="width: 25vw; margin: 15px").form-control
+			input(type="password" name="rcPword" placeholder="Confirm Password" style="width: 25vw; margin: 15px").form-control
+			input(type="submit" value="Reset" style="width: 25vw; margin: 15px").btn.btn-primary.form-control

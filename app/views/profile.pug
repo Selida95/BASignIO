@@ -1,0 +1,34 @@
+extends layouts/adminLayout
+
+block content
+
+	div.panel.panel-default
+		div.panel-heading
+			h3.panel-title
+				| Profile
+		div.panel-body
+			if !msg
+			else
+				div( id="msgAlert" role='alert').alert.alert-success
+					| #{msg}
+				br
+			b
+				| Username: 
+			| #{user.username}
+			br
+			if user.username != "admin"
+				b
+					| Forenames: 
+				| #{user.forenames}
+				br
+				b
+					| Surname: 
+				| #{user.surname}
+				br
+				b
+					| Email: 
+				| #{user.username}@battleabbeyschool.com
+				br
+				br
+				form(method="POST" action="/users/" + user.username).btn-group
+					input.btn.btn-default(type="submit" name="pwReset" id="pwReset" value="Reset Password")

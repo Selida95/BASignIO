@@ -1,0 +1,233 @@
+extends layouts/adminLayout
+
+block content
+
+	div.row
+		if stuEdit
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title
+						| Edit Student
+				div.panel-body
+					form(id="stuEditInput" name="stuEditInput" method="POST" action="/users/" + user + "/students?" + query).form-group.form-inline
+						input(type="number" class="input-sm" placeholder="CadID" name="stuEditCadid" value=stuEdit._id required).form-control
+						input(type="number" class="input-sm" placeholder="CardID" name="stuEditCardid" value=stuEdit.cardID required).form-control
+						input(type="text" class="input-sm" placeholder="Surname" name="stuEditSurname" value=stuEdit.surname required).form-control
+						input(type="text" class="input-sm" placeholder="Forenames" name="stuEditForenames" value=stuEdit.forenames required).form-control
+						select(name="stuEditHouse").form-control.input-sm
+							if stuEdit.house == "MT"
+								option(value="MT" selected) St Martin's
+							else
+								option(value="MT") St Martin's
+							if stuEdit.house == "MA"
+								option(value="MA" selected) St Mary's
+							else
+								option(value="MA") St Mary's
+							if stuEdit.house == "PA"
+								option(value="PA" selected) St Patrick's
+							else
+								option(value="PA") St Patrick's
+							if stuEdit.house == "ET"
+								option(value="ET" selected) St Etheldreda's
+							else
+								option(value="ET") St Etheldreda's
+						select(name="stuEditTutorGrp" style="width: 90px;").form-control.input-sm
+							option(disabled) Year 7
+							if stuEdit.tutorGrp == "AC"
+								option(value="AC" selected) AC
+							else
+								option(value="AC") AC
+							if stuEdit.tutorGrp == "PB"
+								option(value="PB" selected) PB
+							else
+								option(value="PB") PB
+							option(disabled) Year 8
+							if stuEdit.tutorGrp == "JXS"
+								option(value="JXS" selected) JXS
+							else
+								option(value="JXS") JXS
+							if stuEdit.tutorGrp == "MSA"
+								option(value="MSA" selected) MSA
+							else
+								option(value="MSA") MSA
+							option(disabled) Year 9
+							if stuEdit.tutorGrp == "KD"
+								option(value="KD" selected) KD
+							else
+								option(value="KD") KD
+							if stuEdit.tutorGrp == "LS"
+								option(value="LS" selected) LS
+							else
+								option(value="LS") LS
+							if stuEdit.tutorGrp == "IT"
+								option(value="IT" selected) IT
+							else
+								option(value="IT") IT
+							option(disabled) Year 10
+							if stuEdit.tutorGrp == "SIB"
+								option(value="SIB" selected) SIB
+							else
+								option(value="SIB") SIB
+							if stuEdit.tutorGrp == "MMG"
+								option(value="MMG" selected) MMG
+							else
+								option(value="MMG") MMG
+							if stuEdit.tutorGrp == "JL/PR"
+								option(value="JL/PR" selected) JL/PR
+							else
+								option(value="JL/PR") JL/PR
+							option(disabled) Year 11
+							if stuEdit.tutorGrp == "HS"
+								option(value="HS" selected) HS
+							else
+								option(value="HS") HS
+							if stuEdit.tutorGrp == "FT"
+								option(value="FT" selected) FT
+							else
+								option(value="FT") FT
+							option(disabled) Year 12
+							if stuEdit.tutorGrp == "MJ"
+								option(value="MJ" selected) MJ
+							else
+								option(value="MJ") MJ
+							if stuEdit.tutorGrp == "ST"
+								option(value="ST" selected) ST
+							else
+								option(value="ST") ST
+							if stuEdit.tutorGrp == "LH"
+								option(value="LH" selected) LH
+							else
+								option(value="LH") LH
+							option(disabled) Year 13
+							if stuEdit.tutorGrp == "FR"
+								option(value="FR" selected) FR
+							else
+								option(value="FR") FR
+							if stuEdit.tutorGrp == "DAC"
+								option(value="DAC" selected) DAC
+							else
+								option(value="DAC") DAC
+							if stuEdit.tutorGrp == "EC"
+								option(value="EC" selected) EC
+							else
+								option(value="EC") EC
+						select(name="stuEditYearGroup" style="width: 90px;").form-control.input-sm
+							if stuEdit.yearGroup == 7
+								option(value=7 selected) Year 7
+							else
+								option(value=7) Year 7
+							if stuEdit.yearGroup == 8
+								option(value=8 selected) Year 8
+							else
+								option(value=8) Year 8
+							if stuEdit.yearGroup == 9
+								option(value=9 selected) Year 9
+							else
+								option(value=9) Year 9
+							if stuEdit.yearGroup == 10
+								option(value=10 selected) Year 10
+							else
+								option(value=10) Year 10
+							if stuEdit.yearGroup == 11
+								option(value=11 selected) Year 11
+							else
+								option(value=11 selected) Year 11
+							if stuEdit.yearGroup == 12
+								option(value=12) Year 12
+							else
+								option(value=12) Year 12
+							if stuEdit.yearGroup == 13
+								option(value=13 selected) Year 13
+							else
+								option(value=13) Year 13
+						input(type="submit" class="btn btn-primary input-sm" value="Submit" id="stuSubmit" name="stuEditSubmit").form-control.btn.btn-primary
+		else
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title
+						| Add Student
+				div.panel-body
+					form(id="stuInput" name="stuInput" method="POST" action="/users/" + user + "/students").form-inline
+						input(type="number" class="input-sm" placeholder="CadID" name="cadid" style="width: 75px;" required).form-control
+						input(type="number" class="input-sm" placeholder="CardID" name="cardid" required).form-control
+						input(type="text" class="input-sm" placeholder="Surname" name="surname" required).form-control
+						input(type="text" class="input-sm" placeholder="Forenames" name="forenames" required).form-control
+						select(name="house").form-control.input-sm
+							option(disabled selected) Choose House
+							option(value="MT") St Martin's
+							option(value="MA") St Mary's
+							option(value="PA") St Patrick's
+							option(value="ET") St Etheldreda's
+						select(name="tutorGrp" style="width: 90px;").form-control.input-sm
+							option(disabled selected) Choose Tutor Group
+							option(disabled) ---Year 7---
+							option(value="AC") AC
+							option(value="PB") PB
+							option(disabled) ---Year 8---
+							option(value="JXS") JXS
+							option(value="MSA") MSA
+							option(disabled) ---Year 9---
+							option(value="KD") KD
+							option(value="LS") LS
+							option(value="IT") IT
+							option(disabled) ---Year 10---
+							option(value="SIB") SIB
+							option(value="MMG") MMG
+							option(value="JL/PR") JL/PR
+							option(disabled) ---Year 11---
+							option(value="HS") HS
+							option(value="FT") FT
+							option(disabled) ---Year 12---
+							option(value="MJ") MJ
+							option(value="ST") ST
+							option(value="LH") LH
+							option(disabled) ---Year 13---
+							option(value="FR") FR
+							option(value="DAC") DAC
+							option(value="EC") EC
+						select(name="yearGroup" style="width: 90px;").form-control.input-sm
+							option(disabled selected) Choose Year Group
+							option(value=7) Year 7
+							option(value=8) Year 8
+							option(value=9) Year 9
+							option(value=10) Year 10
+							option(value=11) Year 11
+							option(value=12) Year 12
+							option(value=13) Year 13
+						input(type="submit" class="btn btn-primary input-sm" value="Submit" id="stuSubmit" name="stuSubmit").form-control.btn.btn-primary
+	//div.col-md-6
+	div.row
+		div.panel.panel-default
+			div.panel-heading
+				h3.panel-title
+					| Student List
+			div.panel-body
+				table(id="stuTable" class="table table-condensed table-hover").table-hover
+					thead
+						tr
+							th(style="text-align: center;") CadID
+							th(style="text-align: center;") Surname
+							th(style="text-align: center;") Forenames
+							th(style="text-align: center;") Tutor Group
+							th(style="text-align: center;") House
+							th(style="text-align: center;") Year
+							th(style="text-align: center;") CardID
+							th(style="text-align: center;") Modify
+							th(style="text-align: center;") Delete
+					tbody(class='table-striped')
+						each student in students
+							tr
+								td(style="text-align: center; width: 10px;")= student._id
+								td(style="width: 500px;text-align: center;")= student.surname
+								td(style="width: 500px;text-align: center;")= student.forenames
+								td(style="text-align: center; width: 100px;")= student.tutorGrp
+								td(style="text-align: center; max-width: 25px;")= student.house
+								td(style="text-align: center; width: 100px;")= student.yearGroup
+								td(style="text-align: center; max-width: 25px; overflow: hidden;")= student.cardID
+								td(style="text-align: center; width: 10px; border-left: 1px solid #ddd;")
+									a(href='/users/' + user + '/students?page=' + pageNum + '&e=' + student._id)
+										| Edit
+								td(style="text-align: center; width: 25px; border-left: 1px solid #ddd;")
+									a(href='/users/' + user + '/students?page=' + pageNum + '&r=' + student._id)
+										| Remove
+				include ./pagination/stuPaginate

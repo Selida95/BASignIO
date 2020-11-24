@@ -1,0 +1,103 @@
+extends ../headers/adminHeader
+
+block body
+	div#bodyContent.container-fluid
+		div#header.row
+			div#logo.col-md-1
+				img(id="logoImg" src='/img/logo.png')
+			div#title.col-md-6
+				h1=title
+			div.col-md-3
+			div(id="headerButtons").col-md-2
+				form(method="POST" action="/users/" + user.username).btn-group
+					button.btn.btn-default(type="submit" id="profile") Profile
+					button.btn.btn-default(type="button" name="logOut" id="logOut" data-toggle="modal" data-target="#logoutModal") Logout
+		div.row
+			div#Menu.col-md-2
+				ul
+					li
+						a(href='/users/' + user.username + '/home')
+							span.glyphicon.glyphicon-home(aria-hidden="true")
+							| Home
+					li
+						a(href='/users/' + user.username + '/students?page=1')
+							span.glyphicon.glyphicon-education(aria-hidden="true")
+							| Students
+					li
+						a(href='/users/' + user.username + '/staff?page=1')
+							span.glyphicon.glyphicon-briefcase(aria-hidden="true")
+							| Staff
+					li
+						a(href='/users/' + user.username + '/registers?page=1&sort=live')
+							span.glyphicon.glyphicon-list-alt(aria-hidden="true")
+							| Registers
+					li
+						a(href='/users/' + user.username + '/export')
+							span.glyphicon.glyphicon-export(aria-hidden="true")
+							| Export
+					if(role == 'admin')
+						li
+							a(href='/users/' + user.username + '/users')
+								span.glyphicon.glyphicon-user(aria-hidden="true")
+								| Users
+					li
+						a(href='/users/' + user.username + '/about')
+							span.glyphicon.glyphicon-info-sign(aria-hidden="true")
+							| About
+			div#Content.col-md-10
+				block content
+			div#regFilterModal.modal.fade(role="dialog" aria-labelledby="#regFilterModalLabel")
+				div.modal-dialog(role="document")
+					div.modal-content
+						div.modal-header
+							button.close(type="button" data-dismiss="modal" aria-label="Close")
+								span(aria-hidden="true")
+									| &times;
+							h4#regFilterModalLabel.modal-title
+								|Filter
+						div.modal-body
+							form(id="regFilter" method="GET" action="/users/" + user.username + "/registers").form-group
+								input(name="page" type="text" value="1" hidden)
+								input(name="sort" type="text" value=sort hidden)
+								| Location: 
+								select(name='sortLoc').form-control
+									option(disabled selected)
+										| Choose a location
+									option(value="MH")
+										| Martlet House (MH)
+									option(value="BA")
+										| Battle Abbey (BA)
+
+								| Year Group: 
+								select(name='sortYrGroup').form-control
+									option(disabled selected)
+										| Choose a year group
+									option(value="7")
+										| Year 7
+									option(value="8")
+										| Year 8
+									option(value="9")
+										| Year 9
+									option(value="10")
+										| Year 10
+									option(value="11")
+										| Year 11
+									option(value="12")
+										| Year 12
+									option(value="13")
+										| Year 13
+								| Type: 
+								select(name='sortType').form-control
+									option(disabled selected)
+										| Filter between staff or students
+									option(value="staff")
+										| Staff
+									option(value="student")
+										| Students
+								| Date:
+								input(name="sortDate" type="text" id="datepickerReg" placeholder="Select Date" required).form-control
+
+						div.modal-footer
+							button.btn.btn-default(type="button" data-dismiss="modal")
+								| Close
+							input.btn.btn-primary( id="regFilterSubmit" type="submit" form="regFilter" value="Submit")

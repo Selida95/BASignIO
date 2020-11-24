@@ -1,0 +1,21 @@
+div(id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel").modal.fade
+	div(role="document").modal-dialog
+		div.modal-content
+			div.modal-header
+				button(type='button' data-dismiss='modal' aria-label='Close').close
+					span(aria-hidden='true')
+						| &times;
+				h4(id='loginModalLabel').modal-title
+					if msg == "Incorrect_Username"
+						| Incorrect Username or Password
+					else if msg == "Incorrect_Password"
+						| Incorrect Password
+			div.modal-body
+				p
+					if msg == "Incorrect_Username"
+						| Sorry but the credentials you have entered are incorrect.
+					else if msg == "Incorrect_Password"
+						| Sorry but the password you have entered is incorrect.
+			div.modal-footer
+				button(type='button' data-dismiss='modal').btn.btn-default
+					| OK

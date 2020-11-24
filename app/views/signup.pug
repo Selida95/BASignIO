@@ -1,0 +1,11 @@
+extends layouts/baseLayout
+
+block content
+	
+	form(name="logIn" method="POST" action="/admin/register" id="loginForm" class="form-group")
+		p #{account}
+		input(type="text" name="username" class="form-group" placeholder="Username") 
+		br
+		input(type="password" class="form-group" name="password" placeholder="Password") 
+		br
+		input(type="submit" name="loginSub" class="btn btn-primary" value="Login-test")

@@ -1,0 +1,57 @@
+1 doctype html
+html
+	head
+		meta(name="viewport" content="width=device-width, user-scalable=no")
+		title= title
+		link(rel='stylesheet', href='/css/global.css')
+		link(rel='stylesheet', href='/vendor/css/bootstrap-theme.min.css')
+		link(href="/vendor/css/bootstrap.min.css", rel="stylesheet")
+		// jQuery
+		script(src='/vendor/js/jquery-3.2.1.min.js')
+
+		// jQuery UI theme or Bootstrap (optional, if you create a custom theme)
+		link(href='/vendor/css/jquery-ui.css', rel='stylesheet')
+
+		// jQuery UI position utility (optional, if you position the keyboard yourself)
+		script(src='/vendor/js/jquery-ui.js')
+
+		// keyboard widget css & script
+		link(href='/vendor/css/keyboard.css', rel='stylesheet')
+		script(src='/vendor/js/jquery.keyboard.js')
+
+		// css for the preview keyset extension
+		link(href='/vendor/css/keyboard-previewkeyset.css', rel='stylesheet')
+
+		// keyboard optional extensions - include ALL (includes mousewheel)
+		script(src='/vendor/js/jquery.keyboard.extension-all.js')
+
+		// or include individual extensions, as desired
+		//
+			script(src='/vendor/js/jquery.mousewheel.js')
+			script(src='/vendor/js/jquery.keyboard.extension-altkeypopup.js')
+			script(src='/vendor/js/jquery.keyboard.extension-autocomplete.js')
+			script(src='/vendor/js/jquery.keyboard.extension-caret.js')
+			script(src='/vendor/js/jquery.keyboard.extension-extender.js')
+			script(src='/vendor/js/jquery.keyboard.extension-mobile.js')
+			script(src='/vendor/js/jquery.keyboard.extension-navigation.js')
+			script(src='/vendor/js/jquery.keyboard.extension-previewkeyset.js')
+			script(src='/vendor/js/jquery.keyboard.extension-scramble.js')
+			script(src='/vendor/js/jquery.keyboard.extension-typing.js')
+
+		script(src="/js/keyboard.js")
+
+		script.
+			//document.addEventListener('contextmenu', event => event.preventDefault());
+			$("#scanID").blur(function(){
+				setTimeout(function(){ alert("HelloWorld"); }, 3000);
+			});
+	body
+		div#bodyContent.container-fluid
+			div#header.row
+				div.col-md-1
+					img(id="logo" src='/img/logo.png')
+				div.col-md-5
+					h1.h1Header=title
+				div.col-md-4
+				div.col-md-2
+		block content

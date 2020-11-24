@@ -1,0 +1,55 @@
+footer
+	nav(aria-label='Page navigation')
+
+		ul.pagination
+			if pageNum == 1
+				li.disabled
+					span(aria-hidden='true')
+						span.glyphicon.glyphicon-step-backward(aria-hidden="true")
+				li.disabled
+					span(aria-hidden='true')
+						span.glyphicon.glyphicon-chevron-left(aria-hidden="true")
+			else
+				li
+					a(href='/users/' + user.username + '/students?page=1', aria-label='Previous')
+						span.glyphicon.glyphicon-step-backward(aria-hidden="true")
+				li
+					a(href='/users/' + user.username + '/students?page=' + prevPage, aria-label='Previous')
+						span.glyphicon.glyphicon-chevron-left(aria-hidden="true")
+
+
+			- for (var x = fvp; x <= lvp ; x++)
+
+				if x == pageNum
+					li.active
+						a(href='/users/' + user.username + '/students?page=' + x)= x
+				else
+					li
+						a(href='/users/' + user.username + '/students?page=' + x)= x
+
+
+			if pageNum == totalPages
+				li.disabled
+					span(aria-hidden='true')
+						span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
+				li.disabled
+					span(aria-hidden='true')
+						span.glyphicon.glyphicon-step-forward(aria-hidden="true")
+			else
+				if totalPages == 0
+					li.disabled
+						span(aria-hidden='true')
+							span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
+					li.disabled
+						span(aria-hidden='true')
+							span.glyphicon.glyphicon-step-forward(aria-hidden="true")
+
+				else
+					li
+						a(href='/users/' + user.username + '/students?page=' + nextPage, aria-label='Next')
+							span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
+					li
+						a(href='/users/' + user.username + '/students?page=' + totalPages, aria-label='Next')
+							span.glyphicon.glyphicon-step-forward(aria-hidden="true")
+
+			| Total # of pages: #{totalPages}

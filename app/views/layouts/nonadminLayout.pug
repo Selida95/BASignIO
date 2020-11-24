@@ -1,0 +1,34 @@
+extends ../headers/adminHeader
+
+block body
+	div#bodyContent.container-fluid
+		div#header.row
+			div#logo.col-md-1
+				img(id="logoImg" src='/img/logo.png')
+			div#title.col-md-6
+				h1=title
+			div.col-md-3
+
+		div.row
+			div#Menu.col-md-2
+				ul
+					li
+						a(href='')
+							br
+					li
+						a(href='')
+							br
+					li
+						a(href='')
+							br
+					li
+						a(href='')
+							br
+					li
+						a(href='')
+							br
+					li
+						a(href='')
+							br
+			div#Content.col-md-10
+				block content

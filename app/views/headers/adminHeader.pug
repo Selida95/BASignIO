@@ -1,0 +1,53 @@
+doctype html
+html
+	head
+		meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+		title= title
+		link(rel='stylesheet', href='/css/admin.css')
+		link(rel='stylesheet', href='/css/base.css')
+		link(rel='stylesheet', href='/vendor/css/bootstrap-theme.min.css')
+		link(href="/vendor/css/bootstrap.min.css", rel="stylesheet")
+		link(rel='stylesheet', href='/vendor/css/jquery-ui.css')
+		script(type='text/javascript' src='/vendor/js/jquery-3.2.1.min.js')
+		script(type='text/javascript' src='/vendor/js/jquery.query-object.js')
+		script(type='text/javascript' src='/vendor/js/jquery-ui.js')
+		script(type='text/javascript' src='/vendor/js/bootstrap.min.js')
+
+			
+			
+		script.
+			$( function() {
+				$( "#datepicker" ).datepicker({
+					dateFormat: 'dd-mm-yy',
+					maxDate: '-1d',
+					minDate: new Date(2017, 4 - 1, 20),	
+					beforeShowDay: $.datepicker.noWeekends
+				});
+
+				$( "#datepickerReg" ).datepicker({
+					dateFormat: 'dd-mm-yy',
+					maxDate: '0d',
+					minDate: new Date(2017, 4 - 1, 20),	
+					beforeShowDay: $.datepicker.noWeekends
+				});
+
+				$("#sortLive").attr("href", "http://www.google.com/")
+
+				$("#regFilterSubmit").click( function() {
+				    //$('#regFilter').submit();
+				});
+
+				if (window.location.search.indexOf('e') > -1) {
+				    //alert('track present');
+				}
+
+			});
+			function logOut(){
+					window.location.href = "/admin/logout";
+			}
+
+
+block body
+
+include ../modals/logout

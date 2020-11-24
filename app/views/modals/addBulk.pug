@@ -1,0 +1,16 @@
+div(id="addBulkModal" tabindex="-1" role="dialog" aria-labelledby="addBulkModalLabel").modal.fade
+	div(role="document").modal-dialog
+		div.modal-content
+			div.modal-header
+				button(type='button' data-dismiss='modal' aria-label='Close').close
+					span(aria-hidden='true')
+						| &times;
+				h4(id='addBulkModalLabel').modal-title
+					| Add Bulk
+			div.modal-body
+				| Upload CSV
+
+				form(method="POST" action="/user")
+			div.modal-footer
+				button(type='button' data-dismiss='modal').btn.btn-default
+					| OK

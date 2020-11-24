@@ -1,0 +1,86 @@
+extends layouts/adminLayout
+
+block content
+
+	div.row
+		if userEdit
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title
+						| Edit User
+				div.panel-body
+					form(id="userInput" name="userInput" method="POST" action="/users/" + user + "/users").form-group.form-inline
+							input(type="text" placeholder="Username" name="userEditUsername" value=userEdit.username required).form-control
+							input(type="text" placeholder="Surname" name="userEditSurname" value=userEdit.surname).form-control
+							input(type="text" placeholder="Forenames" name="userEditForenames" value=userEdit.forenames).form-control
+							input(type="password" placeholder="Password" name="userEditPassword").form-control
+							input(type="password" placeholder="Confirm Password" name="userEditCPassword").form-control
+							select(placeholder="roleType" name="userEditRoleType" required).form-control
+								if userEdit.role == "admin"
+									option(value="admin" selected)
+										|Admin
+									option(value="user")
+										|User
+								else
+									option(value="admin")
+										|Admin
+									option(value="user" selected)
+										|User									
+							input(type="submit" value="Edit" id="userSubmit" name="userEditSubmit").form-control.btn.btn-primary
+		else
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title
+						| Add User
+				div.panel-body
+					form(id="userEditInput" name="userEditInput" method="POST" action="/users/" + user + "/users").form-group.form-inline
+							input(type="text" placeholder="Username" name="username" required).form-control
+							input(type="text" placeholder="Surname" name="surname").form-control
+							input(type="text" placeholder="Forenames" name="forenames").form-control
+							input(type="password" placeholder="Password" name="password" required).form-control
+							input(type="password" placeholder="Confirm Password" name="cPassword" required).form-control
+							select(placeholder="roleType" name="roleType" required).form-control
+								option(value="" disabled selected style="display: none;") Choose Role Type
+								option(value="admin")
+									|Admin
+								option(value="user")
+									|User
+							input(type="submit" value="Submit" id="userSubmit" name="userSubmit").form-control.btn.btn-primary
+
+
+	div.row
+		div.panel.panel-default
+			div.panel-heading
+				h3.panel-title
+					| User List
+			div.panel-body
+				table(id="userTable" class="table table-condensed").table-hover
+					thead
+						tr
+							th(class="adminTable adminTableHeader" style="text-align: center;")
+								|Username
+							th(class="adminTable adminTableHeader" style="text-align: center;")
+								|Surname
+							th(class="adminTable adminTableHeader" style="text-align: center;")
+								|Forenames
+							th(class="adminTable adminTableHeader" style="text-align: center;")
+								|Role
+							th(style="text-align: center;")
+								|Modify
+							th(style="text-align: center;")
+								|Delete
+					tbody(class='table-striped')
+						each account in accounts
+							tr
+								td(style="text-align: center;")= account.username
+								td= account.surname
+								td= account.forenames
+								td(style="text-align: center;")= account.role
+								td(style="text-align: center; width: 70px; border-left: 1px solid #ddd;")
+									if account.username != "admin"
+										a(href='/users/' + user.username + '/users?e=' + account._id)
+											| Edit
+								td(style="text-align: center; width: 70px; border-left: 1px solid #ddd;")
+									if account.username != "admin"
+										a(href='/users/' + user.username + '/users?r=' + account._id)
+											| Remove

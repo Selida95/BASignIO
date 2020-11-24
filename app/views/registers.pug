@@ -1,0 +1,37 @@
+extends layouts/regLayout
+
+block content
+	div(id="content")
+		if error && error.length > 0
+			div#msgBox.alert.alert-danger(role='alert')
+				p= error
+		if success && success.length > 0
+			div#msgBox.alert.alert-success(role='alert')
+				p= success
+		if warning && warning.length > 0
+			div#msgBox.alert.alert-warning(role='alert')
+				p= warning
+		else
+			script
+				| console.log('Else');
+
+		if user == ''
+			button(id="manualInput" onclick="keyboard();" class="btn btn-info")
+				| Manual Input
+		else
+			button(id="clearInput" form= "ClearForm" onclick ="location.replace(location.href);" class="btn btn-warning")
+				| Clear
+		form(name="scanBarcode" method="POST")
+			if inputFocus == true
+				input(type="text" id="scanID" name="scanID" autofocus="true" autocomplete="off" )
+
+			else
+				input(type="text" id="scanID" name="scanID" value=id autocomplete="off")
+			if user != 'undefined'
+				if user != NULL
+					span(id="stName") #{user.surname}, #{user.forenames}
+			else
+				span(id-"stName")
+			input(type="submit" id="scanSubmit" name="scanSubmit" value="Scan Barcode" hidden="true")
+			input(id="signInBtn" class="submitBtn" type="submit" name="signIn" value="Sign In")
+			input(id="signOutBtn" class="submitBtn" type="submit" name="signOut" value="Sign Out")

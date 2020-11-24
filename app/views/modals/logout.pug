@@ -1,0 +1,17 @@
+div(id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel").modal.fade
+	div(role="document").modal-dialog
+		div.modal-content
+			div.modal-header
+				button(type='button' data-dismiss='modal' aria-label='Close').close
+					span(aria-hidden='true')
+						| &times;
+				h4(id='logoutModalLabel').modal-title
+					| Logout: Are you sure?
+			div.modal-body
+				p
+					| You are about to logout. This will also clear any cookies set if you checked "remember me".
+			div.modal-footer
+				button(type='button' data-dismiss='modal').btn.btn-default
+					| Close
+				button(type='button' onclick="logOut()").btn.btn-primary
+					| Log out

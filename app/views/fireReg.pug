@@ -1,0 +1,37 @@
+extends layouts/fireRegLayout
+
+block content
+
+	div#header
+		img(id='logo' src='/img/reportlogo.jpg')
+		h1
+			| BASignIO: Fire Register
+		h3
+			| Location: #{loc}
+
+
+	table.table
+		thead
+			tr
+				th.center
+					| Surname
+				th.center
+					| Forenames
+				th.center
+					| Year Group
+				th.center
+					| Tutor Group
+				th.center
+					| Location
+				th.center
+					| Time In
+
+		tbody.table-striped
+			each reg in results
+				tr
+					td= reg.surname
+					td= reg.forenames
+					td= reg.yearGroup
+					td= reg.tutorGrp
+					td= reg.loc
+					td= reg.timeIn

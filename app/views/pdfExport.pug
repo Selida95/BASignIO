@@ -1,0 +1,225 @@
+doctype html
+html
+  head
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    link(rel='stylesheet', href='/css/export.css')
+    title= title
+
+  body
+    .header
+      include ../public/img/logo.svg
+      h1=title
+      if register.length > 0
+        - var yearSeven = false;
+        - var yearEight = false;
+        - var yearNine = false;
+        - var yearTen = false;
+        - var yearEleven = false;
+        - var yearTwelve = false;
+        - var yearThirteen = false;
+        - var staff = false;
+        each item in register
+          if item.type == "student" && item.yearGroup == 7
+            - yearSeven = true;
+          if item.type == "student" && item.yearGroup == 8
+            - yearEight = true;
+          if item.type == "student" && item.yearGroup == 9
+            - yearNine = true;
+          if item.type == "student" && item.yearGroup == 10
+            - yearTen = true;
+          if item.type == "student" && item.yearGroup == 11
+            - yearEleven = true;
+          if item.type == "student" && item.yearGroup == 12
+            - yearTwelve = true;
+          if item.type == "student" && item.yearGroup == 13
+            - yearThirteen = true;
+          if item.type == "staff"
+            - staff = true;
+            
+        if yearSeven
+          h2
+            | Year 7
+          table
+            tr
+              th
+                | Forenames
+              th
+                | Surname
+              th
+                | Location
+              th
+                | Time In
+              th
+                | Time Out
+            each student in register
+              if student.type == "student" && student.yearGroup == 7
+                tr
+                  td= student.forenames
+                  td= student.surname
+                  td= student.loc
+                  td= student.timeIn
+                  td= student.timeOut
+        if yearEight
+          h2
+            | Year 8
+          table
+            tr
+              th
+                | Forenames
+              th
+                | Surname
+              th
+                | Location
+              th
+                | Time In
+              th
+                | Time Out
+            each student in register
+              if student.type == "student" && student.yearGroup == 8
+                tr
+                  td= student.forenames
+                  td= student.surname
+                  td= student.loc
+                  td= student.timeIn
+                  td= student.timeOut
+        if yearNine
+          h2
+            | Year 9
+          table
+            tr
+              th
+                | Forenames
+              th
+                | Surname
+              th
+                | Location
+              th
+                | Time In
+              th
+                | Time Out
+            each student in register
+              if student.type == "student" && student.yearGroup == 9
+                tr
+                  td= student.forenames
+                  td= student.surname
+                  td= student.loc
+                  td= student.timeIn
+                  td= student.timeOut
+        if yearTen
+          h2
+            | Year 10
+          table
+            tr
+              th
+                | Forenames
+              th
+                | Surname
+              th
+                | Location
+              th
+                | Time In
+              th
+                | Time Out
+            each student in register
+              if student.type == "student" && student.yearGroup == 10
+                tr
+                  td= student.forenames
+                  td= student.surname
+                  td= student.loc
+                  td= student.timeIn
+                  td= student.timeOut
+        if yearEleven
+          h2
+            | Year 11
+          table
+            tr
+              th
+                | Forenames
+              th
+                | Surname
+              th
+                | Location
+              th
+                | Time In
+              th
+                | Time Out
+            each student in register
+              if student.type == "student" && student.yearGroup == 11
+                tr
+                  td= student.forenames
+                  td= student.surname
+                  td= student.loc
+                  td= student.timeIn
+                  td= student.timeOut
+        if yearTwelve
+          h2
+            | Year 12
+          table
+            tr
+              th
+                | Forenames
+              th
+                | Surname
+              th
+                | Location
+              th
+                | Time In
+              th
+                | Time Out
+            each student in register
+              if student.type == "student" && student.yearGroup == 12
+                tr
+                  td= student.forenames
+                  td= student.surname
+                  td= student.loc
+                  td= student.timeIn
+                  td= student.timeOut
+        if yearThirteen
+          h2
+            | Year 13
+          table
+            tr
+              th
+                | Forenames
+              th
+                | Surname
+              th
+                | Location
+              th
+                | Time In
+              th
+                | Time Out
+            each student in register
+              if student.type == "student" && student.yearGroup == 13
+                tr
+                  td= student.forenames
+                  td= student.surname
+                  td= student.loc
+                  td= student.timeIn
+                  td= student.timeOut
+        if staff
+          h2
+            | Staff
+          table
+            tr
+              th
+                | Forenames
+              th
+                | Surname
+              th
+                | Location
+              th
+                | Time In
+              th
+                | Time Out
+            each staff in register
+              if staff.type == "staff"
+                tr
+                  td= staff.forenames
+                  td= staff.surname
+                  td= staff.loc
+                  td= staff.timeIn
+                  td= staff.timeOut
+      else
+        h2
+          | No one signed in.

@@ -1,0 +1,78 @@
+extends layouts/adminLayout
+
+block content
+
+	div.row
+		if staffEdit
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title
+						| Edit Staff
+				div.panel-body
+					form(id="staffEditInput" name="staffEditInput" method="POST" action="/users/" + user + "/staff?" + query).form-group.form-inline
+						input(type="number" class="input-sm" placeholder="ID" name="staffEditID" value=staffEdit._id required).form-control
+						input(type="number" class="input-sm" placeholder="CardID" name="staffEditCardID" value=staffEdit.cardID required).form-control
+						input(type="number" class="input-sm" placeholder="CardID2" name="staffEditCardID2" value=staffEdit.cardID2).form-control
+						input(type="text" class="input-sm" placeholder="Surname" name="staffEditSurname" value=staffEdit.surname required).form-control
+						input(type="text" class="input-sm" placeholder="Forenames" name="staffEditForenames" value=staffEdit.forenames required).form-control
+						select(placeholder="Staff Type" name="staffEditStaffType" required).form-control
+							if staffEdit.staffType == "support"
+								option(value="support" selected) Support
+								option(value="teaching") Teaching
+							else
+								option(value="support") Support
+								option(value="teaching" selected) Teaching
+						input(type="text" placeholder="Department" name="staffEditDepartment" value=staffEdit.department required).form-control
+						input(type="submit" class="btn btn-primary input-sm" value="Submit" id="staffSubmit" name="staffEditSubmit").form-control.btn.btn-primary
+		else
+			div.panel.panel-default
+				div.panel-heading
+					h3.panel-title
+						| Add Staff
+				div.panel-body
+					form(id="staffInput" name="staffInput" method="POST" action="/users/" + user + "/staff").form-group.form-inline
+						input(type="number" class="input-sm" placeholder="ID" name="staffid" required).form-control.form-group.form-inline
+						input(type="number" class="input-sm" placeholder="CardID" name="cardid" required).form-control
+						input(type="number" class="input-sm" placeholder="CardID2" name="cardid2" required).form-control
+						input(type="text" class="input-sm" placeholder="Surname" name="surname" required).form-control
+						input(type="text" class="input-sm" placeholder="Forenames" name="forenames" required).form-control
+						select(placeholder="Staff Type" name="staffType" required).form-control
+							option(value="" disabled selected) Choose Staff Type
+							option(value="support") Support
+							option(value="teaching") Teaching
+						input(type="text" placeholder="Department" name="department" required).form-control
+						input(type="submit" class="btn btn-primary input-sm" value="Submit" id="staffSubmit" name="staffSubmit").form-control.btn.btn-primary
+	//div.col-md-6
+	div.row
+		div.panel.panel-default
+			div.panel-heading
+				h3.panel-title
+					| Staff List
+			div.panel-body
+				table(id="staffTable" class="table table-condensed table-hover").table-hover
+					thead
+						tr
+							th(class="adminTable adminTableHeader" style="text-align: center;") Staff ID
+							th(class="adminTable adminTableHeader" style="text-align: center;") Surname
+							th(class="adminTable adminTableHeader" style="text-align: center;") Forenames
+							th(class="adminTable adminTableHeader" style="text-align: center;") Staff Type
+							th(class="adminTable adminTableHeader" style="text-align: center;") Department
+							th(class="adminTable adminTableHeader" style="text-align: center;") CardID
+							th(style="text-align: center;") Modify
+							th(style="text-align: center;") Delete
+					tbody(class='table-striped')
+						each staff in staffs
+							tr
+								td(style="text-align: center;")= staff._id
+								td= staff.surname
+								td= staff.forenames
+								td(style="text-align: center;")= staff.staffType
+								td(style="text-align: center;")= staff.department
+								td(style="text-align: center; overflow: hidden;")= staff.cardID
+								td(style="text-align: center; width: 10px; border-left: 1px solid #ddd;")
+									a(href='/users/' + user + '/staff?page=' + pageNum + '&e=' + staff._id)
+										| Edit
+								td(style="text-align: center; width: 25px; border-left: 1px solid #ddd;")
+									a(href='/users/' + user + '/staff?page=' + pageNum + '&r=' + staff._id)
+										| Remove
+				include ./pagination/staffPaginate
