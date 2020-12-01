@@ -23,7 +23,6 @@
  /* --- Database --- */
  mongoose.Promise = global.Promise;
  mongoose.connect('mongodb://' + config.db.host + '/' + config.db.name, {
-   useMongoClient: true
  })
 
  var db = mongoose.connection;
