@@ -22,7 +22,6 @@
 
  // Global Variables
  var ObjectID = require('mongodb').ObjectID;
- var user;
  var inputFocus;
 
 
@@ -33,11 +32,7 @@
  router.get('/:location', (req, res, next) => {
    // Gives focus to scan ID
    inputFocus = true;
-
-   // Clears user info
-   user = '';
-
-   res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, loc: req.params.location, inputFocus: inputFocus});
+   res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: '', loc: req.params.location, inputFocus: inputFocus});
  });
 
  router.post('/:location', (req, res, next) => {
@@ -81,21 +76,16 @@
                }
              })
              // Get student forename and surname
-             user = student;
              console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
-             res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus, warning: message});
+             res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: students._id, inputFocus: inputFocus, warning: message});
            } else {
              if (req.body.scanID == student.data._id) {
                // Manual Input was used.
-               // Get student forename and surname
-               user = student.data;
                console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id. Manual Input was used.");
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: student.data._id, inputFocus: inputFocus});
+               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus});
              } else {
-               //Get student forename and surname
-               user = student.data;
                console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: student.data._id, inputFocus: inputFocus});
+               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus});
              }
            }
          } else {
@@ -105,9 +95,8 @@
              //if staff exists
              if (staffs) {
                //Get staff forename and surname
-               user = staffs;
                console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: staffs._id, inputFocus: inputFocus});
+               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: staff.data, id: staffs._id, inputFocus: inputFocus});
              }else{
                //if user doesn't exist.
                req.flash('error', 'Please contact admin. Your ID does not exist.');
@@ -118,8 +107,6 @@
        })
      }
    } else if(req.body.signIn) {
-     /*function myfunction() {};
-     setTimeout(myfunction(), 2000);*/
 
      //if scanID is empty
      if (!req.body.scanID) {
@@ -382,13 +369,6 @@
                          console.log("Log: " + functions.date() + " " + functions.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in, but didn't sign out.");
                          req.flash('error', exists.forenames + ' ' + exists.surname + " was signed in, but didn't previously signout. Please do so in the future!");
                          res.redirect('/reg/' + req.params.location);
-                       /*}else{
-
-                         console.log("Log: " + functions.date() + " " + functions.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in. Sign in button was press more than once.");
-                         req.flash('success', exists.forenames + ' ' + exists.surname + ' was signed in! But you dont\'t need to spam the button.');
-
-                         res.redirect('/reg/' + req.params.location);
-                       }*/
                      }
                  //else, Staff doesn't exist on the fire register
                  }else{
@@ -695,13 +675,6 @@
                          console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out, but didn't sign in.");
                          req.flash('error', exists.fullName + " was signed out, but didn't sign in. Please do so in the future!")
                          res.redirect('/reg/' + req.params.location);
-                       /*}else{
-                         console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out. Sign Out button was press more than once.");
-                         req.flash('success', exists.fullName + ' was signed out. But you dont\'t need to spam the button.')
-
-                         res.redirect('/reg/' + req.params.location);
-                       }*/
-
                      }
                  //else; staff doesn't exist on the fire register
                  }else{
