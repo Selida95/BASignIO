@@ -6,6 +6,7 @@
 
  // Dependencies
  const util = require('./utilities')
+ const ObjectID = require('mongodb').ObjectID;
 
  // Database Models
 
@@ -20,8 +21,6 @@
  // Required Fields: parameterObject (contains: id, forenames, surname, type, location, IO state), callback
  // Optional Fields: yearGroup (dependent if student or staff)
  manager.createRecord = (parameterObject, callback) => {
-   let ObjectID = require('mongodb').ObjectID;
-
    // Validate required fields
    let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
    let forenames = typeof(parameterObject.forenames) === 'string' && parameterObject.forenames.length > 0  ? parameterObject.forenames : false
