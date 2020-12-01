@@ -9,7 +9,7 @@
  const ObjectID = require('mongodb').ObjectID;
 
  // Database Models
-
+ const register = require('../models/register');
 
  // Config
  const config = require('../config');
