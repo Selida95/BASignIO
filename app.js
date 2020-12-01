@@ -33,11 +33,11 @@
  /* ---------------- */
 
  /* --- Routers --- */
- const indexRouter = require('./app/routes/app/index');
- const adminRouter = require('./app/routes/app/admin');
- const usersRouter = require('./app/routes/app/users');
- const reportRouter = require('./app/routes/app/report');
- const registerRouter = require('./app/routes/app/registers');
+ const indexRouter = require('./app/routes/index');
+ const adminRouter = require('./app/routes/admin');
+ const usersRouter = require('./app/routes/users');
+ const reportRouter = require('./app/routes/report');
+ const registerRouter = require('./app/routes/registers');
  /* --------------- */
 
  const app = express();
