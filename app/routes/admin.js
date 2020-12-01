@@ -6,8 +6,8 @@
 
  // Dependencies
  const router = require('express').Router();
- const accountManager = require('../lib/accountManager');
- const reportGenerator = require('../lib/report_generator');
+ const account_manager = require('../lib/account_manager');
+ const report_generator = require('../lib/report_generator');
 
  // Config
  const config = require('../config');
@@ -20,7 +20,7 @@
      if (req.cookies.basignio_username == undefined || req.cookies.basignio_password == undefined) {
        res.render('index', { title : 'BASignIO'});
      } else {
-       accountManager.autoLogin(reg.cookies.basignio_username, req.cookies.basignio_password, (user) => {
+       account_manager.autoLogin(reg.cookies.basignio_username, req.cookies.basignio_password, (user) => {
          if (user != null) {
            req.session.user = user;
            res.redirect('/users/' + req.session.user.username + '/home');
@@ -35,7 +35,7 @@
  });
 
  router.post('/', (req, res, next) => {
-   accountManager.manualLogin(req.body.uname, req.body.pword, (error, user) => {
+   account_manager.manualLogin(req.body.uname, req.body.pword, (error, user) => {
      if (!user) {
        if (error == 'user-not-found') {
          res.render('index', { title: 'BASignIO', msg: 'Incorrect Username or Password'});
@@ -94,7 +94,7 @@
    let filename;
 
    if (req.query.email) {
-     reportGenerator.generateFireRegisterReport({
+     report_generator.generateFireRegisterReport({
        date : date,
        location : location
      }, (error, report) => {
@@ -128,7 +128,7 @@
        });
      });
    } else {
-     reportGenerator.generateRegisterReport({
+     report_generator.generateRegisterReport({
  			date : req.query.date,
  			location : req.query.loc
  		 }, (error, report) => {

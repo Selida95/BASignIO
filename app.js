@@ -23,7 +23,8 @@
  /* --- Database --- */
  mongoose.Promise = global.Promise;
  mongoose.connect('mongodb://' + config.db.host + '/' + config.db.name, {
-   useMongoClient: true
+   useNewUrlParser: true,
+   useUnifiedTopology: true
  })
 
  var db = mongoose.connection;
@@ -34,11 +35,11 @@
  /* ---------------- */
 
  /* --- Routers --- */
- const indexRouter = require('./routes/app/index');
- const adminRouter = require('./routes/app/admin');
- const usersRouter = require('./routes/app/users');
- const reportRouter = require('./routes/app/report');
- const registerRouter = require('./routes/app/registers');
+ const indexRouter = require('./app/routes/index');
+ const adminRouter = require('./app/routes/admin');
+ const usersRouter = require('./app/routes/users');
+ const reportRouter = require('./app/routes/report');
+ const registerRouter = require('./app/routes/registers');
  /* --------------- */
 
  const app = express();

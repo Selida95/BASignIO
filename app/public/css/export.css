@@ -1,0 +1,32 @@
+body {
+  margin-left: 10vw;
+  margin-right: 10vw;
+}
+
+.logo-svg {
+  height: 100px;
+}
+.logo-path {
+  fill: #800000;
+}
+
+.header {
+  display: inline-block;
+}
+
+.header h1, .header h3{
+  display: inline-block;
+}
+
+tr {
+  border-bottom: 2px solid lightgrey;
+}
+
+.location {
+  font-size: 20px;
+  border-left: 0.5px solid lightgrey;
+}
+
+.center {
+  text-align: center;
+}

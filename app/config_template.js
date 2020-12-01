@@ -42,3 +42,6 @@
  config.manual_input.enabled = true; // If manual input usage count is enabled or not
  config.manual_input.max_uses = 10; // How many times manual input can be used per user before an email is sent
  config.manual_input.email = ''; // Email address that manual input report gets emailed to
+
+ // Export Config
+ module.exports = config

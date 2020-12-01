@@ -1,0 +1,233 @@
+	/*--Header--*/
+		#header{
+			background-image: linear-gradient(to bottom, #8F1A51, #641239);
+			color: white;
+
+			width: 100vw;
+			height: 10vh;
+
+			position: fixed;
+
+			padding:0;
+			border: 0;
+			margin: 0;
+		}
+		#header > h1{
+			font-size: 10%;
+			margin: 25%;
+			border: 0;
+			padding: 0;
+		}
+
+		#header > #title {
+			float: left;
+			height: 9vh;
+			padding: 0;
+		}
+
+		#header > #logo {
+			float: left;
+		}
+
+		#logoImg{
+			margin-left: 25%;
+			margin-top: 17%;
+			margin-bottom: 17%;
+
+		}
+
+		#headerButtons{
+			float: right;
+			/*margin-left: 20px; 
+			margin-right: 20px;
+			margin-top: 20px;*/
+			margin: 20px;
+		}
+		#headerButtons > form{
+			float: right;
+		}
+
+	/*--Menu--*/
+		#Menu{
+			position: fixed;
+			top: 20vh;
+		}
+
+		#Menu ul {
+			margin: 0;
+			list-style: none;
+			
+			
+			/*width: 75%;*/
+			width: 23vw;
+
+			padding: 0 !important; /* Indirect Bootstrap override */
+		}
+		
+		#Menu>ul>li:first-child a {
+			border-top-left-radius: 10px;
+		}
+
+		#Menu>ul>li:last-child a {
+			border-bottom-left-radius: 10px;
+		}
+
+		#Menu>ul>li.active:after {
+			border-bottom: 15px inset transparent;
+			border-right: 15px solid #FFFFFF;
+			border-top: 15px inset transparent;
+			content: "";
+			height: 0;
+			position: absolute;
+			right: 0;
+			top: 6px;
+			width: 0;
+			z-index: 2;
+		}
+
+		#Menu>ul>li {
+			display: block;
+			position: relative;
+		}
+
+		#Menu>ul>li>a {
+			border-bottom: 1px solid #520F2E;
+			border-top: 1px solid #66133A;
+			background: none repeat scroll 0 0 #5F1236;
+			transition: background .2s;
+
+			color: #FFFFFF;
+			display: block;
+			padding: 10px 0 10px 15px;
+		}
+
+		#Menu>ul>li>a:hover {
+			background: #661038;
+		}
+
+		#Menu>ul>li>a:active {
+			background: #490927;
+		}
+
+		#Menu>ul ul li:first-child a {
+			border-top: 0 none;
+		}
+
+		#Menu>ul ul li a {
+			border-bottom: 1px solid #202020;
+			border-top: 1px solid #333333;
+
+			color: #777777;
+			display: block;
+			padding: 10px 0 10px 25px;
+		}
+
+
+		#Menu>ul li.open ul {
+			display: block;
+		}
+
+		#Menu>ul ul {
+			background-color: #2A2A2A;
+			border-top: 1px solid #4E4E4E;
+
+			box-shadow: 0 0 3px rgba(0, 0, 0, 0.5) inset;
+			display: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		span.glyphicon{
+			margin-right: 5px;
+		}
+	/*--Content--*/
+
+		#Content{
+			position: fixed;
+			top: 10vh;
+			right: 0;
+
+			min-height: calc(100vh - 10px);
+			width: calc(100% - 219px);
+
+			border-radius: 10px 0 0 0;
+
+			background-color: white;
+
+			padding: 25px;
+		}
+
+	/*--Content Styles--*/
+		/*--Filter--*/
+			#filter{
+				position: fixed;
+				right: 2vw;
+
+				float: right;
+				/*clear: both;*/
+			}
+			#dropdownType{
+				float: left;
+				width: 125px;
+			}
+			#dropdownLoc{
+				float: left;
+				width: 150px;
+			}
+			#dropdownYG{
+				float: left;
+				width: 150px;
+			}
+			#regMenu{
+				float: left;
+			}
+		/*--Table--*/
+			.center{
+				text-align: center;
+			}
+
+		/*--Inputs--*/
+			.group{
+				width: 500px;
+		        clear: both;
+			}
+
+			.group input{
+				/*width: 500px;*/
+		        clear: both;
+			}
+
+			#stuInput > input{
+				margin: 5px;
+			}
+
+			#stuInput > select{
+				margin: 5px;
+			}
+
+			#staffInput > input{
+				margin: 5px;
+			}
+
+			#staffInput > select{
+				margin: 5px;
+			}
+
+		/*--Export--*/
+			input#datepicker{
+				width: 150px;
+				padding: 10px;
+				margin: 0;
+			}
+			#dateSearch{
+				width: 100px;
+			}
+			
+			.expRadio{
+				position: fixed;
+				left: 25px;
+			}
+
+			.exportMenu{
+				padding-left: 100px;
+			}
