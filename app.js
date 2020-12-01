@@ -23,6 +23,8 @@
  /* --- Database --- */
  mongoose.Promise = global.Promise;
  mongoose.connect('mongodb://' + config.db.host + '/' + config.db.name, {
+   useNewUrlParser: true,
+   useUnifiedTopology: true
  })
 
  var db = mongoose.connection;
