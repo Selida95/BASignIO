@@ -1,0 +1,358 @@
+/*--Bootstrap overrides--*/
+.col-md-1{
+	width: calc(5vw * 1) !important;
+}
+/*--Base Styles--*/
+
+	body {
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		margin: 0;
+		background-color: #2B0014 !important;
+		color: white;
+		touch-action: none;
+	}
+
+
+	#bodyContent{
+		width: 100%;
+		height: 100%;
+
+		vertical-align: top;
+
+		padding: 0 !important;
+		margin: 0 !important;
+		border: 0 !important;
+	}
+
+
+
+/*--Admin and Reg Styles--*/
+
+	/*--Header--*/
+		#header{
+			background-image: linear-gradient(to bottom, #8F1A51, #641239);
+			color: white;
+
+			width: 100vw;
+			/*height: 10vh;*/
+
+			position: fixed;
+
+			padding:0;
+			border: 0;
+			margin: 0;
+		}
+		#header > h1{
+			font-size: 10%;
+			margin: 25%;
+			border: 0;
+			padding: 0;
+		}
+
+		#header > #title {
+			float: left;
+		}
+
+		#header > #logo {
+			float: left;
+		}
+
+		#logoImg{
+			margin: 25%;
+		}
+
+		#logOut{
+			float: right;
+			margin: 20px;
+		}
+
+	/*--Login--*/
+		#loginForm{
+			width: 300px;
+
+			position: fixed;
+			top: 25vh;
+			left: 40vw;
+		}
+		#loginForm > input{
+			width: 250px;
+		}
+
+		#loginSub{
+			width: 265px;
+		}
+
+	/*--Menu--*/
+		#Menu{
+			position: fixed;
+			top: 20vh;
+		}
+
+		#Menu ul {
+			margin: 0;
+			list-style: none;
+			
+			
+			/*width: 75%;*/
+			width: 23vw;
+
+			padding: 0 !important; /* Indirect Bootstrap override */
+		}
+		
+		#Menu>ul>li:first-child a {
+			border-top-left-radius: 10px;
+		}
+
+		#Menu>ul>li:last-child a {
+			border-bottom-left-radius: 10px;
+		}
+
+		#Menu>ul>li.active:after {
+			border-bottom: 15px inset transparent;
+			border-right: 15px solid #FFFFFF;
+			border-top: 15px inset transparent;
+			content: "";
+			height: 0;
+			position: absolute;
+			right: 0;
+			top: 6px;
+			width: 0;
+			z-index: 2;
+		}
+
+		#Menu>ul>li {
+			display: block;
+			position: relative;
+		}
+
+		#Menu>ul>li>a {
+			border-bottom: 1px solid #520F2E;
+			border-top: 1px solid #66133A;
+			background: none repeat scroll 0 0 #5F1236;
+			transition: background .2s;
+
+			color: #FFFFFF;
+			display: block;
+			padding: 10px 0 10px 15px;
+		}
+
+		#Menu>ul>li>a:hover {
+			background: #661038;
+		}
+
+		#Menu>ul>li>a:active {
+			background: #490927;
+		}
+
+		#Menu>ul ul li:first-child a {
+			border-top: 0 none;
+		}
+
+		#Menu>ul ul li a {
+			border-bottom: 1px solid #202020;
+			border-top: 1px solid #333333;
+
+			color: #777777;
+			display: block;
+			padding: 10px 0 10px 25px;
+		}
+
+
+		#Menu>ul li.open ul {
+			display: block;
+		}
+
+		#Menu>ul ul {
+			background-color: #2A2A2A;
+			border-top: 1px solid #4E4E4E;
+
+			box-shadow: 0 0 3px rgba(0, 0, 0, 0.5) inset;
+			display: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		span.glyphicon{
+			margin-right: 5px;
+		}
+
+	/*--Content--*/
+
+		#Content{
+			position: fixed;
+			top: 10vh;
+			right: 0;
+
+			min-height: calc(100vh - 10px);
+			width: calc(100% - 219px);
+
+			border-radius: 10px 0 0 0;
+
+			background-color: white;
+
+			padding-top: 25px;
+		}
+
+	/*--Content Styles--*/
+		/*--Filter--*/
+			#dropdownType{
+				float: left;
+				width: 125px;
+			}
+			#dropdownLoc{
+				float: left;
+				width: 150px;
+			}
+			#dropdownYG{
+				float: left;
+				width: 150px;
+			}
+			#regMenu{
+				float: left;
+			}
+		/*--Table--*/
+			.center{
+				text-align: center;
+			}
+
+		/*--Inputs--*/
+		.group{
+			width: 500px;
+	        clear: both;
+		}
+
+		.group input{
+			/*width: 500px;*/
+	        clear: both;
+		}
+	/*--SignIO--*/
+		#scanID{
+			background-color: #6a4c5a;
+			color: white;
+
+			margin-left: 25px;
+
+			border: none;
+
+			font-size: 60px;
+
+			width: 135px;
+
+			position: fixed;
+			top: 45%;
+			left: 10%;
+		}
+
+		#manualInput{
+			position: fixed;
+			left: 25px;
+			bottom: 25px;
+
+			height: 92.5px;
+			width: 152.5px;
+
+			border-radius: 5%;
+
+			color: white;
+		}
+
+		#clearInput{
+			position: fixed;
+			left: 25px;
+			bottom: 25px;
+
+			height: 92.5px;
+			width: 152.5px;
+
+			border-radius: 5%;
+
+			color: white;
+		}
+
+		#scanID_keyboard{
+			position: fixed;
+			top: calc(50vh - 213.53px);
+			left: calc(50vw - 240.53px);
+		}
+
+		#stName{
+			color: white;
+			font-size: 60px;
+
+			margin: 20px;
+
+			position: fixed;
+			top: 43.3%;
+			left: 20%;
+		}
+
+
+		.submitBtn{
+			border-radius: 5%;
+			border: none;
+
+			height: 275px;
+			width: 350px;
+			
+			margin: 20px;
+
+			color: white;
+
+			font-size: 25px;
+		}
+
+		#signInBtn{
+			background-color: green;
+			
+			position: fixed;
+			top: 18%;
+			right: 10%;
+		}
+
+		#signOutBtn{
+			background-color: red;
+			position: fixed;
+			right: 10%;
+			bottom: 14%;
+		}
+
+		#msgBox{
+			position: fixed;
+			top: 10vh;
+
+			width: 100vw;
+
+			padding-top: 30px;
+			padding-left: 20px;
+			padding-bottom: 30px;
+			padding-right: 20px;
+
+			
+			background-color: #8F1A51;
+			border: 2px black solid;
+		}
+
+		.alert{
+			position: absolute;
+			top: 100px;
+		}
+	/*--Export--*/
+		input#datepicker{
+			width: 150px;
+			padding: 10px;
+			margin: 0;
+		}
+		#dateSearch{
+			width: 100px;
+		}
+		
+		.expRadio{
+			position: fixed;
+			left: 25px;
+		}
+
+		.exportMenu{
+			padding-left: 100px;
+		}
