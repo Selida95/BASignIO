@@ -12,11 +12,11 @@ const crypto = require('crypto');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
 const path = require('path');
-const pag = require('../modules/pagination');
-const mailer = require('../modules/email');
-const functions = require('../modules/functions');
-const account = require('../modules/account-manager');
-const useChecker = require('../modules/use-checker.js');
+const pag = require('../lib/pagination');
+const mailer = require('../lib/email');
+const functions = require('../lib/functions');
+const account = require('../lib/account_manager');
+const useChecker = require('../lib/use-checker.js');
 
 // Config
 const config = require('../config');
