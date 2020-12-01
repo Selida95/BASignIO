@@ -94,7 +94,7 @@
              id : id,
              manualCount : counter
            }, (results) => {
-             if (results.message === 'SUCCESS',) {
+             if (results.message === 'SUCCESS') {
                callback({ message : message, data : counter })
              } else {
                throw 'ERROR_INCREMENTING_COUNTER'
