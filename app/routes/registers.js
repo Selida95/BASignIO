@@ -55,59 +55,47 @@
        inputFocus = false;
 
        // Check if student exists
-       student.findOne({$or: [{'_id': req.body.scanID}, {'cardID': req.body.scanID}]}, (error, students) => {
-         if (error) {
-           console.error('ERROR: ' + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + ' | ' + err);
-           req.flash('error', 'There was an error. Please contact admin.');
-           res.redirect('/reg/' + req.params.location);
-         }
+       student_manager.getStudent(req.body.scanID, (student) => {
 
          // If Student exists
          if (student) {
-           if (config.manual_input.enabled == "true" && req.body.scanID == students._id) {
-             students.manualCount = students.manualCount + 1;
-             students.save();
+           if (config.manual_input.enabled == "true" && req.body.scanID == student.data._id) {
+             student_manager.incrementMICounter(student.data._id, (counter) => {
+               let message = 'You have used ' + counter.data + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
+               if (counter.message === 'MAX_REACHED_RESET') {
+                 mailer.send({
+                   receiver: config.manual_input.email + ', pagee@battleabbeyschool.com',
+                   subject: 'BASignIO: Manual Input',
+                   text: students.fullName + ' has used all their manual input allowance.'
+                 }, (error, mail) => {
+                   if (error) {
+                     console.error(error);
+                     return;
+                   }
 
-             let msg;
-
-             if (students.manualCount == config.manual_input.max_uses) {
-               console.log("Allowance reached. Emailing and resetting.");
-               mailer.send({
-                 receiver: config.manual_input.email + ', pagee@battleabbeyschool.com',
-                 subject: 'BASignIO: Manual Input',
-                 text: students.fullName + ' has used all their manual input allowance.'
-               }, (error, mail) => {
-                 if (error) {
-                   console.error(error);
-                   return;
-                 }
-
-                 if (mail) {
-                   console.log(mail);
-                 }
-               });
-               students.manualCount = 0;
-               students.save();
-               msg = 'You have used all of your manual input allowance.';
-             } else {
-               msg = 'You have used ' + students.manualCount + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
-             }
+                   if (mail) {
+                     console.log(mail);
+                   }
+                 });
+                 message = 'You have used all of your manual input allowance.';
+               }
+             })
              // Get student forename and surname
-             user = students;
+             user = student;
              console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
-             res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus, warning: msg});
+             res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus, warning: message});
            } else {
-             if (req.body.scanID == students._id) {
+             if (req.body.scanID == student.data._id) {
                // Manual Input was used.
                // Get student forename and surname
-               user = students;
+               user = student.data;
                console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id. Manual Input was used.");
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus});
+               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: student.data._id, inputFocus: inputFocus});
              } else {
                //Get student forename and surname
-               user = students;
+               user = student.data;
                console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus});
+               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: student.data._id, inputFocus: inputFocus});
              }
            }
          } else {
@@ -147,9 +135,9 @@
        //Removes focus from scan input
        inputFocus = false;
        //check if student exists
-       student.findOne({'_id': req.body.scanID}, (err, students) => {
+       student_manager.getStudent(req.body.scanID, (student) => {
          //if student exists
-         if(students){
+         if(student.message === 'SUCCESS'){
            //Check if student exists on the fire register
            fRegister.findOne({'_id': req.body.scanID}, (err, exists) => {
              //if student exists on fire register
@@ -253,10 +241,10 @@
                //Create fire register record with current date and timeIn and location
                  var fireRegister = new fRegister({
                    _id: req.body.scanID,
-                   surname: students.surname,
-                   forenames: students.forenames,
-                   yearGroup: students.yearGroup,
-                   tutorGrp: students.tutorGrp,
+                   surname: student.data.surname,
+                   forenames: student.data.forenames,
+                   yearGroup: student.data.yearGroup,
+                   tutorGrp: student.data.tutorGrp,
                    type: 'student',
                    loc: req.params.location.toUpperCase(),
                    timeIn: functions.time(),
@@ -277,9 +265,9 @@
                  var Register = new register({
                    _id: new ObjectID(),
                      id: req.body.scanID,
-                   surname: students.surname,
-                   forenames: students.forenames,
-                   yearGroup: students.yearGroup,
+                   surname: student.data.surname,
+                   forenames: student.data.forenames,
+                   yearGroup: student.data.yearGroup,
                    type: 'student',
                    loc: req.params.location.toUpperCase(),
                    timeIn: functions.time(),
@@ -292,14 +280,14 @@
                    versionKey: false
                  });
 
-                 Register.save((err, Staff) => {
+                 Register.save((err, record) => {
                    if (err) return console.error(err);
-                   //console.dir(Student);
+                   //console.dir(record);
                  })
 
 
-                 console.log("Log: " + functions.date() + " " + functions.time() + " " + students.forenames + ' ' + students.surname + ' was signed in!');
-                 req.flash('success', students.forenames + ' ' + students.surname + ' was signed in!');
+                 console.log("Log: " + functions.date() + " " + functions.time() + " " + student.data.forenames + ' ' + student.data.surname + ' was signed in!');
+                 req.flash('success', student.data.forenames + ' ' + student.data.surname + ' was signed in!');
                  res.redirect('/reg/' + req.params.location);
 
              }
@@ -482,9 +470,9 @@
        //Removes focus from scan input
        inputFocus = false;
        //Check if student exists
-       student.findOne({'_id': req.body.scanID}, (err, students) => {
+       student_manager.getStudent(req.body.scanID, (student) => {
          //if student exists
-         if (students) {
+         if (student.message === 'SUCCESS') {
            //Check if student exists on the fire register
            fRegister.findOne({'_id': req.body.scanID}, (err, exists) => {
              //if student exists on fire register
@@ -574,10 +562,10 @@
                //Create fire register record with current date and timeIn and location
                var fireRegister = new fRegister({
                  _id: req.body.scanID,
-                 surname: students.surname,
-                 forenames: students.forenames,
-                 yearGroup: students.yearGroup,
-                 tutorGrp: students.tutorGrp,
+                 surname: student.data.surname,
+                 forenames: student.data.forenames,
+                 yearGroup: student.data.yearGroup,
+                 tutorGrp: student.data.tutorGrp,
                  type: 'student',
                  loc: req.params.location.toUpperCase(),
                  timeIn: 'N/A',
@@ -598,9 +586,9 @@
                var Register = new register({
                  _id: new ObjectID(),
                  id: req.body.scanID,
-                 surname: students.surname,
-                 forenames: students.forenames,
-                 yearGroup: students.yearGroup,
+                 surname: student.data.surname,
+                 forenames: student.data.forenames,
+                 yearGroup: student.data.yearGroup,
                  type: 'student',
                  loc: req.params.location.toUpperCase(),
                  timeIn: 'N/A',
@@ -619,8 +607,8 @@
                })
 
                //Print('Student was signed out, but didn't sign in)
-               console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed!");
-               req.flash('error', students.fullName + " was signed out!")
+               console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + student.data.forenames + ' ' + student.data.surname + " was signed!");
+               req.flash('error', student.data.fullName + " was signed out!")
                res.redirect('/reg/' + req.params.location);
              }
            })
