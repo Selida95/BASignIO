@@ -9,6 +9,7 @@ var register = new Schema({
 	surname: {type: String, required: true},
 	forenames: {type: String, required: true},
 	yearGroup: {type: Number},
+	tutorGrp: {type:String},
 	type: {type: String, required: true},
 	loc: {type: String, required: true},
 	timeIn: { type: String },

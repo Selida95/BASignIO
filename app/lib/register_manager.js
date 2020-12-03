@@ -18,7 +18,7 @@
  var manager = {};
 
  // Create Record
- // Required Fields: parameterObject (contains: id, forenames, surname, type, location, IO state), callback
+ // Required Fields: parameterObject (contains: id, forenames, surname, type, location, tutorGrp, IO state), callback
  // Optional Fields: yearGroup (dependent if student or staff)
  manager.createRecord = (parameterObject, callback) => {
    // Validate required fields
@@ -31,6 +31,7 @@
 
    // Validate optional field
    let yearGroup = typeof(parseInt(parameterObject.yearGroup)) === 'number' && parseInt(parameterObject.yearGroup) < 14 && parseInt(parameterObject.yearGroup) > 0 && type === 'student' ? parseInt(parameterObject.yearGroup) : undefined
+   let tutorGrp = typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0  ? parameterObject.tutorGrp : undefined
 
    if (id && forenames && surname && type && location && io) {
      let Register = new register({
@@ -40,6 +41,7 @@
        forenames : forenames,
        type : type,
        yearGroup : yearGroup,
+       tutorGrp: tutorGrp,
        loc : location.toUpperCase(),
        timeIn : io === 1 ? utils.time() : '',
        timeOut : io === 0 ? utils.time() : '',
@@ -58,6 +60,13 @@
    } else {
      throw new Error('MISSING_REQUIRED_FIELDS')
    }
+ }
+
+ // Update Latest Record
+ // Required Fields:
+ // Optional Fields:
+ manager.updateLatestRecord = () => {
+
  }
 
  // Export module
