@@ -20,7 +20,6 @@
  // Optional Fields: None
  manager.getStudent = (student_id, callback) => {
    // Validate id
-   console.log(typeof(student_id) === 'string' && student_id.length > 0)
    let id = typeof(student_id) === 'string' && student_id.length > 0 ? student_id.trim() : false;
 
    if (!id) {
