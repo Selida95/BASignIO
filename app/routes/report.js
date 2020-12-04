@@ -6,7 +6,7 @@
 
  // Dependencies
  const router = require('express').Router();
- const functions = require('../lib/functions.js');
+ const utils = require('../lib/utilities.js');
 
  // Database Models
  const fireRegisters = require('../models/fireRegister');
