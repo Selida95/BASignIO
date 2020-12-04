@@ -5,7 +5,7 @@
  */
 
  // Dependencies
- const util = require('./utilities')
+ const utils = require('./utilities')
  const ObjectID = require('mongodb').ObjectID;
 
  // Database models
@@ -21,8 +21,13 @@
  // Required Fields:
  // Optional Fields:
  manager.createRecord = (parameterObject, callback) => {
+
+   console.log(typeof(parameterObject.id) === 'string')
+   console.log(parameterObject.id.length > 0)
+   console.log(typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0)
+
    // Validate required fields
-   let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && parameterObject.id.toString().length > 0 ? parseInt(parameterObject.id) : false;
    let forenames = typeof(parameterObject.forenames) === 'string' && parameterObject.forenames.length > 0  ? parameterObject.forenames : false
    let surname = typeof(parameterObject.surname) === 'string' && parameterObject.surname.length > 0  ? parameterObject.surname : false
    let type = typeof(parameterObject.type) === 'string' && parameterObject.type.toLowerCase() == 'student' || parameterObject.type.toLowerCase() == 'staff' ? parameterObject.type.toLowerCase() : false
@@ -52,7 +57,7 @@
        versionKey: false
      });
 
-     Register.save((err, records) => {
+     Register.save((error, records) => {
        if (error) throw error;
        callback({ message : 'SUCCESS', data : record })
      })
@@ -81,17 +86,22 @@
  // Optional Fields: none
  manager.updateRecord = (parameterObject) => {
    // Validate required fields
-   let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && parameterObject.id.toString().length > 0 ? parseInt(parameterObject.id) : false;
    let location = typeof(parameterObject.location) === 'string' && parameterObject.location.length > 0  ? parameterObject.location : false
    let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
 
-   if (id && location && io) {
+   console.log(id)
+   console.log(location)
+   console.log(io)
+   console.log(id !== false && location !== false && io !== false)
+
+   if (id !== false && location !== false && io !== false) {
      manager.getRecord(id, (record) => {
        if (record.message === 'NOT_FOUND') throw new Error('NOT_FOUND')
 
-       record.data.timeIn = io === 1 ? util.time() : record.data.timeIn
-       record.data.timeOut = io === 0 ? util.time() : record.data.timeOut
-       record.data.date = util.date()
+       record.data.timeIn = io === 1 ? utils.time() : record.data.timeIn
+       record.data.timeOut = io === 0 ? utils.time() : record.data.timeOut
+       record.data.date = utils.date()
        record.data.io = io
        record.data.location = location.toUpperCase()
 
