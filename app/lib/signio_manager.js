@@ -18,10 +18,10 @@
  // Define manager object
  var manager = {}
 
- // Get User Data
+ // Scan
  // Required Fields: id, location, callback
  // Optional Fields: none
- manager.getUserData = (parameterObject, callback) => {
+ manager.scan = (parameterObject, callback) => {
    let id = typeof(parseInt(parameterObject.id)) === 'number' && parameterObject.id.toString().length > 0 ? parseInt(parameterObject.id) : false;
    let location = typeof(parameterObject.location) === 'string' && parameterObject.location.length > 0  ? parameterObject.location : false
 
@@ -51,7 +51,7 @@
                message = 'You have used all of your manual input allowance.';
              }
            })
-           console.log("Log: " + utils.date() + " " + utils.time() + " " + location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname +  'just scanned/entered their id. They have' + student.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
+           console.log("Log: " + utils.date() + " " + utils.time() + " " + location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname +  ' just scanned/entered their id. They have ' + student.data.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
            callback({ message : 'SUCCESS', data : student.data, flash_message : message })
          } else {
            if (id === student.data._id) {

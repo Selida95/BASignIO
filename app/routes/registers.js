@@ -42,9 +42,9 @@
        // Remove focus from scan input
        inputFocus = false;
        console.log('Fetch Student')
-       // Fetch User Data
+       // Scan ID
        try {
-         signio_manager.getUserData({
+         signio_manager.scan({
            id : req.body.scanID,
            location : req.params.location
          }, (user) => {
