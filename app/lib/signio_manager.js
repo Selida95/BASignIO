@@ -10,6 +10,7 @@
  const register_manager = require('../lib/register_manager')
  const fire_register_manager = require('../lib/fire_register_manager')
  const mailer = require('../lib/email')
+ const utils = require('../lib/utilities')
 
  // Config
  const config = require('../config')
