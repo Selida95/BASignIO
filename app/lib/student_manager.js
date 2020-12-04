@@ -20,10 +20,11 @@
  // Optional Fields: None
  manager.getStudent = (student_id, callback) => {
    // Validate id
-   let id = typeof(student_id) == 'string' && student_id.length > 0 ? student_id.trim() : false;
+   console.log(typeof(student_id) === 'string' && student_id.length > 0)
+   let id = typeof(student_id) === 'string' && student_id.length > 0 ? student_id.trim() : false;
 
-   if (id !== true) {
-     throw "REQUIRED_FIELD_INVALID";
+   if (!id) {
+     throw new Error("REQUIRED_FIELD_INVALID");
    }
 
    studentModel.findOne({$or : [{ '_id' : id }, { 'cardID' : id }]}, (error, student) => {
