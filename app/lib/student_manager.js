@@ -20,7 +20,7 @@
  // Optional Fields: None
  manager.getStudent = (student_id, callback) => {
    // Validate id
-   let id = typeof(student_id) === 'string' && student_id.length > 0 ? student_id.trim() : false;
+   let id = typeof(parseInt(student_id)) === 'number' && student_id.toString().length > 0 ? parseInt(student_id) : false;
 
    if (!id) {
      throw new Error("REQUIRED_FIELD_INVALID");
@@ -31,7 +31,7 @@
         throw error;
       }
 
-      if (Object.keys(student.length > 0)) {
+      if (student && Object.keys(student.length > 0)) {
         callback({ message : 'SUCCESS', data : student});
         return;
       }

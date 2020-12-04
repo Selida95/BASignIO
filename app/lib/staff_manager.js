@@ -20,9 +20,9 @@
  // Optional Fields: None
  manager.getStaff = (staff_id, callback) => {
    // Validate id
-   let id = typeof(staff_id) == 'string' && staff_id.length > 0 ? staff_id.trim() : false;
+   let id = typeof(parseInt(staff_id)) === 'number' && staff_id.toString().length > 0 ? parseInt(staff_id) : false;
 
-   if (id !== true) {
+   if (!id) {
      throw "REQUIRED_FIELD_INVALID";
    }
 
@@ -31,7 +31,7 @@
         throw error;
       }
 
-      if (Object.keys(staff.length > 0)) {
+      if (staff && Object.keys(staff.length > 0)) {
         callback({ message : 'SUCCESS', data : staff});
         return;
       }
