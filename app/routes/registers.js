@@ -9,10 +9,7 @@
  const moment = require('moment');
  const utils = require('../lib/utilities')
  const mailer = require('../lib/email');
- const student_manager = require('../lib/student_manager');
- const staff_manager = require('../lib/staff_manager');
- const register_manager = require('../lib/register_manager');
- const fire_register_manager = require('../lib/fire_register_manager');
+ const signio_manager = require('../lib/signio_manager')
 
  // Config
  const config = require('../config');
@@ -45,75 +42,25 @@
        // Remove focus from scan input
        inputFocus = false;
        console.log('Fetch Student')
-       // Check if student exists
+       // Fetch User Data
        try {
-         student_manager.getStudent(req.body.scanID, (student) => {
-           console.log('LOOKING FOR STUDENT')
-           // If Student exists
-           if (student.message === 'SUCCESS') {
-             console.log('FOUND STUDENT')
-             if (config.manual_input.enabled == "true" && req.body.scanID == student.data._id) {
-               student_manager.incrementMICounter(student.data._id, (counter) => {
-                 let message = 'You have used ' + counter.data + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
-                 if (counter.message === 'MAX_REACHED_RESET') {
-                   mailer.send({
-                     receiver: config.manual_input.email + ', pagee@battleabbeyschool.com',
-                     subject: 'BASignIO: Manual Input',
-                     text: students.fullName + ' has used all their manual input allowance.'
-                   }, (error, mail) => {
-                     if (error) {
-                       console.error(error);
-                       return;
-                     }
-
-                     if (mail) {
-                       console.log(mail);
-                     }
-                   });
-                   message = 'You have used all of your manual input allowance.';
-                 }
-               })
-               // Get student forename and surname
-               console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: students._id, inputFocus: inputFocus, warning: message});
+         signio_manager.getUserData({
+           id : req.body.scanID,
+           location : req.params.location
+         }, (user) => {
+           if (user.message === 'SUCCESS') {
+             if (user.flash_message) {
+               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user.data, id: user.data._id, inputFocus: inputFocus, warning: user.flash_message});
              } else {
-               if (req.body.scanID == student.data._id) {
-                 // Manual Input was used.
-                 console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname + " just scanned/entered their id. Manual Input was used.");
-                 res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus});
-               } else {
-                 console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname + " just scanned/entered their id.");
-                 res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus});
-               }
+               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user.data, id: user.data._id, inputFocus: inputFocus});
              }
-           } else {
-             console.log('NOT_FOUND STUDENT')
-             console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() +" Scanning ID: User isn't student checking if staff member.");
-             //Check if staff exists
-             try {
-               staff_manager.getStaff(req.body.scanID, (staff) => {
-                 //if staff exists
-                 if (staff.message === 'SUCCESS') {
-                   //Get staff forename and surname
-                   console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + staff.data.forenames + " " + staff.data.surname + " just scanned/entered their id.");
-                   res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: staff.data, id: staff.data._id, inputFocus: inputFocus});
-                 }else{
-                   //if user doesn't exist.
-                   req.flash('error', 'Please contact admin. Your ID does not exist.');
-                   res.redirect('/reg/' + req.params.location);
-                 }
-               })
-             } catch (e) {
-               console.log(e)
-               req.flash('error', 'Something went wrong. Please contact admin.');
-               res.redirect('/reg/' + req.params.location);
-             }
+           } else if (user.message === 'NOT_FOUND') {
+             req.flash('error', 'Please contact admin. Your ID does not exist.');
+             res.redirect('/reg/' + req.params.location);
            }
          })
        } catch (e) {
-         console.log(e)
-         req.flash('error', 'Something went wrong. Please contact admin.');
-         res.redirect('/reg/' + req.params.location);
+         console.error(e)
        }
      }
    } else if(req.body.signIn) {
@@ -160,7 +107,7 @@
                        if (record.message === 'SUCCESS') {
                          //Print('Student was signed in!')
                          console.log("Log: " + utils.date() + " " + utils.time() + " " + student.data.forenames + ' ' + student.data.surname + ' was signed in!');
-                         req.flash('success', student.forenames + ' ' + student.surname + ' was signed in!');
+                         req.flash('success', student.data.forenames + ' ' + student.data.surname + ' was signed in!');
                        } else {
                          console.log("Log: " + utils.date() + " " + utils.time() + " Something went wrong trying to sign " + student.data.forenames + " " + student.data.surname + " in");
                          req.flash('error', "Something went wrong trying to sign your in. Please try again.");
@@ -302,7 +249,7 @@
                        }else{
                          //Check if signin button was pressed twice
                          var currentTime = moment()
-                         var lastTime = moment(exists.timeIn, 'HH:mm:ss')
+                         var lastTime = moment(staff.data.timeIn, 'HH:mm:ss')
                          var diffTime = currentTime.diff(lastTime, 'seconds');
 
                          //if (diffTime > 60) {
@@ -344,7 +291,7 @@
                        forenames : staff.data.forenames,
                        surname : staff.data.surname,
                        type : 'staff',
-                       loc : req.params.location,
+                       location : req.params.location,
                        io : 1
                      }, (record) => {
                        if (record.message !== 'SUCCESS') {
@@ -490,7 +437,7 @@
                    yearGroup : student.data.yearGroup,
                    tutorGrp : student.data.tutorGrp,
                    type : 'student',
-                   loc : req.params.location,
+                   location : req.params.location,
                    io : 0
                  }, (record) => {
                    if (record.message !== 'SUCCESS') {
@@ -607,7 +554,7 @@
                      forenames : staff.data.forenames,
                      surname : staff.data.surname,
                      type : 'staff',
-                     loc : req.params.location,
+                     location : req.params.location,
                      io : 0
                    }, (record) => {
                      if (record.message !== 'SUCCESS') {
