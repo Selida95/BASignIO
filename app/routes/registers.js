@@ -35,7 +35,7 @@
    // Check if scanSubmit is set
    if (req.body.scanSubmit) {
      // If scanId is empty
-     if (!req.body.scanId) {
+     if (!req.body.scanID) {
        // Print "Please scan your id"
        console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
        req.flash('error', 'Please enter/scan your id.');
@@ -44,63 +44,71 @@
      } else {
        // Remove focus from scan input
        inputFocus = false;
-
+       console.log('Fetch Student')
        // Check if student exists
-       student_manager.getStudent(req.body.scanID, (student) => {
+       try {
+         student_manager.getStudent(req.body.scanID, (student) => {
+           console.log('LOOKING FOR STUDENT')
+           // If Student exists
+           if (student.message === 'SUCCESS') {
+             console.log('FOUND STUDENT')
+             if (config.manual_input.enabled == "true" && req.body.scanID == student.data._id) {
+               student_manager.incrementMICounter(student.data._id, (counter) => {
+                 let message = 'You have used ' + counter.data + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
+                 if (counter.message === 'MAX_REACHED_RESET') {
+                   mailer.send({
+                     receiver: config.manual_input.email + ', pagee@battleabbeyschool.com',
+                     subject: 'BASignIO: Manual Input',
+                     text: students.fullName + ' has used all their manual input allowance.'
+                   }, (error, mail) => {
+                     if (error) {
+                       console.error(error);
+                       return;
+                     }
 
-         // If Student exists
-         if (student) {
-           if (config.manual_input.enabled == "true" && req.body.scanID == student.data._id) {
-             student_manager.incrementMICounter(student.data._id, (counter) => {
-               let message = 'You have used ' + counter.data + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
-               if (counter.message === 'MAX_REACHED_RESET') {
-                 mailer.send({
-                   receiver: config.manual_input.email + ', pagee@battleabbeyschool.com',
-                   subject: 'BASignIO: Manual Input',
-                   text: students.fullName + ' has used all their manual input allowance.'
-                 }, (error, mail) => {
-                   if (error) {
-                     console.error(error);
-                     return;
-                   }
-
-                   if (mail) {
-                     console.log(mail);
-                   }
-                 });
-                 message = 'You have used all of your manual input allowance.';
+                     if (mail) {
+                       console.log(mail);
+                     }
+                   });
+                   message = 'You have used all of your manual input allowance.';
+                 }
+               })
+               // Get student forename and surname
+               console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
+               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: students._id, inputFocus: inputFocus, warning: message});
+             } else {
+               if (req.body.scanID == student.data._id) {
+                 // Manual Input was used.
+                 console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname + " just scanned/entered their id. Manual Input was used.");
+                 res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus});
+               } else {
+                 console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname + " just scanned/entered their id.");
+                 res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus});
+               }
+             }
+           } else {
+             console.log('NOT_FOUND STUDENT')
+             console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() +" Scanning ID: User isn't student checking if staff member.");
+             //Check if staff exists
+             staff_manager.getStaff(req.body.scanID, (staff) => {
+               //if staff exists
+               if (staff.message === 'SUCCESS') {
+                 //Get staff forename and surname
+                 console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + staff.data.forenames + " " + staff.data.surname + " just scanned/entered their id.");
+                 res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: staff.data, id: staff.data._id, inputFocus: inputFocus});
+               }else{
+                 //if user doesn't exist.
+                 req.flash('error', 'Please contact admin. Your ID does not exist.');
+                 res.redirect('/reg/' + req.params.location);
                }
              })
-             // Get student forename and surname
-             console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
-             res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: students._id, inputFocus: inputFocus, warning: message});
-           } else {
-             if (req.body.scanID == student.data._id) {
-               // Manual Input was used.
-               console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id. Manual Input was used.");
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus});
-             } else {
-               console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus});
-             }
            }
-         } else {
-           console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() +" Scanning ID: User isn't student checking if staff member.");
-           //Check if staff exists
-           staff_manager.getStaff(req.body.scanID, (staff) => {
-             //if staff exists
-             if (staff.message === 'SUCCESS') {
-               //Get staff forename and surname
-               console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + staff.data.forenames + " " + staff.data.surname + " just scanned/entered their id.");
-               res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: staff.data, id: staff.data._id, inputFocus: inputFocus});
-             }else{
-               //if user doesn't exist.
-               req.flash('error', 'Please contact admin. Your ID does not exist.');
-               res.redirect('/reg/' + req.params.location);
-             }
-           })
-         }
-       })
+         })
+       } catch (e) {
+         console.log(e)
+         req.flash('error', 'Something went wrong. Please contact admin.');
+         res.redirect('/reg/' + req.params.location);
+       }
      }
    } else if(req.body.signIn) {
      //if scanID is empty
