@@ -17,14 +17,7 @@
  // Config
  const config = require('../config');
 
- // Database Models
- const student = require('../models/student');
- const staff = require('../models/staff');
- const register = require('../models/register');
- const fRegister = require('../models/fireRegister');
-
  // Global Variables
- var ObjectID = require('mongodb').ObjectID;
  var inputFocus;
 
 
