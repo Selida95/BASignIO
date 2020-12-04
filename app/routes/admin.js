@@ -6,6 +6,7 @@
 
  // Dependencies
  const router = require('express').Router();
+ const utils = require('../lib/utilities');
  const account_manager = require('../lib/account_manager');
  const report_generator = require('../lib/report_generator');
 
@@ -90,7 +91,7 @@
 
  router.get('/export', (req, res) => {
    let location = typeof(req.query.loc) === 'string' && req.query.loc.length > 0 ? req.query.loc.trim() : false;
-   let date = typeof(req.query.date) === 'string' && req.query.date.length > 0 ? req.query.date.trim() : functions.date();
+   let date = typeof(req.query.date) === 'string' && req.query.date.length > 0 ? req.query.date.trim() : utils.date();
    let filename;
 
    if (req.query.email) {
