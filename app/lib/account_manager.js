@@ -1,50 +1,59 @@
-const crypto = require('crypto');
+/*
+ * ---------------------------
+ * BASignIO - Account Manager
+ * ---------------------------
+ */
 
-var account = require('../models/accounts.js');
+ // Dependences
+ const crypto = require('crypto');
 
-// --- Exports --- //
+ // Config
+ const config = require('../config');
 
-exports.manualLogin = function(user, pass, callback){
-	account.findOne({username: user}, function(err, doc){
-		if (err) {
-			console.log('Error: ' + err)
-		}
+ // Database Models
+ const accountModel = require('../models/accounts')
 
-		if (doc == null) {
-			callback('user-not-found');
-		}else{
-			validatePassword(pass, doc.password, function(err, validate){
-				if (err) {
-					console.log('Error: ' + err);
-				}
-				if (validate) {
-					callback(null, doc);
-				}else{
-					callback('invalid-password');
-				}
-			});
-		}
-		//console.log("HASH: " + pwordHash);
-	})
-}
+ // Define module object
+ var manager = {}
 
+ manager.manualLogin = (user, pass, callback) => {
+	 accountModel.findOne({username: user}, (err, doc) => {
+		 if (err) {
+			 console.log('Error: ' + err)
+		 }
 
-exports.autoLogin = function(user, pass, callback){
-	account.findOne({username:user}, function(err, o){
-		if (o) {
-			o.password == pass ? callback(o) : callback(null);
-		}else{
-			callback(null);
-		}
-	});
-}
+		 if (doc == null) {
+			 callback('user-not-found');
+		 }else{
+			 validatePassword(pass, doc.password, (err, validate) => {
+				 if (err) {
+					 console.log('Error: ' + err);
+				 }
+				 if (validate) {
+					 callback(null, doc);
+				 }else{
+					 callback('invalid-password');
+				 }
+			 });
+		 }
+		 //console.log("HASH: " + pwordHash);
+	 })
+ }
 
-// --------------- //
+ manager.autoLogin = (user, pass, callback) => {
+	 accountModel.findOne({username:user}, (err, o) => {
+ 		if (o) {
+ 			o.password == pass ? callback(o) : callback(null);
+ 		}else{
+ 			callback(null);
+ 		}
+ 	});
+ }
 
 
 // --- Functions --- //
-	var hash = function(str){
-		const secret = process.env.SECRET;
+	var hash = (str) => {
+		const secret = config.crypto.secret;
 
 		const hashOut = crypto.createHmac('sha256', secret)
 		                   .update(str)
@@ -53,7 +62,7 @@ exports.autoLogin = function(user, pass, callback){
 		return hashOut;
 	}
 
-	var validatePassword = function(pass, accPass, callback){
+	var validatePassword = (pass, accPass, callback) => {
 		var pwordHash = hash(pass)
 
 		if (pwordHash == accPass) {
@@ -68,4 +77,5 @@ exports.autoLogin = function(user, pass, callback){
 	}
 // ----------------- //
 
-
+// Export Module
+module.exports = manager;
