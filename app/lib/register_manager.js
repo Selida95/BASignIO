@@ -100,23 +100,20 @@
  }
 
  // Update Latest Record
- // Required Fields:
- // Optional Fields:
- manager.updateLatestRecord = () => {
+ // Required Fields: id, io, callback
+ // Optional Fields: none
+ manager.updateLatestRecord = (id, io, callback) => {
    // Validate required fields
    let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
-   let location = typeof(parameterObject.location) === 'string' && parameterObject.location.length > 0  ? parameterObject.location : false
    let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
 
    if (id && location && io) {
      manager.getLatestRecord(id, io, (record) => {
        if (record.message === 'NOT_FOUND') throw new Error('NOT_FOUND')
 
-       record.data.timeIn = io === 1 ? util.time() : record.data.timeIn
-       record.data.timeOut = io === 0 ? util.time() : record.data.timeOut
-       record.data.date = util.date()
-       record.data.io = io
-       record.data.location = location.toUpperCase()
+       record.data.timeIn = io === 0 ? 'N/A' : record.data.timeIn
+       record.data.timeOut = io === 1 ? 'N/A' : record.data.timeOut
+       record.data.io = io == 1 ? 0 : 1
 
        record.data.save()
      })
