@@ -43,7 +43,7 @@
        yearGroup : yearGroup,
        tutorGrp: tutorGrp,
        loc : location.toUpperCase(),
-       timeIn : io === 1 ? utils.time() : '',
+       timeIn : io === 1 ? utils.time() : 'N/A',
        timeOut : io === 0 ? utils.time() : '',
        io : io,
        date : utils.date()
