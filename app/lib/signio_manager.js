@@ -31,8 +31,9 @@
        if (student.message === 'SUCCESS') {
          // Check if manual input counter is enabled
          if (config.manual_input.enabled === true && parseInt(id) === student.data._id ) {
+           let message
            student_manager.incrementMICounter(student.data._id, (counter) => {
-             let message = 'You have used ' + counter.data + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
+             message = 'You have used ' + counter.data + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
              if (counter.message === 'MAX_REACHED_RESET') {
                mailer.send({
                  receiver: config.manual_input.email,
@@ -62,7 +63,7 @@
            }
          }
        } else {
-         console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() +" Scanning ID: User isn't student checking if staff member.");
+         console.log("Log: " + utils.date() + " " + utils.time() + " " + location.toUpperCase() +" Scanning ID: User isn't student checking if staff member.");
          try {
            staff_manager.getStaff(id, (staff) => {
              if (staff.message === 'SUCCESS') {
