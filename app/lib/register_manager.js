@@ -62,11 +62,67 @@
    }
  }
 
+ // Get Record
+ // Required Fields: id, callback
+ // Optional Fields: none
+ manager.getRecord = (id, callback) => {
+   register.findOne({ '_id' : id }, (error, record) => {
+     if (error) throw error;
+
+     if (record && Object.keys(record).length > 0) {
+       callback({ message : 'SUCCESS', data : record })
+     } else {
+       callback({ message : 'NOT_FOUND' })
+     }
+   })
+ }
+
+ // Get Latest Record
+ // Required Fields: id, io, callback
+ // Optional Fields: none
+ manager.getLatestRecord = (id, io, callback) => {
+   let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
+   let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
+
+   if (id && io) {
+     register.findOne({ '_id' : id, 'io' : io === 1 ? 0 : 1 }, { sort: { 'timeIn' : -1, 'date' : -1} }, (error, record) => {
+       if (error) throw error;
+
+       if (record && Object.keys(record).length > 0) {
+         callback({ message : 'SUCCESS', data : record })
+       } else {
+         callback({ message : 'NOT_FOUND' })
+       }
+     })
+   } else {
+     throw new Error('MISSING_REQUIRED_FIELDS')
+   }
+ }
+
  // Update Latest Record
  // Required Fields:
  // Optional Fields:
  manager.updateLatestRecord = () => {
+   // Validate required fields
+   let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
+   let location = typeof(parameterObject.location) === 'string' && parameterObject.location.length > 0  ? parameterObject.location : false
+   let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
 
+   if (id && location && io) {
+     manager.getLatestRecord(id, io, (record) => {
+       if (record.message === 'NOT_FOUND') throw new Error('NOT_FOUND')
+
+       record.data.timeIn = io === 1 ? util.time() : record.data.timeIn
+       record.data.timeOut = io === 0 ? util.time() : record.data.timeOut
+       record.data.date = util.date()
+       record.data.io = io
+       record.data.location = location.toUpperCase()
+
+       record.data.save()
+     })
+   } else {
+     throw new Error('MISSING_REQUIRED_FIELDS')
+   }
  }
 
  // Export module
