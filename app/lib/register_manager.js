@@ -5,7 +5,7 @@
  */
 
  // Dependencies
- const util = require('./utilities')
+ const utils = require('./utilities')
  const ObjectID = require('mongodb').ObjectID;
 
  // Database Models
@@ -22,7 +22,7 @@
  // Optional Fields: yearGroup (dependent if student or staff)
  manager.createRecord = (parameterObject, callback) => {
    // Validate required fields
-   let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && parameterObject.id.toString().length > 0 ? parseInt(parameterObject.id) : false;
    let forenames = typeof(parameterObject.forenames) === 'string' && parameterObject.forenames.length > 0  ? parameterObject.forenames : false
    let surname = typeof(parameterObject.surname) === 'string' && parameterObject.surname.length > 0  ? parameterObject.surname : false
    let type = typeof(parameterObject.type) === 'string' && parameterObject.type.toLowerCase() == 'student' || parameterObject.type.toLowerCase() == 'staff' ? parameterObject.type.toLowerCase() : false
@@ -33,7 +33,9 @@
    let yearGroup = typeof(parseInt(parameterObject.yearGroup)) === 'number' && parseInt(parameterObject.yearGroup) < 14 && parseInt(parameterObject.yearGroup) > 0 && type === 'student' ? parseInt(parameterObject.yearGroup) : undefined
    let tutorGrp = typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0  ? parameterObject.tutorGrp : undefined
 
-   if (id && forenames && surname && type && location && io) {
+
+
+   if (id !== false && forenames !== false && surname !== false && type !== false && location  !== false && io !== false) {
      let Register = new register({
        _id : new ObjectID(),
        id : id,
@@ -81,10 +83,10 @@
  // Required Fields: id, io, callback
  // Optional Fields: none
  manager.getLatestRecord = (parameterObject, callback) => {
-   let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && parameterObject.id.toString().length > 0 ? parseInt(parameterObject.id) : false;
    let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
 
-   if (id && io) {
+   if (id !== false && io !== false) {
      register.findOne({ 'id' : id, 'io' : io}, { sort: { 'timeIn' : -1, 'date' : -1} }, (error, record) => {
        if (error) throw error;
 
@@ -104,10 +106,10 @@
  // Optional Fields: none
  manager.updateLatestRecord = (parameterObject) => {
    // Validate required fields
-   let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && parameterObject.id.toString().length > 0 ? parseInt(parameterObject.id) : false;
    let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
 
-   if (id && location && io) {
+   if (id !== false && io !== false) {
      manager.getLatestRecord({
        id : id,
        io : io
