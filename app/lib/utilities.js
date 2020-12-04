@@ -15,7 +15,7 @@
  }
 
  lib.date = () => {
-   return moment.format('DD-MM-YYYY')
+   return moment().format('DD-MM-YYYY')
  }
 
  // Export Module
