@@ -50,7 +50,7 @@
                message = 'You have used all of your manual input allowance.';
              }
            })
-           console.log("Log: " + utils.date() + " " + utils.time() + " " + location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
+           console.log("Log: " + utils.date() + " " + utils.time() + " " + location.toUpperCase() + " " + student.data.forenames + " " + student.data.surname +  'just scanned/entered their id. They have' + student.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
            callback({ message : 'SUCCESS', data : student.data, flash_message : message })
          } else {
            if (id === student.data._id) {
