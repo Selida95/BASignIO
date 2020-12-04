@@ -85,7 +85,7 @@
    let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
 
    if (id && io) {
-     register.findOne({ '_id' : id, 'io' : io}, { sort: { 'timeIn' : -1, 'date' : -1} }, (error, record) => {
+     register.findOne({ 'id' : id, 'io' : io}, { sort: { 'timeIn' : -1, 'date' : -1} }, (error, record) => {
        if (error) throw error;
 
        if (record && Object.keys(record).length > 0) {
