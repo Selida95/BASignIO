@@ -80,12 +80,12 @@
  // Get Latest Record
  // Required Fields: id, io, callback
  // Optional Fields: none
- manager.getLatestRecord = (id, io, callback) => {
+ manager.getLatestRecord = (parameterObject, callback) => {
    let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
    let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
 
    if (id && io) {
-     register.findOne({ '_id' : id, 'io' : io === 1 ? 0 : 1 }, { sort: { 'timeIn' : -1, 'date' : -1} }, (error, record) => {
+     register.findOne({ '_id' : id, 'io' : io}, { sort: { 'timeIn' : -1, 'date' : -1} }, (error, record) => {
        if (error) throw error;
 
        if (record && Object.keys(record).length > 0) {
@@ -102,13 +102,16 @@
  // Update Latest Record
  // Required Fields: id, io, callback
  // Optional Fields: none
- manager.updateLatestRecord = (id, io, callback) => {
+ manager.updateLatestRecord = (parameterObject) => {
    // Validate required fields
    let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false;
    let io = typeof(parseInt(parameterObject.io)) === 'number' && parseInt(parameterObject.io) == 0 || parseInt(parameterObject.io) == 1 ? parseInt(parameterObject.io) : false
 
    if (id && location && io) {
-     manager.getLatestRecord(id, io, (record) => {
+     manager.getLatestRecord({
+       id : id,
+       io : io
+     }, (record) => {
        if (record.message === 'NOT_FOUND') throw new Error('NOT_FOUND')
 
        record.data.timeIn = io === 0 ? 'N/A' : record.data.timeIn
