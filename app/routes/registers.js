@@ -12,6 +12,7 @@
  const student_manager = require('../lib/student_manager');
  const staff_manager = require('../lib/staff_manager');
  const register_manager = require('../lib/register_manager');
+ const fire_register_manager = require('../lib/fire_register_manager');
 
  // Config
  const config = require('../config');
@@ -128,15 +129,17 @@
          //if student exists
          if(student.message === 'SUCCESS'){
            //Check if student exists on the fire register
-           fRegister.findOne({'_id': req.body.scanID}, (err, exists) => {
+           fire_register_manager.getRecord(student.data._id, (record) => {
              //if student exists on fire register
-             if(exists){
+             if(record.message == 'SUCCESS'){
                //Check if student was signed out
                  //if user was signed out
-                 if (exists.io == 0) {
+                 if (record.data.io == 0) {
                    //Update fire register with new timeIn and location
-                   fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': utils.time(), 'timeOut': '', 'io' : 1, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
-                     if (err) {console.log('Error: ' + err)};
+                   fire_register_manager.updateRecord({
+                     id : student.data._id,
+                     io : 1,
+                     location : req.params.location
                    })
                    register_manager.createRecord({
                      id : req.body.scanID,
@@ -213,48 +216,41 @@
                  }
              //else, student doesn't exist on the fire register
              }else{
-               //Create fire register record with current date and timeIn and location
-               var fireRegister = new fRegister({
-                 _id: req.body.scanID,
-                 surname: student.data.surname,
-                 forenames: student.data.forenames,
-                 yearGroup: student.data.yearGroup,
-                 tutorGrp: student.data.tutorGrp,
-                 type: 'student',
-                 loc: req.params.location.toUpperCase(),
-                 timeIn: utils.time(),
-                 timeOut: '',
-                 io: 1,
-                 date: utils.date()
-               },
-               {
-                 collection: 'fireRegisters',
-                 versionKey: false
-               });
-
-               fireRegister.save((err, records) => {
-                 if (err) return console.error(err);
-                 //console.dir(records);
-               })
-
-               //Create new register record
-               register_manager.createRecord({
-                 id : req.body.scanID,
+               //Create fire register record
+               fire_register_manager.createRecord({
+                 id : student.data._id,
                  forenames : student.data.forenames,
                  surname : student.data.surname,
-                 type : 'student',
-                 location : req.params.location,
                  yearGroup : student.data.yearGroup,
+                 tutorGrp : student.data.tutorGrp,
+                 type : 'student',
+                 loc : req.params.location,
                  io : 1
                }, (record) => {
-                 if (record.message === 'SUCCESS') {
-                   console.log("Log: " + utils.date() + " " + utils.time() + " " + student.data.forenames + ' ' + student.data.surname + ' was signed in!');
-                   req.flash('success', student.data.forenames + ' ' + student.data.surname + ' was signed in!');
-                 } else {
-                   console.log("Log: " + utils.date() + " " + utils.time() + " Something went wrong trying to sign " + student.data.forenames + " " + student.data.surname + " in");
+                 if (record.message !== 'SUCCESS') {
+                   console.log("Log: " + utils.date() + " " + utils.time() + " Something went wrong trying to sign " + student.data.forenames + " " + student.data.surname + " in on fire register.");
                    req.flash('error', "Something went wrong trying to sign your in. Please try again.");
                  }
-                 res.redirect('/reg/' + req.params.location);
+                 //Create new register record
+                 register_manager.createRecord({
+                   id : req.body.scanID,
+                   forenames : student.data.forenames,
+                   surname : student.data.surname,
+                   type : 'student',
+                   location : req.params.location,
+                   yearGroup : student.data.yearGroup,
+                   tutorGrp : student.data.tutorGrp,
+                   io : 1
+                 }, (record) => {
+                   if (record.message === 'SUCCESS') {
+                     console.log("Log: " + utils.date() + " " + utils.time() + " " + student.data.forenames + ' ' + student.data.surname + ' was signed in!');
+                     req.flash('success', student.data.forenames + ' ' + student.data.surname + ' was signed in!');
+                   } else {
+                     console.log("Log: " + utils.date() + " " + utils.time() + " Something went wrong trying to sign " + student.data.forenames + " " + student.data.surname + " in");
+                     req.flash('error', "Something went wrong trying to sign your in. Please try again.");
+                   }
+                   res.redirect('/reg/' + req.params.location);
+                 })
                })
              }
            })
@@ -265,15 +261,17 @@
              //if Staff exists
              if(staff.message === 'SUCCESS'){
                //Check if Staff exists on the fire register
-               fRegister.findOne({'_id': staff.data._id}, (err, exists) => {
+               fire_register_manager.getRecord(staff.data._id, (record) => {
                  //if student exists on fire register
-                 if(exists){
+                 if(record.message === 'SUCCESS'){
                    //Check if Staff was signed out
                      //if user was signed out
-                     if (exists.io == 0) {
-                       //Update fire register with new timeIn and location
-                       fRegister.findOneAndUpdate({'_id': staff.data._id }, {'timeIn': utils.time(), 'timeOut': '', 'io' : 1, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
-                         if (err) {console.log('Error: ' + err)};
+                     if (record.data.io == 0) {
+                       //Update fire register, io state and location
+                       fire_register_manager.updateRecord({
+                         id : staff.data._id,
+                         io : 1,
+                         location : req.params.location
                        })
 
                        //Create new register record
@@ -302,19 +300,16 @@
                        var diffTime = currentTime.diff(lastTime, 'seconds');
 
                        //if (diffTime > 60) {
-                         //Update fire register with new timeIn and location
-                         fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': utils.time(), 'timeOut': '', 'io' : 1, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
-                           if (err) {
-                             console.log('Error: ' + err);
-                             req.flash('error', 'There was an error. Please contact admin.');
-                           };
+                         //Update fire register, io state and location
+                         fire_register_manager.updateRecord({
+                          id : staff.data._id,
+                          io : 1,
+                          location : req.params.location
                          })
                          //Update last register record with 'N/A' for timeOut
-                         register.findOneAndUpdate({'id': req.body.scanID, 'io' : 1}, {'timeOut': 'N/A', 'io' : 0}, { sort: { 'timeIn' : -1, 'date' : -1} }, (err, doc) =>{
-                           if (err) {
-                             console.error('Error: ' + err);
-                             req.flash('error', 'There was an error. Please contact admin.');
-                           };
+                         register_manager.updateLatestRecord({
+                           id : staff.data._id,
+                           io : 1
                          })
                          //Create new register record
                          register_manager.createRecord({
@@ -337,45 +332,37 @@
                      }
                  //else, Staff doesn't exist on the fire register
                  }else{
-                   //Create fire register record with current date and timeIn and location
-                   var fireRegister = new fRegister({
-                     _id: req.body.scanID,
-                     surname: exists.surname,
-                     forenames: exists.forenames,
-                     staffType: staffs.staffType,
-                     type: 'staff',
-                     loc: req.params.location.toUpperCase(),
-                     timeIn: utils.time(),
-                     timeOut: '',
-                     io: 1,
-                     date: utils.date()
-                   },
-                   {
-                     collection: 'fireRegisters',
-                     versionKey: false
-                   });
-
-                   fireRegister.save((err, records) => {
-                     if (err) return console.error(err);
-                       //console.dir(records);
-                   })
-                   //Create new register record
-                   register_manager.createRecord({
+                   //Create fire register record
+                   fire_register_manager.createRecord({
                      id : staff.data._id,
                      forenames : staff.data.forenames,
                      surname : staff.data.surname,
                      type : 'staff',
-                     location : req.params.location,
+                     loc : req.params.location,
                      io : 1
                    }, (record) => {
-                     if (record.message === 'SUCCESS') {
-                       console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed in.");
-                       req.flash('success', staff.data.fullName + " was signed in!")
-                     } else {
-                       console.log("Log: " + utils.date() + " " + utils.time() + " Something went wrong trying to sign " + staff.data.forenames + " " + staff.data.surname + " in");
+                     if (record.message !== 'SUCCESS') {
+                       console.log("Log: " + utils.date() + " " + utils.time() + " Something went wrong trying to sign " + student.data.forenames + " " + student.data.surname + " in on fire register.");
                        req.flash('error', "Something went wrong trying to sign your in. Please try again.");
                      }
-                     res.redirect('/reg/' + req.params.location);
+                     //Create new register record
+                     register_manager.createRecord({
+                       id : staff.data._id,
+                       forenames : staff.data.forenames,
+                       surname : staff.data.surname,
+                       type : 'staff',
+                       location : req.params.location,
+                       io : 1
+                     }, (record) => {
+                       if (record.message === 'SUCCESS') {
+                         console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed in.");
+                         req.flash('success', staff.data.fullName + " was signed in!")
+                       } else {
+                         console.log("Log: " + utils.date() + " " + utils.time() + " Something went wrong trying to sign " + staff.data.forenames + " " + staff.data.surname + " in");
+                         req.flash('error', "Something went wrong trying to sign your in. Please try again.");
+                       }
+                       res.redirect('/reg/' + req.params.location);
+                     })
                    })
                  }
                })
