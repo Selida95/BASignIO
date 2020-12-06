@@ -4,7 +4,7 @@
  * --------------
  */
 const mailer = require('nodemailer');
-const utils = require('./utilities')
+const functions = require('./functions')
 const config = require('../config')
 
 exports.send = function(mailOptions, callback){
@@ -37,6 +37,6 @@ exports.send = function(mailOptions, callback){
 		}
 		//console.log('Message sent: ' + info.response);
 		//console.dir(info);
-		callback(null, "Log: " + utils.date() + " " + utils.time() + " " + "Message Sent.");
+		callback(null, "Log: " + functions.date() + " " + functions.time() + " " + "Message Sent.");
 	});
 }

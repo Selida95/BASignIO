@@ -1,31 +1,23 @@
-/*
- * -------------------------
- * BASignIO - Routes: Users
- * -------------------------
- */
-
-
-// Dependences
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
 const path = require('path');
-const pag = require('../lib/pagination');
-const mailer = require('../lib/email');
-const utils = require('../lib/utilities');
-const account = require('../lib/account_manager');
-const useChecker = require('../lib/use-checker.js');
+//const client = require("jsreport-client")('http://victoria:5488');
 
-// Config
-const config = require('../config');
+const secret = process.env.SECRET;
+const pag = require('../modules/pagination');
+const mailer = require('../modules/email');
+const functions = require('../modules/functions');
+const account = require('../modules/account-manager');
+const useChecker = require('../modules/use-checker.js');
 
-// Database Models
 var student = require('../models/student');
 var staff = require('../models/staff');
 var registers = require('../models/register');
 var fRegisters = require('../models/fireRegister');
+//var client = require("jsreport-client")('http://localhost:5488');
 
 /* GET users listing. */
 
@@ -51,7 +43,7 @@ router.get('/:user/home', function(req, res, next) {
 					useChecker.stuCheck(function(stu){
 				      console.log(stu._id + " - " + stu.forenames + " " + stu.surname)
 				    })
-					//console.log(utils.date());
+					//console.log(functions.date());
 					//res.render('home', { title: 'BASignIO Admin: Welcome ' + name.charAt(0).toUpperCase() + name.slice(1)});
 					res.redirect('/users/' + req.session.user.username + '/home');
 				}else{
@@ -109,7 +101,7 @@ router.post('/:user', function(req, res, next) {
 			mailer.send({
 				receiver: req.session.user.username + '@battleabbeyschool.com',
 				subject: 'BASignIO: Reset Password',
-				text: 'Hi ' + name + ', <br><br> Please click the link below to change your password: <br><br> <a href="http://victoria:' + config.http.port + '/admin/reset/'+ req.session.user.password + '" > Reset Password </a> <br><br> Best Regards, <br>IT Department'
+				text: 'Hi ' + name + ', <br><br> Please click the link below to change your password: <br><br> <a href="http://victoria:' + process.env.PORT + '/admin/reset/'+ req.session.user.password + '" > Reset Password </a> <br><br> Best Regards, <br>IT Department'
 			}, function(err, mail){
 			    if (err) {
 			        console.log(err);
@@ -139,7 +131,7 @@ router.get('/:user/users', function(req, res) {
 					}else{
 						name = req.session.user.username;
 					}
-					//res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, date: utils.date(), role: req.session.user.role, accounts: accounts});
+					//res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, date: functions.date(), role: req.session.user.role, accounts: accounts});
 					res.redirect('/users/' + req.session.user.username + '/users');
 				}else{
 					res.redirect('/')
@@ -209,7 +201,7 @@ router.post('/:user/users', function(req, res) {
 					}else{
 						name = req.session.user.username;
 					}
-					//res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, date: utils.date(), role: req.session.user.role, accounts: accounts});
+					//res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, date: functions.date(), role: req.session.user.role, accounts: accounts});
 					res.redirect('/users/' + req.session.user.username + '/users');
 				}else{
 					res.redirect('/')
@@ -230,7 +222,7 @@ router.post('/:user/users', function(req, res) {
 				if(req.body.userSubmit){
 
 					if(req.body.password == req.body.cPassword){
-						var pword = crypto.createHmac('sha256', config.crypto.secret)
+						var pword = crypto.createHmac('sha256', secret)
 										.update(req.body.password)
 										.digest('hex');
 						var account = new Account({
@@ -282,7 +274,7 @@ router.post('/:user/users', function(req, res) {
 
 						if (req.body.userEditPassword != "") {
 							if (req.body.userEditPassword == req.body.userEditCPassword) {
-								var pword = crypto.createHmac('sha256', config.crypto.secret)
+								var pword = crypto.createHmac('sha256', secret)
 												.update(req.body.userEditPassword)
 												.digest('hex');
 							}else{
@@ -364,7 +356,7 @@ router.get('/:user/students', function(req, res) {
 			pag.pagination(student, currentPage, search, function(err, params){
 				student.find(search, function(err, students){
 					student.findOne({'_id': req.query.e}, function(err, stuEdit){
-						res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, stuEdit: stuEdit, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+						res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, stuEdit: stuEdit, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 					})
 				}).limit(params.maxDocs).skip(params.skipPages).sort({yearGroup: 1})
 			})
@@ -382,7 +374,7 @@ router.get('/:user/students', function(req, res) {
 			pag.pagination(student, currentPage, search, function(err, params){
 				student.find(search, function(err, students){
 					//console.dir(students);
-					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({yearGroup: 1})
 			})
 		}
@@ -503,7 +495,7 @@ router.post('/:user/students', function(req, res) {
 			pag.pagination(student, currentPage, search, function(err, params){
 				student.find(search, function(err, students){
 					//console.dir(students);
-					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: params.currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: params.currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
 		}
@@ -558,7 +550,7 @@ router.get('/:user/staff', function(req, res) {
 			pag.pagination(staff, currentPage, search, function(err, params){
 				staff.find(search, function(err, staffs){
 					staff.findOne({'_id': req.query.e}, function(err, staffEdit){
-						res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffEdit: staffEdit, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+						res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffEdit: staffEdit, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 					})
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
@@ -575,7 +567,7 @@ router.get('/:user/staff', function(req, res) {
 			pag.pagination(staff, currentPage, query, function(err, params){
 				staff.find(query, function(err, staffs){
 					//console.dir(staffs);
-					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
 		}
@@ -679,7 +671,7 @@ router.post('/:user/staff', function(req, res) {
 			pag.pagination(staff, currentPage, query, function(err, params){
 				staff.find(query, function(err, staffs){
 					//console.dir(staffs);
-					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp});
+					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
 		};
@@ -736,7 +728,7 @@ router.all('/:user/registers', function(req, res) {
 		if (req.query.sortDate != undefined) {
 			search.date = req.query.sortDate;
 		}else{
-			search.date = utils.date();
+			search.date = functions.date();
 		}
 		if (req.query.sortYrGroup) {
 			search.yearGroup = req.query.sortYrGroup;
@@ -800,12 +792,12 @@ router.all('/:user/registers', function(req, res) {
 					}
 					console.log(sortData)
 
-					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort, search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
+					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, registers: register, sort: req.query.sort, search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
 				}).limit(maxDocs).skip(skipDocs).sort({_id: -1})
 			})
 		}else{
 			search.io = 1;
-			search.date = utils.date();
+			search.date = functions.date();
 			fRegisters.count(search, function(err, fregister){
 				//console.log(register);
 				//Total number of records
@@ -861,7 +853,7 @@ router.all('/:user/registers', function(req, res) {
 						}
 					}
 					console.log(sortData)
-					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort,  search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
+					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, registers: register, sort: req.query.sort,  search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
 
 				}).limit(maxDocs).skip(skipDocs).sort({surname: 1})
 
@@ -909,10 +901,10 @@ router.all('/:user/export', function(req, res) {
               })();
 	            //res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user.username});
 	    	}else{
-				  res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: utils.date(), role: req.session.user.role, request: 'NULL'});
+				  res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: functions.date(), role: req.session.user.role, request: 'NULL'});
 	      };
     	}else{
-    		res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: utils.date(), role: req.session.user.role, request: 'NULL'});
+    		res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: functions.date(), role: req.session.user.role, request: 'NULL'});
     	};
     }
 });
@@ -921,5 +913,4 @@ router.get('/:user/about', function(req, res) {
 	res.render('about', { title: 'BASignIO Admin: About',  user: req.session.user, role: req.session.user.role});
 });
 
-// Export Routes
 module.exports = router;

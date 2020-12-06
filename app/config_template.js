@@ -1,47 +1,45 @@
 /*
- * ----------------
- * Config Template
- * ----------------
+ * -------
+ * Config
+ * -------
  */
 
  // Config Template: Duplicate file and rename to config.js before updating.
 
- // Define config object
+ // Define config constructor
  var config = {};
 
  // HTTP Config
- config.http = {}
- config.http.port = 3000; // HTTP Server Port
- config.http.cookie = {}
- config.http.cookie.max_life = 60*60*24*1000*365*5; // Maximum Cookie Life - Default: 5 Years
- config.http.session = {}
- config.http.session.secret = '' // Secret for sessions
+ config.http = {}; // HTTP config contructor
+ config.http.port = 3000; // Port http server listens on
+ config.http.cookie_life = 60*60*24*1000*365*5; // 5 Years - maximum life of a http cookie
 
  // Database Config
- config.db = {}
+ config.db = {}; // Database config contructor
  config.db.name = ''; // Database name
  config.db.host = ''; // Database host
 
  // Crypto Config
- config.crypto = {}
- config.crypto.secret = '' // Secret for account passwords
+ config.crypto = {};
+ config.crypto.secret = '';
 
  // Admin Config
- config.admin = {};
+ config.admin = {}; // Admin config contructor
  config.admin.email = ''; // Admin email address
- config.admin.password = ''; // Password for admin account
+ config.admin.password = ''; // Password for Admin account
 
  // Email Config
- config.mail = {};
+ config.mail = {}; // Email config constructor
  config.mail.host = ''; // Mail relay host
  config.mail.port = 25; // Mail relay port
- config.mail.sender_address = '' // Email address used to send mail via relay
+ config.mail.sender = ''; // Sender email address for mail relay
 
  // Manual Input Config
  config.manual_input = {};
  config.manual_input.enabled = true; // If manual input usage count is enabled or not
- config.manual_input.max_uses = 10; // How many times manual input can be used per user before an email is sent
- config.manual_input.email = ''; // Email address that manual input report gets emailed to. Multiple emails can be added via comma seperated string.
+ config.manual_input.max_uses = 10; // How many times manual input can be used before an email can be used
+ config.manual_input.email = ''; // Email address that manual input report gets emailed to
 
- // Export Config
- module.exports = config
+
+ // Export Module
+ module.exports = config;

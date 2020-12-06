@@ -1,129 +1,111 @@
-/*
- * --------------
- * BASignIO: App
- * --------------
- */
+const	express = require('express'),
+		path = require('path'),
+		favicon = require('serve-favicon'),
+		logger = require('morgan'),
+		flash = require('connect-flash'),
+		cookieParser = require('cookie-parser'),
+		bodyParser = require('body-parser'),
+		mongoose = require('mongoose'),
+		session = require('express-session'),
+		mongoStore = require('connect-mongo')(session);
 
- // Dependencies
- const createError = require('http-errors');
- const express = require('express');
- const path = require('path');
- const cookieParser = require('cookie-parser');
- const logger = require('morgan');
- const mongoose = require('mongoose');
- const favicon = require('serve-favicon');
- const session = require('express-session');
- const flash = require('connect-flash');
- const crypto = require('crypto');
+// --- Config --- //
+var config = require('./app/config/global');
+// -------------- //
 
- /* --- Config --- */
- const config = require('./app/config');
- /* -------------- */
+// --- Database --- //
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://' + process.env.DB_HOST + '/' + process.env.DB_NAME, {
+	useMongoClient: true
+});
 
- /* --- Database --- */
- mongoose.Promise = global.Promise;
- mongoose.connect('mongodb://' + config.db.host + '/' + config.db.name, {
-   useNewUrlParser: true,
-   useUnifiedTopology: true
- })
+var db = mongoose.connection;
 
- var db = mongoose.connection;
- db.on('error', console.error.bind(console, 'connection error:'));
- db.once('open', () => {
-   console.log('Connected to Database...');
- });
- /* ---------------- */
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function(){
+	console.log('Connected to Database...')
+});
+// ---------------- //
 
- /* --- Routers --- */
- const indexRouter = require('./app/routes/index');
- const adminRouter = require('./app/routes/admin');
- const usersRouter = require('./app/routes/users');
- const reportRouter = require('./app/routes/report');
- const registerRouter = require('./app/routes/registers');
- /* --------------- */
+var index = require('./app/routes/index');
+var admin = require('./app/routes/admin');
+var users = require('./app/routes/users');
+var report = require('./app/routes/report');
+var registers = require('./app/routes/registers');
 
- const app = express();
+var app = express();
 
- // view engine setup
- app.set('views', path.join(__dirname, 'app', 'views'));
- app.set('view engine', 'pug');
+// view engine setup
+app.set('views', path.join(__dirname, 'app', 'views'));
+app.set('view engine', 'pug');
 
- app.use(favicon(path.join(__dirname, 'app', 'public', 'img', 'favicon.ico')));
- app.use(logger('dev'));
- app.use(express.json());
- app.use(express.urlencoded({ extended: false }));
- app.use(cookieParser());
- app.use(session({
-   secret : config.http.session.secret,
-   resave : false,
-   saveUninitialized : true
- }));
- app.use(express.static(path.join(__dirname, 'app', 'public')));
- app.use(flash());
- app.use((req, res, next) => {
-   res.locals.success = req.flash('success');
-   res.locals.error = req.flash('error');
-   res.locals.warning = req.flash('warning');
-   next();
- })
+// uncomment after placing your favicon in /public
+app.use(favicon(path.join(__dirname, 'app', 'public', 'img', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(session({secret: "ThisIsTheSecret",
+                 resave: false,
+                 saveUninitialized: true}))
+app.use(express.static(path.join(__dirname, 'app', 'public')));
+app.use(flash());
+app.use(function(req, res, next){
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  res.locals.warning = req.flash('warning');
+  next();
+})
 
- app.use('/', indexRouter);
- app.use('/admin', adminRouter);
- app.use('/users', usersRouter);
- app.use('/reports', reportRouter);
- app.use('/reg', registerRouter);
+var accounts = require('./app/models/accounts');
 
- // catch 404 and forward to error handler
- app.use((req, res, next) => {
-   next(createError(404));
- });
+//Creating default Admin user
+  accounts.findOne({'username' : 'admin'}, function(err, doc){
+    if (doc) {
+      console.log("Admin user exists. Moving on...")
+    }else{
+      console.log("Creating Admin user...")
+      var account = new accounts({
+        username: 'admin',
+        surname: '',
+        forenames: '',
+        password: 'd76a0de36bfd385c391a56b85c1cdacbe991b053f33f047a28b725cd95f0e1af',
+        role: 'admin'
+      })
 
- // error handler
- app.use((err, req, res, next) => {
-   // set locals, only providing error in development
-   res.locals.message = err.message;
-   res.locals.error = req.app.get('env') === 'development' ? err : {};
+      account.save(function(err, acc){
+        if (err) return console.error(err);
+        console.log('Created Admin account...')
+      })
+    };
+  })
 
-   // render the error page
-   res.status(err.status || 500);
-   res.render('error');
- });
+app.locals.ucfirst = function(value){
+    return value.charAt(0).toUpperCase() + value.slice(1);
+};
 
- app.locals.ucfirst = (value) => {
-   return value.charAt(0).toUpperCase() + value.slice(1);
- }
+app.use('/', index);
+app.use('/admin', admin);
+app.use('/users', users);
+app.use('/reports', report);
+app.use('/reg', registers)
 
- /* --- Create Default Admin User --- */
- var accounts = require('./app/models/accounts');
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
- accounts.findOne({'username' : 'admin'}, (error, doc) => {
-   if (error) {
-     console.error(error);
-     return;
-   }
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-   if (doc) {
-     console.log("Admin user exists. Moving on...")
-   } else {
-     console.log("Creating Admin user...")
-     var account = new accounts({
-       username: 'admin',
-       surname: '',
-       forenames: '',
-       password: crypto.createHmac('sha256', config.crypto.secret).update(config.admin.password).digest('hex'),
-       role: 'admin'
-     })
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
 
-     account.save((error) => {
-       if (error) {
-         console.error(error);
-         return;
-       }
-       console.log('Created Admin account.')
-     })
-   }
- })
- /* ------------------------- */
-
- // Export module
- module.exports = app;
+module.exports = app;
