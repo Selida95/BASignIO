@@ -6,12 +6,15 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 //const client = require("jsreport-client")('http://victoria:5488');
 
-const secret = process.env.SECRET;
 const pag = require('../modules/pagination');
 const mailer = require('../modules/email');
 const functions = require('../modules/functions');
 const account = require('../modules/account-manager');
 const useChecker = require('../modules/use-checker.js');
+
+// Config
+const config = require('../config')
+const secret = config.crypto.secret;
 
 var student = require('../models/student');
 var staff = require('../models/staff');
@@ -101,7 +104,7 @@ router.post('/:user', function(req, res, next) {
 			mailer.send({
 				receiver: req.session.user.username + '@battleabbeyschool.com',
 				subject: 'BASignIO: Reset Password',
-				text: 'Hi ' + name + ', <br><br> Please click the link below to change your password: <br><br> <a href="http://victoria:' + process.env.PORT + '/admin/reset/'+ req.session.user.password + '" > Reset Password </a> <br><br> Best Regards, <br>IT Department'
+				text: 'Hi ' + name + ', <br><br> Please click the link below to change your password: <br><br> <a href="http://victoria:' + config.http.port + '/admin/reset/'+ req.session.user.password + '" > Reset Password </a> <br><br> Best Regards, <br>IT Department'
 			}, function(err, mail){
 			    if (err) {
 			        console.log(err);

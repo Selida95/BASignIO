@@ -11,6 +11,9 @@
  const functions = require('../modules/functions.js');
  const mailer = require('../modules/email');
 
+ // Config
+ const config = require('../config')
+
  // Database Models
  const student = require('../models/student');
  const staff = require('../models/staff');
@@ -63,16 +66,16 @@
   				//if student exists
   				if (students) {
 
-  					if (process.env.manualCount == "true" && req.body.scanID == students._id) {
+  					if (config.manual_input.enabled == "true" && req.body.scanID == students._id) {
 
   						students.manualCount = students.manualCount + 1;
   						students.save();
 
-  						if (students.manualCount == process.env.manualCountMax) {
+  						if (students.manualCount == config.manual_input.max_uses) {
   							console.log('Allowance reached. Emailing and Resetting.');
 
   							  mailer.send({
-  				                receiver: process.env.manualInputEmail + ', pagee@battleabbeyschool.com',
+  				                receiver: config.manual_input.email,
   				                subject: 'BASignIO: Manual Input',
   				                text: students.fullName + ' has used all their manual input allowance.'
   				              }, (err, mail) => {
@@ -89,11 +92,11 @@
 
   							var msg = 'You have used all of your manual input allowance.';
   						}else{
-  							var msg = 'You have used ' + students.manualCount + '/'+ process.env.manualCountMax + ' of your manual input allowance.';
+  							var msg = 'You have used ' + students.manualCount + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
   						}
   						//Get student forename and surname
   						user = students;
-  						console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ process.env.manualCountMax + ' of their manual input allowance.');
+  						console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
   						res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus, warning: msg});
   					}else{
   						if (req.body.scanID == students._id) {

@@ -10,12 +10,12 @@ const	express = require('express'),
 		mongoStore = require('connect-mongo')(session);
 
 // --- Config --- //
-var config = require('./app/config/global');
+var config = require('./app/config');
 // -------------- //
 
 // --- Database --- //
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://' + process.env.DB_HOST + '/' + process.env.DB_NAME, {
+mongoose.connect('mongodb://' + config.db.host + '/' + config.db.name, {
 	useMongoClient: true
 });
 
@@ -59,6 +59,16 @@ app.use(function(req, res, next){
 
 var accounts = require('./app/models/accounts');
 
+var hash = function(str){
+	const secret = process.env.SECRET;
+
+	const hashOut = crypto.createHmac('sha256', secret)
+										 .update(str)
+										 .digest('hex');
+
+	return hashOut;
+}
+
 //Creating default Admin user
   accounts.findOne({'username' : 'admin'}, function(err, doc){
     if (doc) {
@@ -69,7 +79,7 @@ var accounts = require('./app/models/accounts');
         username: 'admin',
         surname: '',
         forenames: '',
-        password: 'd76a0de36bfd385c391a56b85c1cdacbe991b053f33f047a28b725cd95f0e1af',
+        password: hash(config.admin.password),
         role: 'admin'
       })
 

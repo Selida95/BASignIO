@@ -2,6 +2,8 @@ const crypto = require('crypto');
 
 var account = require('../models/accounts.js');
 
+const config = require('../config')
+
 // --- Exports --- //
 
 exports.manualLogin = function(user, pass, callback){
@@ -44,7 +46,7 @@ exports.autoLogin = function(user, pass, callback){
 
 // --- Functions --- //
 	var hash = function(str){
-		const secret = process.env.SECRET;
+		const secret = config.crypto.secret;
 
 		const hashOut = crypto.createHmac('sha256', secret)
 		                   .update(str)
@@ -67,5 +69,3 @@ exports.autoLogin = function(user, pass, callback){
 		}
 	}
 // ----------------- //
-
-
