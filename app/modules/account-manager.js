@@ -48,8 +48,8 @@
  // Required Fields: parameterObject(containing at least one optional field), callback
  // Optional Fields: id, username
  manager.getUser = (parameterObject, callback) => {
-	 let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id.trim() : ''
-	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username.trim() : ''
+	 let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id.trim() : null
+	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username.trim() : null
 
 	 if (id || username) {
 		 accountModel.findOne({$or : [{ _id : id }, { username : username }]}, (error, account) => {
@@ -76,10 +76,11 @@
 	 if (username && password) {
 		 try {
 			 manager.getUser({ username : username }, (user) => {
+
 				 // Check that user exists
 				 if (user.message === 'SUCCESS') {
 					 // Check if password is correct
-					 if (password === user.password) {
+					 if (password == user.data.password) {
 						 callback({ message : 'AUTHENTICATED', data : user.data })
 					 } else {
 						 callback({ message : 'INVALID_PASSWORD' })
@@ -94,6 +95,15 @@
 	 } else {
 		 throw new Error('REQUIRED_FIELD_INVALID')
 	 }
+ }
+
+ // Hash
+ // Required Fields: String
+ // Optional Fields: None
+ manager.hash = (string) => {
+	 return crypto.createHmac('sha256', config.crypto.secret)
+											.update(string)
+											.digest('hex');
  }
 
  // Export module
