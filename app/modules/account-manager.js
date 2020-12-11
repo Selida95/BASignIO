@@ -6,6 +6,7 @@
 
  // Dependencies
  const crypto = require('crypto');
+ const mailer = require('./email')
 
  // Database Models
  const accountModel = require('../models/accounts.js');
@@ -21,7 +22,7 @@
  // Optional Fields: parameterObject (contains: firstName, lastName, role)
  manager.createNewUser = (parameterObject, callback) => {
 	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username.trim() : false;
-	 let email = typeof(parameterObject.email) === 'string' && parameterObject.email.length > 0 ? parameterObject.email.trim() : false;
+	 let email = typeof(parameterObject.email) === 'string' && parameterObject.email.length > 0 ? parameterObject.email.trim() : username + '@battleabbeyschool.com';
 	 let password = typeof(parameterObject.password) === 'string' && parameterObject.password.length > 0 ? parameterObject.password.trim() : false;
 
 	 if (username && email && password) {
@@ -40,10 +41,11 @@
 			 mailer.send({
 				 receiver : email,
 				 subject : 'BASignIO: New User',
-				 text: 'Hi ' + req.body.forenames +', <br> <br> Your username and password for the BASignIO Sign-in System are as follows: <br> <br> Username: ' + req.body.username + '<br> Password: ' + req.body.password + '<br><br> Best Regards, <br> IT Department'
+				 text: 'Hi ' + parameterObject.firstName ? parameterObject.firstName : parameterObject.username +', <br> <br> Your username and password for the BASignIO Sign-in System are as follows: <br> <br> Username: ' + username + '<br> Password: ' + password + '<br><br> Best Regards, <br> IT Department'
 			 }, (error, mail) => {
-				 if (err) {
-					 console.log(err);
+				 if (error) {
+					 console.log(error);
+					 return;
 				 }
 				 if (mail) {
 					 console.log(mail);
