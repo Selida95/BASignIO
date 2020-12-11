@@ -6,16 +6,12 @@
 
  // Dependencies
  const fs = require('fs');
- const crypto = require('crypto');
  const path = require('path');
  const router = require('express').Router();
  const accountManager = require('../modules/account-manager.js');
  const mailer = require('../modules/email');
  const functions = require('../modules/functions.js');
  const reportGenerator = require('../modules/report_generator');
-
- // Database Models
- const accountModel = require('../models/accounts.js');
 
  // Config
  const config = require('../config')
