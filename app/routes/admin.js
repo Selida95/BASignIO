@@ -38,25 +38,29 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-	accountManager.manualLogin(req.body.uname, req.body.pword, (error, user) => {
-		if (!user) {
-			if (err == 'user-not-found') {
-				res.render('index', { title: 'BASignIO', msg: 'Incorrect Username or Password'});
-			}else{
-				res.render('index', { title: 'BASignIO', msg: 'Incorrect Password'});
-			}
-		}else{
-			req.session.user = user;
-			if (req.body.rememberme == 'on') {
-				res.cookie('basignio_username', req.session.user.username, { maxAge: config.http.cookie_life});
-				res.cookie('basignio_password', req.session.user.password, { maxAge: config.http.cookie_life});
+  try {
+    accountManager.authenticate({
+      username : req.body.uname,
+      password : req.body.pword
+    }, (account) => {
+      if (account.message === 'NOT_FOUND') {
+        res.render('index', { title: 'BASignIO', msg: 'Incorrect Username or Password'});
+      } else if (account.message === 'INVALID_PASSWORD') {
+        res.render('index', { title: 'BASignIO', msg: 'Incorrect Password'});
+      } else {
+        req.session.user = account.data;
+        if (req.body.rememberme == 'on') {
+          res.cookie('basignio_username', req.session.user.username, { maxAge: config.http.cookie_life});
+          res.cookie('basignio_password', req.session.user.password, { maxAge: config.http.cookie_life});
+        }
 
-				res.redirect('/users/' + req.session.user.username + '/home');
-			}else{
-				res.redirect('/users/' + req.session.user.username + '/home');
-			}
-		}
-	});
+        res.redirect('/users/' + req.session.user.username + '/home');
+      }
+    })
+  } catch (e) {
+    console.log(e)
+    res.render('index', { title: 'BASignIO', msg: 'Incorrect Username or Password'});
+  }
 });
 
 router.get('/reset/:token', (req, res, next) => {
