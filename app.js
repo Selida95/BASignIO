@@ -57,38 +57,32 @@ app.use(function(req, res, next){
   next();
 })
 
-var accounts = require('./app/models/accounts');
+// Create admin account
+const accountManager = require('./app/modules/account-manager')
 
-var hash = function(str){
-	const secret = process.env.SECRET;
-
-	const hashOut = crypto.createHmac('sha256', secret)
-										 .update(str)
-										 .digest('hex');
-
-	return hashOut;
+// Check if admin account exists
+try {
+	accountManager.getUser({ username : 'admin' }, (account) => {
+		if (account.message === 'SUCCESS') {
+			console.log('Admin account already exists...')
+		} else {
+			accountManager.createNewUser({
+				username : 'admin',
+				password : config.admin.password,
+				email : config.admin.email
+			}, (newAccount) => {
+				if (newAccount.message === 'SUCCESS') {
+					console.log("Admin account created...")
+				} else {
+					console.log("Something went wrong creating the admin account...")
+				}
+			})
+		}
+	})
+} catch (e) {
+	console.log(e)
 }
 
-//Creating default Admin user
-  accounts.findOne({'username' : 'admin'}, function(err, doc){
-    if (doc) {
-      console.log("Admin user exists. Moving on...")
-    }else{
-      console.log("Creating Admin user...")
-      var account = new accounts({
-        username: 'admin',
-        surname: '',
-        forenames: '',
-        password: hash(config.admin.password),
-        role: 'admin'
-      })
-
-      account.save(function(err, acc){
-        if (err) return console.error(err);
-        console.log('Created Admin account...')
-      })
-    };
-  })
 
 app.locals.ucfirst = function(value){
     return value.charAt(0).toUpperCase() + value.slice(1);
