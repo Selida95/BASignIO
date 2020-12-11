@@ -9,7 +9,7 @@ const path = require('path');
 const pag = require('../modules/pagination');
 const mailer = require('../modules/email');
 const functions = require('../modules/functions');
-const account = require('../modules/account-manager');
+const accountManager = require('../modules/account-manager');
 const useChecker = require('../modules/use-checker.js');
 
 // Config
@@ -33,33 +33,23 @@ router.get('/:user/home', function(req, res, next) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
-				if (o != null) {
-					req.session.user = o;
-					var name;
-					if (req.session.user.forenames) {
-						name = req.session.user.forenames;
-					}else{
-						name = req.session.user.username;
-					}
-
-					useChecker.stuCheck(function(stu){
-				      console.log(stu._id + " - " + stu.forenames + " " + stu.surname)
-				    })
-					//console.log(functions.date());
-					//res.render('home', { title: 'BASignIO Admin: Welcome ' + name.charAt(0).toUpperCase() + name.slice(1)});
-					res.redirect('/users/' + req.session.user.username + '/home');
-				}else{
-					res.redirect('/')				}
-			})
+      try {
+        accountManager.getUser({ username : req.cookies.basignio_username }, (account) => {
+          if (account.message === 'SUCCESS') {
+            // Check if password matches
+            if (req.cookies.basignio_password === account.data.password) {
+              req.session.user = account.data;
+              res.redirect('/users/' + req.session.user.username + '/home')
+            }
+          }
+          res.redirect('/');
+        })
+      } catch (e) {
+        res.redirect('/');
+      }
 		}
 	}else{
-		var name;
-		if (req.session.user.forenames) {
-			name = req.session.user.forenames;
-		}else{
-			name = req.session.user.username;
-		}
+		let name = req.session.user.firstName ? req.session.user.firstName : req.session.user.username;
 		res.render('home', { title: 'BASignIO Admin: Welcome ' + name.charAt(0).toUpperCase() + name.slice(1), user: req.session.user, role: req.session.user.role});
 	}
 });
@@ -69,40 +59,28 @@ router.post('/:user', function(req, res, next) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
-				if (o != null) {
-					req.session.user = o;
-					var name;
-					if (req.session.user.forenames) {
-						name = req.session.user.forenames;
-					}else{
-						name = req.session.user.username;
-					}
-					//res.render('profile', { title: 'BASignIO Admin: Profile: ' + req.session.user.username.charAt(0).toUpperCase() + req.session.user.username.slice(1), user: req.session.user, role: req.session.user.role});
-					res.redirect('/users/' + req.session.user.username);
-				}else{
-					res.redirect('/')
-				}
-			})
+      try {
+        accountManager.getUser({ username : req.cookies.basignio_username }, (account) => {
+          if (account.message === 'SUCCESS') {
+            // Check if password matches
+            if (req.cookies.basignio_password === account.data.password) {
+              req.session.user = account.data;
+              res.redirect('/users/' + req.session.user.username')
+            }
+          }
+          res.redirect('/');
+        })
+      } catch (e) {
+        res.redirect('/');
+      }
 		}
 	}else{
+    let name = req.session.user.firstName ? req.session.user.firstName : req.session.user.username;
 		if (!req.body.pwReset) {
-			var name;
-			if (req.session.user.forenames) {
-				name = req.session.user.forenames;
-			}else{
-				name = req.session.user.username;
-			}
-			res.render('profile', { title: 'BASignIO Admin: Profile - ' + req.session.user.username.charAt(0).toUpperCase() + req.session.user.username.slice(1), user: req.session.user, role: req.session.user.role});
+			res.render('profile', { title: 'BASignIO Admin: Profile - ' + name.charAt(0).toUpperCase() + req.session.user.username.slice(1), user: req.session.user, role: req.session.user.role});
 		}else{
-			var name;
-				if (req.session.user.forenames) {
-					name = req.session.user.forenames;
-				}else{
-					name = req.session.user.username;
-				}
 			mailer.send({
-				receiver: req.session.user.username + '@battleabbeyschool.com',
+				receiver: req.session.user.email,
 				subject: 'BASignIO: Reset Password',
 				text: 'Hi ' + name + ', <br><br> Please click the link below to change your password: <br><br> <a href="http://victoria:' + config.http.port + '/admin/reset/'+ req.session.user.password + '" > Reset Password </a> <br><br> Best Regards, <br>IT Department'
 			}, function(err, mail){
@@ -113,7 +91,7 @@ router.post('/:user', function(req, res, next) {
 				    console.log(mail);
 				}
 			});
-			res.render('profile', { title: 'BASignIO Admin: Profile - ' + req.session.user.username.charAt(0).toUpperCase() + req.session.user.username.slice(1), user: req.session.user, role: req.session.user.role, msg: "Reset password email sent!!"});
+			res.render('profile', { title: 'BASignIO Admin: Profile - ' + name.charAt(0).toUpperCase() + req.session.user.username.slice(1), user: req.session.user, role: req.session.user.role, msg: "Reset password email sent!!"});
 		}
 	}
 
@@ -125,66 +103,72 @@ router.get('/:user/users', function(req, res) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
-				if (o != null) {
-					req.session.user = o;
-					var name;
-					if (req.session.user.forenames) {
-						name = req.session.user.forenames;
-					}else{
-						name = req.session.user.username;
-					}
-					//res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, date: functions.date(), role: req.session.user.role, accounts: accounts});
-					res.redirect('/users/' + req.session.user.username + '/users');
-				}else{
-					res.redirect('/')
-				}
-			})
+      try {
+        accountManager.getUser({ username : req.cookies.basignio_username }, (account) => {
+          if (account.message === 'SUCCESS') {
+            // Check if password matches
+            if (req.cookies.basignio_password === account.data.password) {
+              req.session.user = account.data;
+              res.redirect('/users/' + req.session.user.username + '/users');
+            }
+          }
+          res.redirect('/');
+        })
+      } catch (e) {
+        res.redirect('/');
+      }
 		}
 	}else{
-
-
 		if (req.session.user.role == 'admin') {
-			var Account = require('../models/accounts.js');
-
 			if (req.query.r) {
-				var id = req.query.r;
-				console.log('id: '+ id);
-				Account.findOneAndRemove({'_id': id}, function(err, user){
-					if (err) {
-						console.error('Error: ' + err);
-					};
-					console.log('User was removed.');
-					res.redirect('/users/' + req.session.user.username + '/users');
-				});
+				let id = req.query.r;
+        try {
+          accountManager.removeUser({ id : id }, (user) => {
+            if (user.message === 'SUCCESS') {
+              console.log('User was removed.');
+              res.redirect('/users/' + req.session.user.username + '/users');
+            }
+          })
+        } catch (e) {
+          console.error(e)
+        }
 			}else if(req.query.e){
-				Account.find({}, function(err, accounts){
-					Account.findOne({_id: req.query.e}, function(err, userEdit){
-						if (err) {
-							console.error(err);
-						};
-
-						if (userEdit) {
-							console.dir(userEdit);
-							console.log(userEdit.username);
-							console.log(userEdit.forenames);
-							console.log(userEdit.surname);
-						}
-
-						res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, role: req.session.user.role, accounts: accounts, userEdit: userEdit});
-					})
-				})
+        try {
+          accountManager.getAllUsers((accounts) => {
+            if (accounts.message === 'SUCCESS') {
+              accountManager.getUser({
+                id : req.query.e
+              }, (account) => {
+                if (account.message === 'SUCCESS') {
+                  res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, role: req.session.user.role, accounts: accounts.data, userEdit: account.data});
+                } else {
+                  res.redirect('/users/' + req.session.user.username + '/home');
+                }
+              })
+            } else {
+              res.redirect('/users/' + req.session.user.username + '/home');
+            }
+          })
+        } catch (e) {
+          console.error(e)
+          res.redirect('/users/' + req.session.user.username + '/home');
+        }
 			}else{
-				Account.find({}, function(err, accounts){
-					if (err) {
-						console.error(err);
-					};
-
-					res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, role: req.session.user.role, accounts: accounts});
-				});
+        try {
+          accountManager.getAllUsers((accounts) => {
+            if (accounts.message === 'SUCCESS') {
+              res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, role: req.session.user.role, accounts: accounts});
+            } else {
+              res.redirect('/users/' + req.session.user.username + '/home');
+            }
+          })
+        } catch (e) {
+          console.log(e)
+          res.redirect('/users/' + req.session.user.username + '/home');
+        }
 			}
 		}else{
-			res.redirect('/users/' + req.session.user.username);
+			res.redirect('/users/' + req.session.user.username + '/home');
 		}
 	}
 });
@@ -195,119 +179,62 @@ router.post('/:user/users', function(req, res) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
-				if (o != null) {
-					req.session.user = o;
-					var name;
-					if (req.session.user.forenames) {
-						name = req.session.user.forenames;
-					}else{
-						name = req.session.user.username;
-					}
-					//res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, date: functions.date(), role: req.session.user.role, accounts: accounts});
-					res.redirect('/users/' + req.session.user.username + '/users');
-				}else{
-					res.redirect('/')
-				}
-			})
+      try {
+        accountManager.getUser({ username : req.cookies.basignio_username }, (account) => {
+          if (account.message === 'SUCCESS') {
+            // Check if password matches
+            if (req.cookies.basignio_password === account.data.password) {
+              req.session.user = account.data;
+              res.redirect('/users/' + req.session.user.username + '/users');
+            }
+          }
+          res.redirect('/');
+        })
+      } catch (e) {
+        res.redirect('/');
+      }
 		}
 	}else{
-
-
 		if (req.session.user.role == 'admin') {
-			var Account = require('../models/accounts.js');
-
-			Account.find({}, function(err, accounts){
-				if (err) {
-					console.error(err);
-				};
-
-				if(req.body.userSubmit){
-
-					if(req.body.password == req.body.cPassword){
-						var pword = crypto.createHmac('sha256', secret)
-										.update(req.body.password)
-										.digest('hex');
-						var account = new Account({
-					    	username: req.body.username,
-							surname: req.body.surname,
-							forenames: req.body.forenames,
-							password: pword,
-							role: req.body.roleType
-						},
-						{
-							collection: 'accounts',
-							versionKey: false
-						});
-
-						account.save(function(err, acc){
-							if (err) return console.error(err);
-							console.dir(acc);
-							mailer.send({
-				                receiver: req.body.username + '@battleabbeyschool.com, pagee@battleabbeyschool.com',
-				                subject: 'BASignIO: New User',
-				                text: 'Hi ' + req.body.forenames +', <br> <br> Your username and password for the BASignIO Sign-in System are as follows: <br> <br> Username: ' + req.body.username + '<br> Password: ' + req.body.password + '<br><br> Best Regards, <br> IT Department'
-				            }, function(err, mail){
-				                if (err) {
-				                  console.log(err);
-				                }
-				                if (mail) {
-				                  console.log(mail);
-				                }
-				            });
-						})
-						console.log('New user created.')
-						res.redirect('/users/' + req.session.user.username + '/users');
-					}else{
-						//error: passwords do not match
-						console.log('Passwords Do not match');
-						res.redirect('/users/' + req.session.user.username + '/users');
-					}
-				}else if(req.body.userEditSubmit){
-					Account.findOne({_id: req.query.e}, function(err, doc){
-
-						if (err) {
-							console.log('Err: ' + err);
-						}
-
-						var username = req.body.userEditUsername;
-						var surname = req.body.userEditSurname;
-						var forenames = req.body.userEditForenames;
-						var role = req.body.userEditRoleType;
-
-						if (req.body.userEditPassword != "") {
-							if (req.body.userEditPassword == req.body.userEditCPassword) {
-								var pword = crypto.createHmac('sha256', secret)
-												.update(req.body.userEditPassword)
-												.digest('hex');
-							}else{
-								console.log("EDIT: Passwords do not match.")
-							}
-						}else{
-							console.log('EDIT: Password NULL')
-							var pword = doc.password;
-						}
-
-						if (doc) {
-							doc.username = username;
-							doc.surname = surname;
-							doc.forenames = forenames;
-							doc.role = yearGroup;
-							doc.password = pword;
-
-							doc.save();
-
-							res.redirect('/users/' + req.session.user.username + '/users');
-						}
-					});
-				}else{
-					//console.log("userSubmit not set");
-					console.log('No user created')
-					res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, role: req.session.user.role, accounts: accounts});
-				}
-			});
+      if (req.body.userSubmit) {
+        if (req.body.password == req.body.cPassword) {
+          try {
+            accountManager.createNewUser({
+              username : req.body.username,
+              email : req.body.email,
+              firstName : req.body.forenames,
+              lastName : req.body.surname,
+              password : req.body.password,
+              role : req.body.roleType
+            }, (account) => {
+              if (account.message === 'SUCCESS') {
+                console.log('New user created.')
+                res.redirect('/users/' + req.session.user.username + '/users');
+              }
+            })
+          } catch (e) {
+            console.error(e)
+          }
+        } else {
+          console.log('Passwords Do not match');
+          res.redirect('/users/' + req.session.user.username + '/users');
+        }
+      } else if (req.body.userEditSubmit) {
+        accountManager.updateUser({
+          id : req.query.e,
+          username : req.body.userEditUsername,
+          firstName : req.body.userEditForenames,
+          lastName : req.body.userEditSurname,
+          email : req.body.userEditEmail,
+          role : req.body.userEditRoleType
+        }, (account) => {
+          res.redirect('/users/' + req.session.user.username + '/users');
+        })
+      } else {
+        res.redirect('/users/' + req.session.user.username + '/users');
+      }
 		}else{
-			res.redirect('/users/' + req.session.user.username);
+			res.redirect('/users/' + req.session.user.username + '/home');
 		}
 	}
 });
