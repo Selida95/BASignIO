@@ -45,10 +45,55 @@
  }
 
  // Get Users
- // Required Fields: id, callback
+ // Required Fields: parameterObject(containing at least one optional field), callback
+ // Optional Fields: id, username
+ manager.getUser = (parameterObject, callback) => {
+	 let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id.trim() : ''
+	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 parameterObject.username.trim() : ''
+
+	 if (id || username) {
+		 accountModel.findOne({$or : [{ _id : id }, { username : username }]}, (error, account) => {
+			 if (error) throw error;
+
+			 if (account && Object.keys(account).length > 0) {
+				 callback({ message : 'SUCCESS', data : account })
+			 } else {
+				 callback({ message : 'NOT_FOUND' })
+			 }
+		 })
+	 } else {
+		 throw new Error('REQUIRED_FIELD_INVALID')
+	 }
+ }
+
+ // Authenticate
+ // Required Fields: parameterObject(containing: username, password), callback
  // Optional Fields: None
- manager.getUser = (id, callback) => {
-	 
+ manager.authenticate = (parameterObject, callback) => {
+	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username.trim() : false;
+	 let password = typeof(parameterObject.password) === 'string' && parameterObject.password.length > 0 ? manager.hash(parameterObject.password) : false;
+
+	 if (username && password) {
+		 try {
+			 manager.getUser({ username : username }, (user) => {
+				 // Check that user exists
+				 if (user.message === 'SUCCESS') {
+					 // Check if password is correct
+					 if (password === user.password) {
+						 callback({ message : 'AUTHENTICATED', data : user.data })
+					 } else {
+						 callback({ message : 'INVALID_PASSWORD' })
+					 }
+				 } else {
+					 callback({ message : 'NOT_FOUND' })
+				 }
+			 })
+		 } catch (e) {
+			 throw e
+		 }
+	 } else {
+		 throw new Error('REQUIRED_FIELD_INVALID')
+	 }
  }
 
  // Export module
