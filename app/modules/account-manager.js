@@ -37,6 +37,19 @@
 		 account.save((error) => {
 			 if (error) throw error;
 
+			 mailer.send({
+				 receiver : email,
+				 subject : 'BASignIO: New User',
+				 text: 'Hi ' + req.body.forenames +', <br> <br> Your username and password for the BASignIO Sign-in System are as follows: <br> <br> Username: ' + req.body.username + '<br> Password: ' + req.body.password + '<br><br> Best Regards, <br> IT Department'
+			 }, (error, mail) => {
+				 if (err) {
+					 console.log(err);
+				 }
+				 if (mail) {
+					 console.log(mail);
+				 }
+			 })
+
 			 callback({ message : 'SUCCESS' });
 		 })
 	 } else {
