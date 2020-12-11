@@ -66,6 +66,21 @@
 	 }
  }
 
+ // Get All Users
+ // Required Fields: callback
+ // Optional Fields: none
+ manager.getAllUsers = (callback) => {
+	 accountModel.find({}, (error, accounts) => {
+		 if (error) throw error;
+
+		 if (accounts && Object.keys(accounts).length > 0) {
+			 callback({ message : 'SUCCESS', data : accounts})
+		 } else {
+			 callback({ message : 'NOT_FOUND'})
+		 }
+	 })
+ }
+
  // Update User
  // Required Fields: parameterObject(Contains: id and at least one optional field), callback
  // Optional Fields: username, email, firstName, lastName, password, role
