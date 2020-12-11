@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
 const path = require('path');
-//const client = require("jsreport-client")('http://victoria:5488');
 
 const pag = require('../modules/pagination');
 const mailer = require('../modules/email');
@@ -20,7 +19,6 @@ var student = require('../models/student');
 var staff = require('../models/staff');
 var registers = require('../models/register');
 var fRegisters = require('../models/fireRegister');
-//var client = require("jsreport-client")('http://localhost:5488');
 
 /* GET users listing. */
 
