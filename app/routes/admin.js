@@ -81,23 +81,21 @@ router.post('/reset/:token', (req, res, next) => {
     if (req.body.rPword == "") {
       res.render('resetpw', { title: 'BASignIO Admin: Reset Password', token: req.params.token, msg: "Your password cannot be blank." });
     }else{
-      let hashedPassword = crypto.createHmac('sha256', config.crypto.secret)
-                        .update(req.body.rPword)
-                      	.digest('hex');
-
-      accountModel.findOne({password: req.params.token}, (error, doc) => {
-        if (error) {
-          console.log("ERROR: " + error)
-        }
-
-        if (doc) {
-          doc.password = hashedPassword;
-
-          doc.save();
-
-          res.redirect('/');
-        }
-      })
+      try {
+        accountManager.resetPassword({
+          id : req.params.token,
+          password : req.body.rPword
+        }, (account) => {
+          if (account.message === 'SUCCESS') {
+            res.redirect('/');
+          } else{
+            console.log(account.message)
+            res.render('resetpw', { title: 'BASignIO Admin: Reset Password', token: req.params.token, msg: "An error occured resetting your password." });
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
     }
   }else{
     console.log("Passwords do not match.")
