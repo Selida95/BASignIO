@@ -49,7 +49,7 @@
  // Optional Fields: id, username
  manager.getUser = (parameterObject, callback) => {
 	 let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id.trim() : ''
-	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 parameterObject.username.trim() : ''
+	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username.trim() : ''
 
 	 if (id || username) {
 		 accountModel.findOne({$or : [{ _id : id }, { username : username }]}, (error, account) => {
