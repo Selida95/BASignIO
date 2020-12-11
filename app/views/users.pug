@@ -73,8 +73,8 @@ block content
 						each account in accounts
 							tr
 								td(style="text-align: center;")= account.username
-								td= account.surname
-								td= account.forenames
+								td= account.lastName
+								td= account.firstName
 								td(style="text-align: center;")= account.role
 								td(style="text-align: center; width: 70px; border-left: 1px solid #ddd;")
 									if account.username != "admin"

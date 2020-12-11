@@ -1,71 +1,211 @@
-const crypto = require('crypto');
+/*
+ * --------------------------
+ * BASignIO: Account Manager
+ * --------------------------
+ */
 
-var account = require('../models/accounts.js');
+ // Dependencies
+ const crypto = require('crypto');
+ const mailer = require('./email')
 
-const config = require('../config')
+ // Database Models
+ const accountModel = require('../models/accounts.js');
 
-// --- Exports --- //
+ // Config
+ const config = require('../config')
 
-exports.manualLogin = function(user, pass, callback){
-	account.findOne({username: user}, function(err, doc){
-		if (err) {
-			console.log('Error: ' + err)
-		}
+ // Define Manager Object
+ let manager = {}
 
-		if (doc == null) {
-			callback('user-not-found');
-		}else{
-			validatePassword(pass, doc.password, function(err, validate){
-				if (err) {
-					console.log('Error: ' + err);
-				}
-				if (validate) {
-					callback(null, doc);
-				}else{
-					callback('invalid-password');
-				}
-			});
-		}
-		//console.log("HASH: " + pwordHash);
-	})
-}
+ // Create New User
+ // Required Fields: parameterObject (contains: username, email, password), callback
+ // Optional Fields: parameterObject (contains: firstName, lastName, role)
+ manager.createNewUser = (parameterObject, callback) => {
+	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username.trim() : false;
+	 let email = typeof(parameterObject.email) === 'string' && parameterObject.email.length > 0 ? parameterObject.email.trim() : username + '@battleabbeyschool.com';
+	 let password = typeof(parameterObject.password) === 'string' && parameterObject.password.length > 0 ? parameterObject.password.trim() : false;
 
+	 if (username && email && password) {
+		 let account = new accountModel({
+			 username : username,
+			 email : email,
+			 password : manager.hash(password),
+			 firstName : typeof(parameterObject.firstName) === 'string' && parameterObject.firstName.length > 0 ? parameterObject.firstName.trim() : '',
+			 lastName : typeof(parameterObject.lastName) === 'string' && parameterObject.lastName.length > 0 ? parameterObject.lastName.trim() : '',
+			 role : typeof(parameterObject.role) === 'string' && parameterObject.role.length > 0 && parameterObject.role.toLowerCase() === 'admin' ? 'admin' : 'user'
+		 })
 
-exports.autoLogin = function(user, pass, callback){
-	account.findOne({username:user}, function(err, o){
-		if (o) {
-			o.password == pass ? callback(o) : callback(null);
-		}else{
-			callback(null);
-		}
-	});
-}
+		 account.save((error) => {
+			 if (error) throw error;
 
-// --------------- //
+			 mailer.send({
+				 receiver : email,
+				 subject : 'BASignIO: New User',
+				 text: 'Hi ' + parameterObject.firstName ? parameterObject.firstName : parameterObject.username +', <br> <br> Your username and password for the BASignIO Sign-in System are as follows: <br> <br> Username: ' + username + '<br> Password: ' + password + '<br><br> Best Regards, <br> IT Department'
+			 }, (error, mail) => {
+				 if (error) {
+					 console.log(error);
+					 return;
+				 }
+				 if (mail) {
+					 console.log(mail);
+				 }
+			 })
 
+			 callback({ message : 'SUCCESS' });
+		 })
+	 } else {
+		 throw new Error('REQUIRED_FIELD_INVALID')
+	 }
+ }
 
-// --- Functions --- //
-	var hash = function(str){
-		const secret = config.crypto.secret;
+ // Get Users
+ // Required Fields: parameterObject(containing at least one optional field), callback
+ // Optional Fields: id, username
+ manager.getUser = (parameterObject, callback) => {
+	 let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id.trim() : null
+	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username.trim() : null
 
-		const hashOut = crypto.createHmac('sha256', secret)
-		                   .update(str)
-		                   .digest('hex');
+	 if (id || username) {
+		 accountModel.findOne({$or : [{ _id : id }, { username : username }]}, (error, account) => {
+			 if (error) throw error;
 
-		return hashOut;
-	}
+			 if (account && Object.keys(account).length > 0) {
+				 callback({ message : 'SUCCESS', data : account })
+			 } else {
+				 callback({ message : 'NOT_FOUND' })
+			 }
+		 })
+	 } else {
+		 throw new Error('REQUIRED_FIELD_INVALID')
+	 }
+ }
 
-	var validatePassword = function(pass, accPass, callback){
-		var pwordHash = hash(pass)
+ // Get All Users
+ // Required Fields: callback
+ // Optional Fields: none
+ manager.getAllUsers = (callback) => {
+	 accountModel.find({}, (error, accounts) => {
+		 if (error) throw error;
 
-		if (pwordHash == accPass) {
-			console.log('Password Validated!');
+		 if (accounts && Object.keys(accounts).length > 0) {
+			 callback({ message : 'SUCCESS', data : accounts})
+		 } else {
+			 callback({ message : 'NOT_FOUND'})
+		 }
+	 })
+ }
 
-			callback(null, 'password-validated');
-		}else{
-			console.log('Incorrect Password.');
+ // Update User
+ // Required Fields: parameterObject(Contains: id and at least one optional field), callback
+ // Optional Fields: username, email, firstName, lastName, password, role
+ manager.updateUser = (parameterObject, callback) => {
+	 let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false
 
-			callback('validation-failed');
-		}
-	}
-// ----------------- //
+	 if (id) {
+		 try {
+			 manager.getUser({ id : id }, (user) => {
+				 if (user.message === 'SUCCESS') {
+					 user.data.username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username : user.data.username;
+					 user.data.email = typeof(parameterObject.email) === 'string' && parameterObject.email.length > 0 ? parameterObject.email : user.data.email;
+					 user.data.firstName = typeof(parameterObject.firstName) === 'string' && parameterObject.firstName.length > 0 ? parameterObject.firstName : user.data.firstName;
+					 user.data.lastName = typeof(parameterObject.lastName) === 'string' && parameterObject.lastName.length > 0 ? parameterObject.lastName : user.data.lastName;
+					 user.data.password = typeof(parameterObject.password) === 'string' && parameterObject.password.length > 0 ? manager.hash(parameterObject.pasword) : user.data.password;
+					 user.data.role = typeof(parameterObject.role) === 'string' && parameterObject.role.length > 0 ? parameterObject.role : user.data.role;
+
+					 user.data.save((error) => {
+						 if (error) throw error;
+
+						 callback({ message : 'SUCCESS'})
+					 })
+				 } else {
+					 callback({ message : 'NOT_FOUND' })
+				 }
+			 })
+		 } catch (e) {
+			 throw e
+		 }
+	 } else {
+		 throw new Error('REQUIRED_FIELD_INVALID')
+	 }
+ }
+
+ // Remove User
+ // Required Fields: parameterObject(Contains: id), callback
+ // Optional Fields: None
+ manager.removeUser = (parameterObject, callback) => {
+	 let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false
+
+	 if (id) {
+		 accountModel.findOneAndRemove({ _id : id }, (error, account) => {
+			 if (error) throw error;
+
+			 if (account && Object.keys(account).length > 0) {
+				 callback({ message : 'SUCCESS' })
+			 } else {
+				 callback({ message : 'NOT_FOUND' })
+			 }
+		 })
+	 } else {
+		 throw new Error('REQUIRED_FIELD_INVALID')
+	 }
+ }
+
+ // Authenticate
+ // Required Fields: parameterObject(containing: username, password), callback
+ // Optional Fields: None
+ manager.authenticate = (parameterObject, callback) => {
+	 let username = typeof(parameterObject.username) === 'string' && parameterObject.username.length > 0 ? parameterObject.username.trim() : false;
+	 let password = typeof(parameterObject.password) === 'string' && parameterObject.password.length > 0 ? manager.hash(parameterObject.password) : false;
+
+	 if (username && password) {
+		 try {
+			 manager.getUser({ username : username }, (user) => {
+
+				 // Check that user exists
+				 if (user.message === 'SUCCESS') {
+					 // Check if password is correct
+					 if (password == user.data.password) {
+						 callback({ message : 'AUTHENTICATED', data : user.data })
+					 } else {
+						 callback({ message : 'INVALID_PASSWORD' })
+					 }
+				 } else {
+					 callback({ message : 'NOT_FOUND' })
+				 }
+			 })
+		 } catch (e) {
+			 throw e
+		 }
+	 } else {
+		 throw new Error('REQUIRED_FIELD_INVALID')
+	 }
+ }
+
+ // Reset Password
+ // Required Fields: parameterObject(Contains: id, password) callback
+ // Optional Fields: None
+ manager.resetPassword = (parameterObject, callback) => {
+	 manager.updateUser({
+		 id : id,
+		 password : password
+	 }, (user) => {
+		 if (user.message === 'SUCCESS') {
+			 callback({ message : 'SUCCESS' })
+		 } else {
+			 callback({ message : 'NOT_FOUND' })
+		 }
+	 })
+ }
+
+ // Hash
+ // Required Fields: String
+ // Optional Fields: None
+ manager.hash = (string) => {
+	 return crypto.createHmac('sha256', config.crypto.secret)
+											.update(string)
+											.digest('hex');
+ }
+
+ // Export module
+ module.exports = manager;

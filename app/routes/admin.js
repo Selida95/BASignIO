@@ -6,7 +6,6 @@
 
  // Dependencies
  const fs = require('fs');
- const crypto = require('crypto');
  const path = require('path');
  const router = require('express').Router();
  const accountManager = require('../modules/account-manager.js');
@@ -14,8 +13,8 @@
  const functions = require('../modules/functions.js');
  const reportGenerator = require('../modules/report_generator');
 
- // Database Models
- const accountModel = require('../models/accounts.js');
+ // Config
+ const config = require('../config')
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -23,14 +22,20 @@ router.get('/', (req, res, next) => {
 		if (req.cookies.basignio_username == undefined || req.cookies.basignio_password == undefined) {
 			res.render('index', { title: 'BASignIO' });
 		}else{
-			accountManager.autoLogin(req.cookies.basignio_username, req.cookies.basignio_password, (user) =>{
-				if (user != null) {
-					req.session.user = user;
-					res.redirect('/users/' + req.session.user.username + '/home')
-				}else{
-					res.render('index', { title: 'BASignIO'});
-				}
-			})
+      try {
+        accountManager.getUser({ username : req.cookies.basignio_username }, (account) => {
+          if (account.message === 'SUCCESS') {
+            // Check if password matches
+            if (req.cookies.basignio_password === account.data.password) {
+              req.session.user = account.data;
+              res.redirect('/users/' + req.session.user.username + '/home')
+            }
+          }
+          res.render('index', { title: 'BASignIO'});
+        })
+      } catch (e) {
+        res.render('index', { title: 'BASignIO'});
+      }
 		}
 	}else{
 		res.redirect('/users/' + req.session.user.username + '/home')
@@ -38,25 +43,29 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-	accountManager.manualLogin(req.body.uname, req.body.pword, (error, user) => {
-		if (!user) {
-			if (err == 'user-not-found') {
-				res.render('index', { title: 'BASignIO', msg: 'Incorrect Username or Password'});
-			}else{
-				res.render('index', { title: 'BASignIO', msg: 'Incorrect Password'});
-			}
-		}else{
-			req.session.user = user;
-			if (req.body.rememberme == 'on') {
-				res.cookie('basignio_username', req.session.user.username, { maxAge: config.http.cookie_life});
-				res.cookie('basignio_password', req.session.user.password, { maxAge: config.http.cookie_life});
+  try {
+    accountManager.authenticate({
+      username : req.body.uname,
+      password : req.body.pword
+    }, (account) => {
+      if (account.message === 'NOT_FOUND') {
+        res.render('index', { title: 'BASignIO', msg: 'Incorrect Username or Password'});
+      } else if (account.message === 'INVALID_PASSWORD') {
+        res.render('index', { title: 'BASignIO', msg: 'Incorrect Password'});
+      } else {
+        req.session.user = account.data;
+        if (req.body.rememberme == 'on') {
+          res.cookie('basignio_username', req.session.user.username, { maxAge: config.http.cookie_life});
+          res.cookie('basignio_password', req.session.user.password, { maxAge: config.http.cookie_life});
+        }
 
-				res.redirect('/users/' + req.session.user.username + '/home');
-			}else{
-				res.redirect('/users/' + req.session.user.username + '/home');
-			}
-		}
-	});
+        res.redirect('/users/' + req.session.user.username + '/home');
+      }
+    })
+  } catch (e) {
+    console.log(e)
+    res.render('index', { title: 'BASignIO', msg: 'Incorrect Username or Password'});
+  }
 });
 
 router.get('/reset/:token', (req, res, next) => {
@@ -68,23 +77,21 @@ router.post('/reset/:token', (req, res, next) => {
     if (req.body.rPword == "") {
       res.render('resetpw', { title: 'BASignIO Admin: Reset Password', token: req.params.token, msg: "Your password cannot be blank." });
     }else{
-      let hashedPassword = crypto.createHmac('sha256', config.crypto.secret)
-                        .update(req.body.rPword)
-                      	.digest('hex');
-
-      accountModel.findOne({password: req.params.token}, (error, doc) => {
-        if (error) {
-          console.log("ERROR: " + error)
-        }
-
-        if (doc) {
-          doc.password = hashedPassword;
-
-          doc.save();
-
-          res.redirect('/');
-        }
-      })
+      try {
+        accountManager.resetPassword({
+          id : req.params.token,
+          password : req.body.rPword
+        }, (account) => {
+          if (account.message === 'SUCCESS') {
+            res.redirect('/');
+          } else{
+            console.log(account.message)
+            res.render('resetpw', { title: 'BASignIO Admin: Reset Password', token: req.params.token, msg: "An error occured resetting your password." });
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
     }
   }else{
     console.log("Passwords do not match.")
