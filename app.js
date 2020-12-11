@@ -69,7 +69,8 @@ try {
 			accountManager.createNewUser({
 				username : 'admin',
 				password : config.admin.password,
-				email : config.admin.email
+				email : config.admin.email,
+				role : 'admin'
 			}, (newAccount) => {
 				if (newAccount.message === 'SUCCESS') {
 					console.log("Admin account created...")
