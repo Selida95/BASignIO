@@ -65,7 +65,7 @@ router.post('/:user', function(req, res, next) {
             // Check if password matches
             if (req.cookies.basignio_password === account.data.password) {
               req.session.user = account.data;
-              res.redirect('/users/' + req.session.user.username')
+              res.redirect('/users/' + req.session.user.username)
             }
           }
           res.redirect('/');
@@ -157,7 +157,7 @@ router.get('/:user/users', function(req, res) {
         try {
           accountManager.getAllUsers((accounts) => {
             if (accounts.message === 'SUCCESS') {
-              res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, role: req.session.user.role, accounts: accounts});
+              res.render('users', { title: 'BASignIO Admin: Users', user: req.session.user, role: req.session.user.role, accounts: accounts.data});
             } else {
               res.redirect('/users/' + req.session.user.username + '/home');
             }
