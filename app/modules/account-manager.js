@@ -100,6 +100,27 @@
 	 }
  }
 
+ // Remove User
+ // Required Fields: parameterObject(Contains: id), callback
+ // Optional Fields: None
+ manager.removeUser = (parameterObject, callback) => {
+	 let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id : false
+
+	 if (id) {
+		 accountModel.findOneAndRemove({ _id : id }, (error, account) => {
+			 if (error) throw error;
+
+			 if (account && Object.keys(account).length > 0) {
+				 callback({ message : 'SUCCESS' })
+			 } else {
+				 callback({ message : 'NOT_FOUND' })
+			 }
+		 })
+	 } else {
+		 throw new Error('REQUIRED_FIELD_INVALID')
+	 }
+ }
+
  // Authenticate
  // Required Fields: parameterObject(containing: username, password), callback
  // Optional Fields: None
@@ -129,6 +150,22 @@
 	 } else {
 		 throw new Error('REQUIRED_FIELD_INVALID')
 	 }
+ }
+
+ // Reset Password
+ // Required Fields: parameterObject(Contains: id, password) callback
+ // Optional Fields: None
+ manager.resetPassword = (parameterObject, callback) => {
+	 manager.updateUser({
+		 id : id,
+		 password : password
+	 }, (user) => {
+		 if (user.message === 'SUCCESS') {
+			 callback({ message : 'SUCCESS' })
+		 } else {
+			 callback({ message : 'NOT_FOUND' })
+		 }
+	 })
  }
 
  // Hash
