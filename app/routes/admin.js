@@ -17,20 +17,29 @@
  // Database Models
  const accountModel = require('../models/accounts.js');
 
+ // Config
+ const config = require('../config')
+
 /* GET home page. */
 router.get('/', (req, res, next) => {
 	if (!req.session.user) {
 		if (req.cookies.basignio_username == undefined || req.cookies.basignio_password == undefined) {
 			res.render('index', { title: 'BASignIO' });
 		}else{
-			accountManager.autoLogin(req.cookies.basignio_username, req.cookies.basignio_password, (user) =>{
-				if (user != null) {
-					req.session.user = user;
-					res.redirect('/users/' + req.session.user.username + '/home')
-				}else{
-					res.render('index', { title: 'BASignIO'});
-				}
-			})
+      try {
+        accountManager.getUser({ username : req.cookies.basignio_username }, (account) => {
+          if (account.message === 'SUCCESS') {
+            // Check if password matches
+            if (req.cookies.basignio_password === account.data.password) {
+              req.session.user = account.data;
+              res.redirect('/users/' + req.session.user.username + '/home')
+            }
+          }
+          res.render('index', { title: 'BASignIO'});
+        })
+      } catch (e) {
+        res.render('index', { title: 'BASignIO'});
+      }
 		}
 	}else{
 		res.redirect('/users/' + req.session.user.username + '/home')
