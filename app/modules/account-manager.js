@@ -42,17 +42,13 @@
 				 receiver : email,
 				 subject : 'BASignIO: New User',
 				 text: 'Hi ' + parameterObject.firstName ? parameterObject.firstName : parameterObject.username +', <br> <br> Your username and password for the BASignIO Sign-in System are as follows: <br> <br> Username: ' + username + '<br> Password: ' + password + '<br><br> Best Regards, <br> IT Department'
-			 }, (error, mail) => {
-				 if (error) {
-					 console.log(error);
-					 return;
-				 }
-				 if (mail) {
-					 console.log(mail);
-				 }
+			 }, (mail) => {
+         if (mail.message === 'SUCCESS') {
+           callback({ message : 'SUCCESS_EMAIL' });
+         } else {
+           callback({ message : 'SUCCESS' });
+         }
 			 })
-
-			 callback({ message : 'SUCCESS' });
 		 })
 	 } else {
 		 throw new Error('REQUIRED_FIELD_INVALID')

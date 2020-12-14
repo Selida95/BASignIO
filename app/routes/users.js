@@ -205,7 +205,7 @@ router.post('/:user/users', function(req, res) {
               password : req.body.password,
               role : req.body.roleType
             }, (account) => {
-              if (account.message === 'SUCCESS') {
+              if (account.message.includes('SUCCESS')) {
                 console.log('New user created.')
                 res.redirect('/users/' + req.session.user.username + '/users');
               }

@@ -1,42 +1,48 @@
 /*
- * --------------
- * Email Manager
- * --------------
+ * ------------------------
+ * BASignIO: Email Manager
+ * ------------------------
  */
-const mailer = require('nodemailer');
-const functions = require('./functions')
-const config = require('../config')
 
-exports.send = function(mailOptions, callback){
-	var smtpTransport = mailer.createTransport({
-		host: config.mail.host, // hostname
-		secureConnection: false, // TLS requires secureConnection to be false
-		port: config.mail.port,
-		tls: {
-			ciphers:'SSLv3'
-		}
-	});
+ // Dependencies
+ const mailer = require('nodemailer');
+ const functions = require('./functions')
 
-    // setup e-mail data with unicode symbols
-	var options = {
-		from: config.mail.sender, // sender address
-		to: mailOptions.receiver, // receiver address
-		subject: mailOptions.subject , // Subject line
-		text: mailOptions.text, // plaintext body
-		html: '<b>' + mailOptions.text + '.</b>', // html body
-	};
+ // Config
+ const config = require('../config')
 
-	if (mailOptions.attachment) {
-		options.attachments = mailOptions.attachment
-	}
+ // Define manager object
+ let manager = {}
 
-	// send mail with defined transport object
-	smtpTransport.sendMail(options, function(err, info){
-		if(err){
-			callback(err);
-		}
-		//console.log('Message sent: ' + info.response);
-		//console.dir(info);
-		callback(null, "Log: " + functions.date() + " " + functions.time() + " " + "Message Sent.");
-	});
-}
+ manager.send = (mailOptions, callback) => {
+	 let smtpTransport = mailer.createTransport({
+		 host : config.mail.host,
+		 secureConnection : false, // TLS requires secureConnection to be false
+		 port : config.mail.port,
+		 tls : {
+			 ciphers : 'SSLv3'
+		 }
+	 })
+
+	 let options = {
+		 from : config.mail.sender,
+		 to : mailOptions.receiver,
+		 subject : mailOptions.subject,
+		 text : mailOptions.text,
+		 html : '<b>' + mailOptions.text + '.</b>'
+	 }
+
+	 if (mailOptions.attachment) {
+		 options.attachments = mailOptions.attachment
+	 }
+
+	 smtpTransport.sendMail(options, (error, info) => {
+		 if (error) throw error;
+		 if (info) {
+			 callback({ message : 'SUCCESS', data : info })
+		 }
+	 })
+ }
+
+ // Export module
+ module.exports = manager;

@@ -72,7 +72,7 @@ try {
 				email : config.admin.email,
 				role : 'admin'
 			}, (newAccount) => {
-				if (newAccount.message === 'SUCCESS') {
+				if (newAccount.message.includes('SUCCESS')) {
 					console.log("Admin account created...")
 				} else {
 					console.log("Something went wrong creating the admin account...")
