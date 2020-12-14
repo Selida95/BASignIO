@@ -8,7 +8,7 @@
  const express = require('express');
  const router = express.Router();
  const moment = require('moment');
- const functions = require('../modules/functions.js');
+ const utils = require('../modules/utilities.js');
  const mailer = require('../modules/email');
 
  // Config
@@ -48,7 +48,7 @@
   		//if scanID is empty
   		if (!req.body.scanID) {
   			//Print("Please scan your id")
-  			console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
+  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
   			req.flash('error', 'Please enter/scan your id.');
 
   			res.redirect('/reg/' + req.params.location);
@@ -59,7 +59,7 @@
   			//Check if student exists
   			student.findOne({$or: [{'_id': req.body.scanID}, {'cardID': req.body.scanID}]}, (err, students) => {
   				if (err) {
-  					console.error('ERROR: ' + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + ' | ' + err);
+  					console.error('ERROR: ' + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + ' | ' + err);
   					req.flash('error', 'There was an error. Please contact admin.');
   					res.redirect('/reg/' + req.params.location);
   				}
@@ -96,32 +96,32 @@
   						}
   						//Get student forename and surname
   						user = students;
-  						console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
+  						console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
   						res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus, warning: msg});
   					}else{
   						if (req.body.scanID == students._id) {
   							//Manual Input was used.
   							//Get student forename and surname
   							user = students;
-  							console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id. Manual Input was used.");
+  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id. Manual Input was used.");
   							res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus});
   						}else{
   							//Get student forename and surname
   							user = students;
-  							console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
+  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
   							res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus});
   						}
   					}
   				//else
   				}else{
-  					console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() +" Scanning ID: User isn't student checking if staff member.");
+  					console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() +" Scanning ID: User isn't student checking if staff member.");
   					//Check if staff exists
   					staff.findOne({$or: [{'_id': req.body.scanID}, {'cardID': req.body.scanID}, {'cardID2': req.body.scanID}]}, (err, staffs) => {
   						//if staff exists
   						if (staffs) {
   							//Get staff forename and surname
   							user = staffs;
-  							console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
+  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
   							res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: staffs._id, inputFocus: inputFocus});
   						}else{
   							//if user doesn't exist.
@@ -140,14 +140,14 @@
   		//if scanID is empty
   		if (!req.body.scanID) {
   			//Print("Please scan your id")
-  			console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
+  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
   			req.flash('error', 'Please enter/scan your id.');
 
   			res.redirect('/reg/' + req.params.location);
   		//else
   		}else{
   			//Print('Checking ID')
-  			console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | Checking ID: " + req.body.scanID)
+  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | Checking ID: " + req.body.scanID)
   			//Removes focus from scan input
   			inputFocus = false;
   			//check if student exists
@@ -162,7 +162,7 @@
   								//if user was signed out
   								if (exists.io == 0) {
   									//Update fire register with new timeIn and location
-  									fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': functions.time(), 'timeOut': '', 'io' : 1, 'date': functions.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
+  									fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': utils.time(), 'timeOut': '', 'io' : 1, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
   										if (err) {console.log('Error: ' + err)};
   									})
   									//Create new register record with timeIn and location
@@ -174,10 +174,10 @@
   										yearGroup: exists.yearGroup,
   										type: 'student',
   										loc: req.params.location.toUpperCase(),
-  										timeIn: functions.time(),
+  										timeIn: utils.time(),
   										timeOut: '',
   										io: 1,
-  										date: functions.date()
+  										date: utils.date()
   									},
   									{
   										collection: 'registers',
@@ -188,7 +188,7 @@
   										//console.dir(Student);
   									})
   									//Print('Student was signed in!')
-  									console.log("Log: " + functions.date() + " " + functions.time() + " " + exists.forenames + ' ' + exists.surname + ' was signed in!');
+  									console.log("Log: " + utils.date() + " " + utils.time() + " " + exists.forenames + ' ' + exists.surname + ' was signed in!');
   									req.flash('success', exists.forenames + ' ' + exists.surname + ' was signed in!');
   									res.redirect('/reg/' + req.params.location);
   								//else
@@ -200,7 +200,7 @@
 
   									if (diffTime > 60) {
   										//Update fire register with new timeIn and location
-  										fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': functions.time(), 'timeOut': '', 'io' : 1, 'date': functions.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
+  										fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': utils.time(), 'timeOut': '', 'io' : 1, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
   											if (err) {
   												console.log('Error: ' + err);
   												req.flash('error', 'There was an error. Please contact admin.');
@@ -222,10 +222,10 @@
   											yearGroup: exists.yearGroup,
   											type: 'student',
   											loc: req.params.location.toUpperCase(),
-  											timeIn: functions.time(),
+  											timeIn: utils.time(),
   											timeOut: '',
   											io: 1,
-  											date: functions.date()
+  											date: utils.date()
   										},
   										{
   											collection: 'registers',
@@ -236,17 +236,17 @@
   											//console.dir(Student);
   										})
   										//Print('Student was signed in, but didn't sign out. Please do so in the future.')
-  										console.log("Log: " + functions.date() + " " + functions.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in, but didn't sign out.");
+  										console.log("Log: " + utils.date() + " " + utils.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in, but didn't sign out.");
   										req.flash('error', exists.forenames + ' ' + exists.surname + " was signed in, but didn't previously signout. Please do so in the future!");
   										res.redirect('/reg/' + req.params.location);
   									}else{
-                      fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': functions.time(), 'timeOut': '', 'io' : 1, 'date': functions.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
+                      fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': utils.time(), 'timeOut': '', 'io' : 1, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
                         if (err) {
                           console.log('Error: ' + err);
                           req.flash('error', 'There was an error. Please contact admin.');
                         };
                       })
-  										console.log("Log: " + functions.date() + " " + functions.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in. Sign in button was press more than once.");
+  										console.log("Log: " + utils.date() + " " + utils.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in. Sign in button was press more than once.");
   										req.flash('success', exists.forenames + ' ' + exists.surname + ' was signed in! But you dont\'t need to spam the button.');
 
   										res.redirect('/reg/' + req.params.location);
@@ -263,10 +263,10 @@
   									tutorGrp: students.tutorGrp,
   									type: 'student',
   									loc: req.params.location.toUpperCase(),
-  									timeIn: functions.time(),
+  									timeIn: utils.time(),
   									timeOut: '',
   									io: 1,
-  									date: functions.date()
+  									date: utils.date()
   								},
   								{
   									collection: 'fireRegisters',
@@ -286,10 +286,10 @@
   									yearGroup: students.yearGroup,
   									type: 'student',
   									loc: req.params.location.toUpperCase(),
-  									timeIn: functions.time(),
+  									timeIn: utils.time(),
   									timeOut: '',
   									io: 1,
-  									date: functions.date()
+  									date: utils.date()
   								},
   								{
   									collection: 'registers',
@@ -302,7 +302,7 @@
   								})
 
 
-  								console.log("Log: " + functions.date() + " " + functions.time() + " " + students.forenames + ' ' + students.surname + ' was signed in!');
+  								console.log("Log: " + utils.date() + " " + utils.time() + " " + students.forenames + ' ' + students.surname + ' was signed in!');
   								req.flash('success', students.forenames + ' ' + students.surname + ' was signed in!');
   								res.redirect('/reg/' + req.params.location);
 
@@ -322,7 +322,7 @@
   										//if user was signed out
   										if (exists.io == 0) {
   											//Update fire register with new timeIn and location
-  											fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': functions.time(), 'timeOut': '', 'io' : 1, 'date': functions.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
+  											fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': utils.time(), 'timeOut': '', 'io' : 1, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
   												if (err) {console.log('Error: ' + err)};
   											})
   											//Create new register record with timeIn and location
@@ -333,10 +333,10 @@
   												forenames: exists.forenames,
   												type: 'staff',
   												loc: req.params.location.toUpperCase(),
-  												timeIn: functions.time(),
+  												timeIn: utils.time(),
   												timeOut: '',
   												io: 1,
-  												date: functions.date()
+  												date: utils.date()
   											},
   											{
   												collection: 'registers',
@@ -347,7 +347,7 @@
   												//console.dir(Staff);
   											})
   											//Print('Staff was signed in!')
-  											console.log("Log: " + functions.date() + " " + functions.time() + " " + exists.forenames + ' ' + exists.surname + ' was signed in!');
+  											console.log("Log: " + utils.date() + " " + utils.time() + " " + exists.forenames + ' ' + exists.surname + ' was signed in!');
   											req.flash('success', exists.forenames + ' ' + exists.surname + ' was signed in!');
   											res.redirect('/reg/' + req.params.location);
 
@@ -360,7 +360,7 @@
 
   											//if (diffTime > 60) {
   												//Update fire register with new timeIn and location
-  												fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': functions.time(), 'timeOut': '', 'io' : 1, 'date': functions.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
+  												fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': utils.time(), 'timeOut': '', 'io' : 1, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
   													if (err) {
   														console.log('Error: ' + err);
   														req.flash('error', 'There was an error. Please contact admin.');
@@ -381,10 +381,10 @@
   													forenames: exists.forenames,
   													type: 'staff',
   													loc: req.params.location.toUpperCase(),
-  													timeIn: functions.time(),
+  													timeIn: utils.time(),
   													timeOut: '',
   													io: 1,
-  													date: functions.date()
+  													date: utils.date()
   												},
   												{
   													collection: 'registers',
@@ -395,12 +395,12 @@
   													//console.dir(Staff);
   												})
   												//Print('Staff was signed in, but didn't sign out. Please do so in the future.')
-  												console.log("Log: " + functions.date() + " " + functions.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in, but didn't sign out.");
+  												console.log("Log: " + utils.date() + " " + utils.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in, but didn't sign out.");
   												req.flash('error', exists.forenames + ' ' + exists.surname + " was signed in, but didn't previously signout. Please do so in the future!");
   												res.redirect('/reg/' + req.params.location);
   											/*}else{
 
-  												console.log("Log: " + functions.date() + " " + functions.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in. Sign in button was press more than once.");
+  												console.log("Log: " + utils.date() + " " + utils.time() + " " + exists.forenames + ' ' + exists.surname + " was signed in. Sign in button was press more than once.");
   												req.flash('success', exists.forenames + ' ' + exists.surname + ' was signed in! But you dont\'t need to spam the button.');
 
   												res.redirect('/reg/' + req.params.location);
@@ -418,10 +418,10 @@
   											staffType: staffs.staffType,
   											type: 'staff',
   											loc: req.params.location.toUpperCase(),
-  											timeIn: functions.time(),
+  											timeIn: utils.time(),
   											timeOut: '',
   											io: 1,
-  											date: functions.date()
+  											date: utils.date()
   										},
   										{
   											collection: 'fireRegisters',
@@ -440,10 +440,10 @@
   											forenames: exists.forenames,
   											type: 'staff',
   											loc: req.params.location.toUpperCase(),
-  											timeIn: functions.time(),
+  											timeIn: utils.time(),
   											timeOut: '',
   											io: 1,
-  											date: functions.date()
+  											date: utils.date()
   										},
   										{
   											collection: 'registers',
@@ -454,14 +454,14 @@
   											if (err) return console.error(err);
   											//console.dir(Student);
   										})
-  										console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + staffs.forenames + ' ' + staff.surname + " was signed in.");
+  										console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staffs.forenames + ' ' + staff.surname + " was signed in.");
   										req.flash('success', staffs.fullName + " was signed in!")
   										res.redirect('/reg/' + req.params.location);
   										})
   								}
   							})
   						}else{
-  							console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | User tried to enter ID: " + req.body.scanID);
+  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | User tried to enter ID: " + req.body.scanID);
   							req.flash('error', "ID: " + req.body.scanID + " doesn't exist. Please contact admin.")
   							res.redirect('/reg/' + req.params.location);
   						}
@@ -475,14 +475,14 @@
   		//if scanID is empty
   		if (!req.body.scanID) {
   			//Print("Please scan your id")
-  			console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
+  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
   			req.flash('error', 'Please enter/scan your id.');
 
   			res.redirect('/reg/' + req.params.location);
   		//else
   		}else{
   			//Print('Checking ID')
-  			console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | Checking ID: " + req.body.scanID)
+  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | Checking ID: " + req.body.scanID)
   			//Removes focus from scan input
   			inputFocus = false;
   			//Check if student exists
@@ -497,21 +497,21 @@
   								//if student was signed in
   								if (exists.io == 1) {
   									//Update fire register with timeOut
-  									fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeOut': functions.time(), 'io': 0}, (err, update) => {
+  									fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeOut': utils.time(), 'io': 0}, (err, update) => {
   										if (err) {
   											console.log('Error: ' + err);
   											req.flash('error', 'There was an error. Please contact admin.');
   										};
   									})
   									//Update register record with timeOut
-  									register.findOneAndUpdate({'id': req.body.scanID, 'io' : 1}, {'timeOut': functions.time(), 'io' : 0}, { sort: { 'timeIn' : -1, 'date' : -1} }, (err, doc) => {
+  									register.findOneAndUpdate({'id': req.body.scanID, 'io' : 1}, {'timeOut': utils.time(), 'io' : 0}, { sort: { 'timeIn' : -1, 'date' : -1} }, (err, doc) => {
   										if (err) {
   											console.error('Error: ' + err);
   											req.flash('error', 'There was an error. Please contact admin.');
   										};
   									})
   									//Print('Student was signed out')
-  									console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out.");
+  									console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out.");
   									req.flash('success', exists.fullName + ' was signed out.')
   									res.redirect('/reg/' + req.params.location);
   								//else
@@ -523,7 +523,7 @@
 
   									if (diffTime > 60) {
   										//Update fire register with timeIn as 'N/A', new timeOut and new location
-  										fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': 'N/A','timeOut': functions.time(), 'io' : 0, 'date': functions.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
+  										fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': 'N/A','timeOut': utils.time(), 'io' : 0, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
   											if (err) {
   												console.log('Error: ' + err);
   												req.flash('error', 'There was an error. Please contact admin.');
@@ -546,9 +546,9 @@
   											type: 'student',
   											loc: req.params.location.toUpperCase(),
   											timeIn: 'N/A',
-  											timeOut: functions.time(),
+  											timeOut: utils.time(),
   											io: 0,
-  											date: functions.date()
+  											date: utils.date()
   										},
   										{
   											collection: 'registers',
@@ -556,17 +556,17 @@
   										});
 
   										Register.save((err, Student) => {
-  											if (err) return console.error('Error @ ' + functions.time() + ' : ' + err);
+  											if (err) return console.error('Error @ ' + utils.time() + ' : ' + err);
   											//console.dir(Student);
   										})
 
   										//Print('Student was signed out, but didn't sign in)
-  										console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out, but didn't sign in.");
+  										console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out, but didn't sign in.");
   										req.flash('error', exists.fullName + " was signed out, but didn't sign in. Please do so in the future!")
   										res.redirect('/reg/' + req.params.location);
   									}else{
 
-  										console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out. Sign Out button was press more than once.");
+  										console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out. Sign Out button was press more than once.");
   										req.flash('success', exists.fullName + ' was signed out. But you dont\'t need to spam the button.')
 
   										res.redirect('/reg/' + req.params.location);
@@ -585,9 +585,9 @@
   								type: 'student',
   								loc: req.params.location.toUpperCase(),
   								timeIn: 'N/A',
-  								timeOut: functions.time(),
+  								timeOut: utils.time(),
   								io: 1,
-  								date: functions.date()
+  								date: utils.date()
   							},
   							{
   								collection: 'fireRegisters',
@@ -608,9 +608,9 @@
   								type: 'student',
   								loc: req.params.location.toUpperCase(),
   								timeIn: 'N/A',
-  								timeOut: functions.time(),
+  								timeOut: utils.time(),
   								io: 0,
-  								date: functions.date()
+  								date: utils.date()
   							},
   							{
   								collection: 'registers',
@@ -618,12 +618,12 @@
   							});
 
   							Register.save((err, Student) => {
-  								if (err) return console.error('Error @ ' + functions.time() + ' : ' + err);
+  								if (err) return console.error('Error @ ' + utils.time() + ' : ' + err);
   								//console.dir(Student);
   							})
 
   							//Print('Student was signed out, but didn't sign in)
-  							console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed!");
+  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed!");
   							req.flash('error', students.fullName + " was signed out!")
   							res.redirect('/reg/' + req.params.location);
   						}
@@ -642,7 +642,7 @@
   										//if staff was signed in
   										if(exists.io == 1){
   											//Update fire register with timeOut
-  											fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeOut': functions.time(), 'io' : 0, 'date': functions.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
+  											fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeOut': utils.time(), 'io' : 0, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
   												if (err) {
   													console.log('Error: ' + err);
   													req.flash('error', 'There was an error. Please contact admin.');
@@ -650,7 +650,7 @@
 
   											})
   											//Update register record with timeOut
-  											register.findOneAndUpdate({'id': req.body.scanID, 'io' : 1}, {'timeOut': functions.time(), 'io' : 0}, { sort: { 'timeIn' : -1, 'date' : -1} }, (err, doc) => {
+  											register.findOneAndUpdate({'id': req.body.scanID, 'io' : 1}, {'timeOut': utils.time(), 'io' : 0}, { sort: { 'timeIn' : -1, 'date' : -1} }, (err, doc) => {
   												if (err) {
   													console.error('Error: ' + err);
   													req.flash('error', 'There was an error. Please contact admin.');
@@ -658,7 +658,7 @@
 
   											})
   											//Print('Staff was signed out')
-  											console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out.");
+  											console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out.");
   											req.flash('success', exists.fullName + ' was signed out.')
   											res.redirect('/reg/' + req.params.location);
   										//else
@@ -670,7 +670,7 @@
 
   											//if (diffTime > 60) {
   												//Update fire register with timeIn as 'N/A', new timeOut and new location
-  												fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': 'N/A', 'timeOut': functions.time(), 'io' : 0, 'date': functions.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
+  												fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': 'N/A', 'timeOut': utils.time(), 'io' : 0, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
   													if (err) {
   														console.log('Error: ' + err);
   														req.flash('error', 'There was an error. Please contact admin.');
@@ -693,9 +693,9 @@
   													type: 'staff',
   													loc: req.params.location.toUpperCase(),
   													timeIn: 'N/A',
-  													timeOut: functions.time(),
+  													timeOut: utils.time(),
   													io: 0,
-  													date: functions.date()
+  													date: utils.date()
   												},
   												{
   													collection: 'registers',
@@ -703,16 +703,16 @@
   												});
 
   												Register.save((err, Student) => {
-  													if (err) return console.error('Error @ ' + functions.time() + ' : ' + err);
+  													if (err) return console.error('Error @ ' + utils.time() + ' : ' + err);
   													//console.dir(Student);
   												})
 
   												//Print('Staff was signed out, But didn't sign in)
-  												console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out, but didn't sign in.");
+  												console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out, but didn't sign in.");
   												req.flash('error', exists.fullName + " was signed out, but didn't sign in. Please do so in the future!")
   												res.redirect('/reg/' + req.params.location);
   											/*}else{
-  												console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out. Sign Out button was press more than once.");
+  												console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out. Sign Out button was press more than once.");
   												req.flash('success', exists.fullName + ' was signed out. But you dont\'t need to spam the button.')
 
   												res.redirect('/reg/' + req.params.location);
@@ -730,9 +730,9 @@
   										type: 'staff',
   										loc: req.params.location.toUpperCase(),
   										timeIn: 'N/A',
-  										timeOut: functions.time(),
+  										timeOut: utils.time(),
   										io: 0,
-  										date: functions.date()
+  										date: utils.date()
   									},
   									{
   										collection: 'fireRegisters',
@@ -752,9 +752,9 @@
   										type: 'staff',
   										loc: req.params.location.toUpperCase(),
   										timeIn: 'N/A',
-  										timeOut: functions.time(),
+  										timeOut: utils.time(),
   										io: 0,
-  										date: functions.date()
+  										date: utils.date()
   									},
   									{
   										collection: 'registers',
@@ -762,18 +762,18 @@
   									});
 
   									Register.save((err, Staff) => {
-  										if (err) return console.error('Error @ ' + functions.time() + ' : ' + err);
+  										if (err) return console.error('Error @ ' + utils.time() + ' : ' + err);
   										//console.dir(Staff);
   									})
 
   									//Print('Staff was signed out, But didn't sign in)
-  									console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | " + staffs.forenames + ' ' + staff.surname + " was signed out.");
+  									console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staffs.forenames + ' ' + staff.surname + " was signed out.");
   									req.flash('error', staffs.fullName + " was signed out!")
   									res.redirect('/reg/' + req.params.location);
   								}
   							})
   						}else{
-  							console.log("Log: " + functions.date() + " " + functions.time() + " " + req.params.location.toUpperCase() + " | User tried to enter ID: " + req.body.scanID);
+  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | User tried to enter ID: " + req.body.scanID);
   							req.flash('error', "ID: " + req.body.scanID + " doesn't exist. Please contact admin.")
   							res.redirect('/reg/' + req.params.location);
   						}

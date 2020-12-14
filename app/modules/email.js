@@ -6,7 +6,6 @@
 
  // Dependencies
  const mailer = require('nodemailer');
- const functions = require('./functions')
 
  // Config
  const config = require('../config')

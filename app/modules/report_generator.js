@@ -8,7 +8,6 @@
  const path = require('path');
  const puppeteer = require('puppeteer');
  const useChecker = require('../modules/use-checker.js');
- const functions = require('../modules/functions.js');
  const config = require('../config');
 
  var reportGenerator = {};

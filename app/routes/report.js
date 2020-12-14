@@ -6,7 +6,7 @@
 
  // Dependencies
  const router = require('express').Router();
- const functions = require('../modules/functions.js');
+ const utils = require('../modules/utilities.js');
 
  // Database Models
  const fireRegisters = require('../models/fireRegister');
@@ -14,7 +14,7 @@
 
  /*router.get('/pdfexport', (req, res) => {
  	var students = {};
- 	var date = req.query.date ? req.query.date.trim() : functions.date();
+ 	var date = req.query.date ? req.query.date.trim() : utils.date();
  	if (req.query.fireReg == 1) {
  		if (req.query.loc) {
  			fRegisters.find({yearGroup : "7", loc: req.query.loc.toUpperCase(), io : 1}, (err, year7) => {
@@ -125,7 +125,7 @@
 });*/
 
  router.get('/pdfexport', (req, res) => {
-    let date = req.query.date ? req.query.date.trim() : functions.date();
+    let date = req.query.date ? req.query.date.trim() : utils.date();
     if (req.query.fireReg) {
       if (req.query.loc) {
         fireRegisters.find({loc : req.query.loc.toUpperCase(), io : 1, date : date}, (error, register) => {

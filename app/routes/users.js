@@ -7,7 +7,7 @@ const path = require('path');
 
 const pag = require('../modules/pagination');
 const mailer = require('../modules/email');
-const functions = require('../modules/functions');
+const utils = require('../modules/utilities');
 const accountManager = require('../modules/account-manager');
 const useChecker = require('../modules/use-checker.js');
 
@@ -284,7 +284,7 @@ router.get('/:user/students', function(req, res) {
 			pag.pagination(student, currentPage, search, function(err, params){
 				student.find(search, function(err, students){
 					student.findOne({'_id': req.query.e}, function(err, stuEdit){
-						res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, stuEdit: stuEdit, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+						res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, stuEdit: stuEdit, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 					})
 				}).limit(params.maxDocs).skip(params.skipPages).sort({yearGroup: 1})
 			})
@@ -302,7 +302,7 @@ router.get('/:user/students', function(req, res) {
 			pag.pagination(student, currentPage, search, function(err, params){
 				student.find(search, function(err, students){
 					//console.dir(students);
-					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({yearGroup: 1})
 			})
 		}
@@ -423,7 +423,7 @@ router.post('/:user/students', function(req, res) {
 			pag.pagination(student, currentPage, search, function(err, params){
 				student.find(search, function(err, students){
 					//console.dir(students);
-					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: params.currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: params.currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
 		}
@@ -478,7 +478,7 @@ router.get('/:user/staff', function(req, res) {
 			pag.pagination(staff, currentPage, search, function(err, params){
 				staff.find(search, function(err, staffs){
 					staff.findOne({'_id': req.query.e}, function(err, staffEdit){
-						res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffEdit: staffEdit, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+						res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffEdit: staffEdit, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 					})
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
@@ -495,7 +495,7 @@ router.get('/:user/staff', function(req, res) {
 			pag.pagination(staff, currentPage, query, function(err, params){
 				staff.find(query, function(err, staffs){
 					//console.dir(staffs);
-					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
 		}
@@ -599,7 +599,7 @@ router.post('/:user/staff', function(req, res) {
 			pag.pagination(staff, currentPage, query, function(err, params){
 				staff.find(query, function(err, staffs){
 					//console.dir(staffs);
-					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp});
+					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
 		};
@@ -656,7 +656,7 @@ router.all('/:user/registers', function(req, res) {
 		if (req.query.sortDate != undefined) {
 			search.date = req.query.sortDate;
 		}else{
-			search.date = functions.date();
+			search.date = utils.date();
 		}
 		if (req.query.sortYrGroup) {
 			search.yearGroup = req.query.sortYrGroup;
@@ -720,12 +720,12 @@ router.all('/:user/registers', function(req, res) {
 					}
 					console.log(sortData)
 
-					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, registers: register, sort: req.query.sort, search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
+					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort, search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
 				}).limit(maxDocs).skip(skipDocs).sort({_id: -1})
 			})
 		}else{
 			search.io = 1;
-			search.date = functions.date();
+			search.date = utils.date();
 			fRegisters.count(search, function(err, fregister){
 				//console.log(register);
 				//Total number of records
@@ -781,7 +781,7 @@ router.all('/:user/registers', function(req, res) {
 						}
 					}
 					console.log(sortData)
-					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, registers: register, sort: req.query.sort,  search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
+					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort,  search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
 
 				}).limit(maxDocs).skip(skipDocs).sort({surname: 1})
 
@@ -829,10 +829,10 @@ router.all('/:user/export', function(req, res) {
               })();
 	            //res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user.username});
 	    	}else{
-				  res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: functions.date(), role: req.session.user.role, request: 'NULL'});
+				  res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: utils.date(), role: req.session.user.role, request: 'NULL'});
 	      };
     	}else{
-    		res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: functions.date(), role: req.session.user.role, request: 'NULL'});
+    		res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: utils.date(), role: req.session.user.role, request: 'NULL'});
     	};
     }
 });

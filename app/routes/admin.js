@@ -10,7 +10,7 @@
  const router = require('express').Router();
  const accountManager = require('../modules/account-manager.js');
  const mailer = require('../modules/email');
- const functions = require('../modules/functions.js');
+ const utils = require('../modules/utilities.js');
  const reportGenerator = require('../modules/report_generator');
 
  // Config
@@ -101,7 +101,7 @@ router.post('/reset/:token', (req, res, next) => {
 
 router.get('/export', (req, res) => {
   let location = typeof(req.query.loc) === 'string' && req.query.loc.length > 0 ? req.query.loc.trim() : false;
-  let date = typeof(req.query.date) === 'string' && req.query.date.length > 0 ? req.query.date.trim() : functions.date();
+  let date = typeof(req.query.date) === 'string' && req.query.date.length > 0 ? req.query.date.trim() : utils.date();
   let filename;
 	if (req.query.email) {
 		reportGenerator.generateFireRegisterReport({
