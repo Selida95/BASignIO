@@ -14,7 +14,7 @@
 	 return moment().format('HH:mm:ss')
  }
 
- utils.data = () => {
+ utils.date = () => {
 	 return moment().format('DD-MM-YYYY')
  }
 
