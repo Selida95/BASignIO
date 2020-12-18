@@ -15,6 +15,7 @@
  const mailer = require('../modules/email');
  const utils = require('../modules/utilities');
  const accountManager = require('../modules/account-manager');
+ const staffManager = require('../modules/staff-manager');
  const useChecker = require('../modules/use-checker.js');
 
  // Config
@@ -548,31 +549,21 @@ router.post('/:user/staff', (req, res, next) => {
 		}
 
 		if (req.body.staffSubmit){
-
-			var query = req.url.split('?')[1]
+		  var query = req.url.split('?')[1]
 			console.log(query);
 
-		    var Staff = new staff({
-		    	_id: req.body.staffid,
-		    	cardID: req.body.cardid,
-		    	cardID2: req.body.cardid2,
-				surname: req.body.surname,
-				forenames: req.body.forenames,
-				department: req.body.department,
-				staffType: req.body.staffType
-			},
-			{
-				collection: 'staff',
-				versionKey: false
-			});
-
-			Staff.save((err, Staff) => {
-				if (err) return console.error(err);
-				console.dir(Staff);
-			})
+      staffManager.createNewStaff({
+        id : req.body.staffid,
+        cardID : req.body.cardid,
+        cardID2 : req.body.cardid2,
+        surname : req.body.surname,
+        forenames : req.body.forenames,
+        department : req.body.department,
+        staffType : req.body.staffType
+      }, (staff) => {
+        res.redirect('/users/' + req.session.user.username + '/staff');
+      })
 		}
-
-    res.redirect('/users/' + req.session.user.username + '/staff');
 	}
 });
 
