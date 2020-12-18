@@ -484,7 +484,7 @@ router.get('/:user/staff', (req, res, next) => {
 
     staff.find({}, (err, staffs) => {
       //console.dir(staffs);
-      res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, staffEdit: staffEdit });
+      res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, staffEdit: staffEdit });
     })
 	}
 });
