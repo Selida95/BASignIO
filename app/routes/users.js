@@ -1,32 +1,39 @@
-const express = require('express');
-const router = express.Router();
-const crypto = require('crypto');
-const fs = require('fs');
-const puppeteer = require('puppeteer');
-const path = require('path');
+/*
+ * -------------------------
+ * BASignIO - Routes: Users
+ * -------------------------
+ */
 
-const pag = require('../modules/pagination');
-const mailer = require('../modules/email');
-const functions = require('../modules/functions');
-const accountManager = require('../modules/account-manager');
-const useChecker = require('../modules/use-checker.js');
+ // Dependencies
+ const express = require('express');
+ const router = express.Router();
+ const crypto = require('crypto');
+ const fs = require('fs');
+ const puppeteer = require('puppeteer');
+ const path = require('path');
+ const pag = require('../modules/pagination');
+ const mailer = require('../modules/email');
+ const utils = require('../modules/utilities');
+ const accountManager = require('../modules/account-manager');
+ const useChecker = require('../modules/use-checker.js');
 
-// Config
-const config = require('../config')
-const secret = config.crypto.secret;
+ // Config
+ const config = require('../config')
+ const secret = config.crypto.secret;
 
-var student = require('../models/student');
-var staff = require('../models/staff');
-var registers = require('../models/register');
-var fRegisters = require('../models/fireRegister');
+ // Database Models
+ const student = require('../models/student');
+ const staff = require('../models/staff');
+ const registers = require('../models/register');
+ const fRegisters = require('../models/fireRegister');
 
 /* GET users listing. */
 
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
   res.redirect('/');
 });
 
-router.get('/:user/home', function(req, res, next) {
+router.get('/:user/home', (req, res, next) => {
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
@@ -52,7 +59,7 @@ router.get('/:user/home', function(req, res, next) {
 	}
 });
 
-router.post('/:user', function(req, res, next) {
+router.post('/:user', (req, res, next) => {
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
@@ -81,7 +88,7 @@ router.post('/:user', function(req, res, next) {
 				receiver: req.session.user.email,
 				subject: 'BASignIO: Reset Password',
 				text: 'Hi ' + name + ', <br><br> Please click the link below to change your password: <br><br> <a href="http://victoria:' + config.http.port + '/admin/reset/'+ req.session.user.password + '" > Reset Password </a> <br><br> Best Regards, <br>IT Department'
-			}, function(err, mail){
+			}, (err, mail) => {
 			    if (err) {
 			        console.log(err);
 			    }
@@ -95,7 +102,7 @@ router.post('/:user', function(req, res, next) {
 
 });
 
-router.get('/:user/users', function(req, res) {
+router.get('/:user/users', (req, res, next) => {
 
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
@@ -171,7 +178,7 @@ router.get('/:user/users', function(req, res) {
 	}
 });
 
-router.post('/:user/users', function(req, res) {
+router.post('/:user/users', (req, res, next) => {
 
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
@@ -205,7 +212,7 @@ router.post('/:user/users', function(req, res) {
               password : req.body.password,
               role : req.body.roleType
             }, (account) => {
-              if (account.message === 'SUCCESS') {
+              if (account.message.includes('SUCCESS')) {
                 console.log('New user created.')
                 res.redirect('/users/' + req.session.user.username + '/users');
               }
@@ -237,13 +244,13 @@ router.post('/:user/users', function(req, res) {
 	}
 });
 
-router.get('/:user/students', function(req, res) {
+router.get('/:user/students', (req, res, next) => {
 
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
+			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, (o) => {
 				if (o != null) {
 					req.session.user = o;
 					var name;
@@ -265,7 +272,7 @@ router.get('/:user/students', function(req, res) {
 			var id = req.query.r;
 			//console.log('id: '+ id);
 
-			student.findOneAndRemove({'_id': id}, function(err, students){
+			student.findOneAndRemove({'_id': id}, (err, students) => {
 				if (err) {
 					console.error('Error: ' + err);
 				};
@@ -281,10 +288,10 @@ router.get('/:user/students', function(req, res) {
 
 			var search = {};
 
-			pag.pagination(student, currentPage, search, function(err, params){
-				student.find(search, function(err, students){
-					student.findOne({'_id': req.query.e}, function(err, stuEdit){
-						res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, stuEdit: stuEdit, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+			pag.pagination(student, currentPage, search, (err, params) => {
+				student.find(search, (err, students) => {
+					student.findOne({'_id': req.query.e}, (err, stuEdit) => {
+						res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, stuEdit: stuEdit, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 					})
 				}).limit(params.maxDocs).skip(params.skipPages).sort({yearGroup: 1})
 			})
@@ -299,23 +306,23 @@ router.get('/:user/students', function(req, res) {
 
 			var search = {};
 
-			pag.pagination(student, currentPage, search, function(err, params){
-				student.find(search, function(err, students){
+			pag.pagination(student, currentPage, search, (err, params) => {
+				student.find(search, (err, students) => {
 					//console.dir(students);
-					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({yearGroup: 1})
 			})
 		}
 	}
 });
 
-router.post('/:user/students', function(req, res) {
+router.post('/:user/students', (req, res, next) => {
 
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
+			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, (o) => {
 				if (o != null) {
 					req.session.user = o;
 					var name;
@@ -343,7 +350,7 @@ router.post('/:user/students', function(req, res) {
 
 
 
-			student.findOne({_id: req.query.e}, function(err, doc){
+			student.findOne({_id: req.query.e}, (err, doc) => {
 				if (err) {
 					console.log('Err: ' + err);
 				}
@@ -407,7 +414,7 @@ router.post('/:user/students', function(req, res) {
 				versionKey: false
 			});
 
-			Student.save(function(err, Student){
+			Student.save((err, Student) => {
 				if (err) return console.error(err);
 				console.dir(Student);
 			})
@@ -420,23 +427,23 @@ router.post('/:user/students', function(req, res) {
 
 			var search = {};
 
-			pag.pagination(student, currentPage, search, function(err, params){
-				student.find(search, function(err, students){
+			pag.pagination(student, currentPage, search, (err, params) => {
+				student.find(search, (err, students) => {
 					//console.dir(students);
-					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: params.currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
+					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: params.currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
 				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
 			})
 		}
 	}
 });
 
-router.get('/:user/staff', function(req, res) {
+router.get('/:user/staff', (req, res, next) => {
 
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
+			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, (o) => {
 				if (o != null) {
 					req.session.user = o;
 					var name;
@@ -477,55 +484,18 @@ router.get('/:user/staff', function(req, res) {
 
     staff.find({}, (err, staffs) => {
       //console.dir(staffs);
-      res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, staffEdit: staffEdit });
+      res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, staffEdit: staffEdit });
     })
-		/*if (req.query.r) {
-			var id = req.query.r;
-			//console.log('id: '+ id);
-
-			staff.findOneAndRemove({'_id': id}, function(err, staff){
-				if (err) {
-					console.error('Error: ' + err);
-				};
-					console.log('Staff was removed.');
-					res.redirect('/users/' + req.session.user.username + '/staff');
-			});
-		}else if(req.query.e){
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-			//Current Page
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(staff, currentPage, search, function(err, params){
-				staff.find(search, function(err, staffs){
-					staff.findOne({'_id': req.query.e}, function(err, staffEdit){
-						res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffEdit: staffEdit, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
-					})
-				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
-			})
-
-		}else{
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-      staff.find({}, (err, staffs) => {
-				//console.dir(staffs);
-				res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs });
-			})
-		}*/
 	}
 });
 
-router.post('/:user/staff', function(req, res) {
+router.post('/:user/staff', (req, res, next) => {
   let staffEdit = null;
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
+			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, (o) => {
 				if (o != null) {
 					req.session.user = o;
 					var name;
@@ -553,7 +523,7 @@ router.post('/:user/staff', function(req, res) {
 
 
 
-			staff.findOne({_id: req.query.e}, function(err, doc){
+			staff.findOne({_id: req.query.e}, (err, doc) => {
 				if (err) {
 					console.log('Err: ' + err);
 				}
@@ -596,7 +566,7 @@ router.post('/:user/staff', function(req, res) {
 				versionKey: false
 			});
 
-			Staff.save(function(err, Staff){
+			Staff.save((err, Staff) => {
 				if (err) return console.error(err);
 				console.dir(Staff);
 			})
@@ -606,13 +576,13 @@ router.post('/:user/staff', function(req, res) {
 	}
 });
 
-router.all('/:user/registers', function(req, res) {
+router.all('/:user/registers', (req, res, next) => {
 
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
+			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, (o) => {
 				if (o != null) {
 					req.session.user = o;
 					var name;
@@ -656,14 +626,14 @@ router.all('/:user/registers', function(req, res) {
 		if (req.query.sortDate != undefined) {
 			search.date = req.query.sortDate;
 		}else{
-			search.date = functions.date();
+			search.date = utils.date();
 		}
 		if (req.query.sortYrGroup) {
 			search.yearGroup = req.query.sortYrGroup;
 		}
 
 		if (req.query.sort == 'all') {
-			registers.count(search, function(err, register){
+			registers.count(search, (err, register) => {
 				//Total number of records
 				var numRec = register;
 				console.log('Total # of Rec: ' + numRec)
@@ -708,7 +678,7 @@ router.all('/:user/registers', function(req, res) {
 				console.log('SkipDocs: ' + skipDocs);
 
 				console.log('Totalpages: ' + totalPages)
-				registers.find(search, function(err, register){
+				registers.find(search, (err, register) => {
 					//console.dir(register);
 					var sortData = ''
 					for (var key in req.query) {
@@ -720,13 +690,13 @@ router.all('/:user/registers', function(req, res) {
 					}
 					console.log(sortData)
 
-					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, registers: register, sort: req.query.sort, search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
+					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort, search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
 				}).limit(maxDocs).skip(skipDocs).sort({_id: -1})
 			})
 		}else{
 			search.io = 1;
-			search.date = functions.date();
-			fRegisters.count(search, function(err, fregister){
+			search.date = utils.date();
+			fRegisters.count(search, (err, fregister) => {
 				//console.log(register);
 				//Total number of records
 				var numRec = fregister;
@@ -771,7 +741,7 @@ router.all('/:user/registers', function(req, res) {
 				var skipDocs = maxDocs*(currentPage - 1)
 				console.log('SkipDocs: ' + skipDocs);
 
-				fRegisters.find(search, function(err, register){
+				fRegisters.find(search, (err, register) => {
 					var sortData = ''
 					for (var key in req.query) {
 						if(key == 'page'){
@@ -781,7 +751,7 @@ router.all('/:user/registers', function(req, res) {
 						}
 					}
 					console.log(sortData)
-					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, registers: register, sort: req.query.sort,  search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
+					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort,  search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
 
 				}).limit(maxDocs).skip(skipDocs).sort({surname: 1})
 
@@ -790,13 +760,13 @@ router.all('/:user/registers', function(req, res) {
 	}
 });
 
-router.all('/:user/export', function(req, res) {
+router.all('/:user/export', (req, res, next) => {
 
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
 		}else{
-			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, function(o){
+			account.autoLogin(req.cookies.basio_user, req.cookies.basio_pass, (o) => {
 				if (o != null) {
 					//console.log(o);
 					req.session.user = o;
@@ -829,15 +799,15 @@ router.all('/:user/export', function(req, res) {
               })();
 	            //res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user.username});
 	    	}else{
-				  res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: functions.date(), role: req.session.user.role, request: 'NULL'});
+				  res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: utils.date(), role: req.session.user.role, request: 'NULL'});
 	      };
     	}else{
-    		res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: functions.date(), role: req.session.user.role, request: 'NULL'});
+    		res.render('export', { title: 'BASignIO Admin: Export', user: req.session.user, date: utils.date(), role: req.session.user.role, request: 'NULL'});
     	};
     }
 });
 
-router.get('/:user/about', function(req, res) {
+router.get('/:user/about', (req, res, next) => {
 	res.render('about', { title: 'BASignIO Admin: About',  user: req.session.user, role: req.session.user.role});
 });
 
