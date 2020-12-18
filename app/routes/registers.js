@@ -1,7 +1,7 @@
 /*
- * ----------------
- * Registers Routes
- * ----------------
+ * -----------------------------
+ * BASignIO - Routes: Registers
+ * -----------------------------
  */
 
  // Dependencies
@@ -20,28 +20,26 @@
  const register = require('../models/register');
  const fRegister = require('../models/fireRegister');
 
- /*-- Variables --*/
+ // Global Variables
  var ObjectID = require('mongodb').ObjectID;
  var user;
  var inputFocus;
- /*--------------*/
 
-  /*-- Routes --*/
 
-  router.get('/', (req, res, next) => {
-    res.redirect('/');
-  });
+ router.get('/', (req, res, next) => {
+   res.redirect('/');
+ });
 
-  router.get('/:location', (req, res, next) => {
-  	//Gives focus to scanID
-  	inputFocus = true;
-  	//Clears user info
-  	user = '';
+ router.get('/:location', (req, res, next) => {
+   //Gives focus to scanID
+   inputFocus = true;
+   //Clears user info
+   user = '';
 
-  	res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, loc: req.params.location, inputFocus: inputFocus});
-  })
+   res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, loc: req.params.location, inputFocus: inputFocus});
+ })
 
-  router.post('/:location', (req, res, next) => {
+ router.post('/:location', (req, res, next) => {
   	//Check if scanSubmit is set
   	if (req.body.scanSubmit) {
 
@@ -782,8 +780,8 @@
   			})
   		}
   	}
-  })
+ })
 
-  /*------------*/
 
-  module.exports = router;
+ // Export router module
+ module.exports = router;
