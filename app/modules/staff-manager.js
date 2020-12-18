@@ -80,7 +80,22 @@
  }
 
  // Get All Staff
+ // Required Fields: callback
+ // Optional Fields: none
+ manager.getAllStaff = (callback) => {
+   staffModel.find({}, (error, staff) => {
+     if (error) {
+       throw error
+       return
+     }
 
+     if (staff && Object.keys(staff).length > 0) {
+       callback({ message : 'SUCCESS', data : staff})
+     } else {
+       callback({ message : 'NOT_FOUND' })
+     }
+   })
+ }
  // Update Staff
 
  // Remove Staff
