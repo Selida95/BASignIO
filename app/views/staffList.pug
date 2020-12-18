@@ -9,7 +9,7 @@ block content
 					h3.panel-title
 						| Edit Staff
 				div.panel-body
-					form(id="staffEditInput" name="staffEditInput" method="POST" action="/users/" + user + "/staff?" + query).form-group.form-inline
+					form(id="staffEditInput" name="staffEditInput" method="POST" action="/users/" + user + "/staff").form-group.form-inline
 						input(type="number" class="input-sm" placeholder="ID" name="staffEditID" value=staffEdit._id required).form-control
 						input(type="number" class="input-sm" placeholder="CardID" name="staffEditCardID" value=staffEdit.cardID required).form-control
 						input(type="number" class="input-sm" placeholder="CardID2" name="staffEditCardID2" value=staffEdit.cardID2).form-control
@@ -70,9 +70,9 @@ block content
 								td(style="text-align: center;")= staff.department
 								td(style="text-align: center; overflow: hidden;")= staff.cardID
 								td(style="text-align: center; width: 10px; border-left: 1px solid #ddd;")
-									a(href='/users/' + user + '/staff?page=' + pageNum + '&e=' + staff._id)
+									a(href='/users/' + user.username + '/staff?e=' + staff._id)
 										| Edit
 								td(style="text-align: center; width: 25px; border-left: 1px solid #ddd;")
-									a(href='/users/' + user + '/staff?page=' + pageNum + '&r=' + staff._id)
+									a(href='/users/' + user.username + '/staff?r=' + staff._id)
 										| Remove
-				include ./pagination/staffPaginate
+				//include ./pagination/staffPaginate

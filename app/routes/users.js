@@ -453,9 +453,33 @@ router.get('/:user/staff', function(req, res) {
 			})
 		}
 	}else{
+    let staffEdit = null;
+    if (req.query.r) {
+      var id = req.query.r;
+      //console.log('id: '+ id);
 
+      staff.findOneAndRemove({'_id': id}, (error, staff) => {
+        if (err) {
+          console.error('Error: ' + err);
+        };
+          console.log('Staff was removed.');
+          res.redirect('/users/' + req.session.user.username + '/staff');
+      });
+    }
 
-		if (req.query.r) {
+    if (req.query.e) {
+      staff.findOne({'_id': req.query.e}, (error, staff) => {
+        if (staff) {
+          staffEdit = staff
+        }
+      })
+    }
+
+    staff.find({}, (err, staffs) => {
+      //console.dir(staffs);
+      res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, staffEdit: staffEdit });
+    })
+		/*if (req.query.r) {
 			var id = req.query.r;
 			//console.log('id: '+ id);
 
@@ -487,23 +511,16 @@ router.get('/:user/staff', function(req, res) {
 			var query = req.url.split('?')[1]
 			console.log(query);
 
-			//Current Page
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(staff, currentPage, query, function(err, params){
-				staff.find(query, function(err, staffs){
-					//console.dir(staffs);
-					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
-				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
+      staff.find({}, (err, staffs) => {
+				//console.dir(staffs);
+				res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs });
 			})
-		}
+		}*/
 	}
 });
 
 router.post('/:user/staff', function(req, res) {
-
+  let staffEdit = null;
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
@@ -555,7 +572,7 @@ router.post('/:user/staff', function(req, res) {
 					var query = req.url.split('?')[1];
 					var query = query.split('&')[0];
 
-					res.redirect('/users/' + req.session.user.username + '/staff?' + query);
+					res.redirect('/users/' + req.session.user.username + '/staff');
 				}
 			});
 		}
@@ -583,26 +600,9 @@ router.post('/:user/staff', function(req, res) {
 				if (err) return console.error(err);
 				console.dir(Staff);
 			})
-			res.redirect('/users/' + req.session.user.username + '/staff?page=1');
-		}else{
+		}
 
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-
-
-			//Current Page
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(staff, currentPage, query, function(err, params){
-				staff.find(query, function(err, staffs){
-					//console.dir(staffs);
-					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp});
-				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
-			})
-		};
+    res.redirect('/users/' + req.session.user.username + '/staff');
 	}
 });
 
