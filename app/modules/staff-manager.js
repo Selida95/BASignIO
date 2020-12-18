@@ -53,6 +53,31 @@
  }
 
  // Get Staff
+ // Required Fields: parameterObject (contains: at least one optional field), callback
+ // Optional Fields: parameterObject (contains: id, cardID, cardID2)
+ manager.getStaff = (parameterObject, callback) => {
+   // Validate required fields
+   let id = typeof(parseInt(parameterObject.id)) === 'number' ? parseInt(parameterObject.id) : false
+   let cardID = typeof(parseInt(parameterObject.cardID)) === 'number' ? parseInt(parameterObject.cardID) : false
+   let cardID2 = typeof(parseInt(parameterObject.cardID2)) === 'number' ? parseInt(parameterObject.cardID2) : false
+
+   // Check that at least one field is valid
+   if (id || cardID || cardID2) {
+     staffModel.findOne({ $or : [{ _id : id }, { cardID : cardID }, { cardID2 : cardID2 }] }, (error, student) => {
+       if (error) {
+         throw error
+       }
+
+       if (student && Object.keys(student).length > 0) {
+         callback({ message : 'SUCCCESS', data : student })
+       } else {
+         callback({ message : 'NOT_FOUND'})
+       }
+     })
+   } else {
+     throw new Error('REQUIRED_FIELDS_INVALID')
+   }
+ }
 
  // Get All Staff
 
