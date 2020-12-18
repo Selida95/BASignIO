@@ -63,13 +63,13 @@
 
    // Check that at least one field is valid
    if (id || cardID || cardID2) {
-     staffModel.findOne({ $or : [{ _id : id }, { cardID : cardID }, { cardID2 : cardID2 }] }, (error, student) => {
+     staffModel.findOne({ $or : [{ _id : id }, { cardID : cardID }, { cardID2 : cardID2 }] }, (error, staff) => {
        if (error) {
          throw error
        }
 
-       if (student && Object.keys(student).length > 0) {
-         callback({ message : 'SUCCCESS', data : student })
+       if (staff && Object.keys(staff).length > 0) {
+         callback({ message : 'SUCCCESS', data : staff })
        } else {
          callback({ message : 'NOT_FOUND'})
        }
