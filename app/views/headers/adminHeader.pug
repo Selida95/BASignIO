@@ -9,14 +9,20 @@ html
 		link(rel='stylesheet', href='/vendor/css/bootstrap-theme.min.css')
 		link(href="/vendor/css/bootstrap.min.css", rel="stylesheet")
 		link(rel='stylesheet', href='/vendor/css/jquery-ui.css')
+		link(rel='stylesheet', href='/vendor/css/jquery-datatables.css')
 		script(type='text/javascript' src='/vendor/js/jquery-3.2.1.min.js')
 		script(type='text/javascript' src='/vendor/js/jquery.query-object.js')
 		script(type='text/javascript' src='/vendor/js/jquery-ui.js')
 		script(type='text/javascript' src='/vendor/js/bootstrap.min.js')
+		script(type='text/javascript' src='/vendor/js/jquery-datatables.js')
 
 			
 			
 		script.
+			$(document).ready(function () {
+				$('#staffTable').DataTable();
+			});
+			
 			$( function() {
 				$( "#datepicker" ).datepicker({
 					dateFormat: 'dd-mm-yy',
@@ -37,6 +43,7 @@ html
 				$("#regFilterSubmit").click( function() {
 				    //$('#regFilter').submit();
 				});
+			
 
 				if (window.location.search.indexOf('e') > -1) {
 				    //alert('track present');

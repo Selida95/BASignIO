@@ -460,57 +460,37 @@ router.get('/:user/staff', (req, res, next) => {
 			})
 		}
 	}else{
+    let staffEdit = null;
+    if (req.query.r) {
+      var id = req.query.r;
+      //console.log('id: '+ id);
 
+      staff.findOneAndRemove({'_id': id}, (error, staff) => {
+        if (err) {
+          console.error('Error: ' + err);
+        };
+          console.log('Staff was removed.');
+          res.redirect('/users/' + req.session.user.username + '/staff');
+      });
+    }
 
-		if (req.query.r) {
-			var id = req.query.r;
-			//console.log('id: '+ id);
+    if (req.query.e) {
+      staff.findOne({'_id': req.query.e}, (error, staff) => {
+        if (staff) {
+          staffEdit = staff
+        }
+      })
+    }
 
-			staff.findOneAndRemove({'_id': id}, (err, staff) => {
-				if (err) {
-					console.error('Error: ' + err);
-				};
-					console.log('Staff was removed.');
-					res.redirect('/users/' + req.session.user.username + '/staff');
-			});
-		}else if(req.query.e){
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-			//Current Page
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(staff, currentPage, search, (err, params) => {
-				staff.find(search, (err, staffs) => {
-					staff.findOne({'_id': req.query.e}, (err, staffEdit) => {
-						res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffEdit: staffEdit, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
-					})
-				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
-			})
-
-		}else{
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-			//Current Page
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(staff, currentPage, query, (err, params) => {
-				staff.find(query, (err, staffs) => {
-					//console.dir(staffs);
-					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
-				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
-			})
-		}
+    staff.find({}, (err, staffs) => {
+      //console.dir(staffs);
+      res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: functions.date(), role: req.session.user.role, staffs: staffs, staffEdit: staffEdit });
+    })
 	}
 });
 
 router.post('/:user/staff', (req, res, next) => {
-
+  let staffEdit = null;
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
@@ -562,7 +542,7 @@ router.post('/:user/staff', (req, res, next) => {
 					var query = req.url.split('?')[1];
 					var query = query.split('&')[0];
 
-					res.redirect('/users/' + req.session.user.username + '/staff?' + query);
+					res.redirect('/users/' + req.session.user.username + '/staff');
 				}
 			});
 		}
@@ -590,26 +570,9 @@ router.post('/:user/staff', (req, res, next) => {
 				if (err) return console.error(err);
 				console.dir(Staff);
 			})
-			res.redirect('/users/' + req.session.user.username + '/staff?page=1');
-		}else{
+		}
 
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-
-
-			//Current Page
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(staff, currentPage, query, (err, params) => {
-				staff.find(query, (err, staffs) => {
-					//console.dir(staffs);
-					res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp});
-				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
-			})
-		};
+    res.redirect('/users/' + req.session.user.username + '/staff');
 	}
 });
 
