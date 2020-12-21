@@ -57,19 +57,20 @@
  // Optional Fields: parameterObject (contains: id, cardID, cardID2)
  manager.getStaff = (parameterObject, callback) => {
    // Validate required fields
-   let id = typeof(parseInt(parameterObject.id)) === 'number' ? parseInt(parameterObject.id) : false
-   let cardID = typeof(parseInt(parameterObject.cardID)) === 'number' ? parseInt(parameterObject.cardID) : false
-   let cardID2 = typeof(parseInt(parameterObject.cardID2)) === 'number' ? parseInt(parameterObject.cardID2) : false
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id)? parseInt(parameterObject.id) : 0
+   let cardID = typeof(parseInt(parameterObject.cardID)) === 'number' && !isNaN(parameterObject.cardID) ? parseInt(parameterObject.cardID) : 0
+   let cardID2 = typeof(parseInt(parameterObject.cardID2)) === 'number' && !isNaN(parameterObject.cardID2) ? parseInt(parameterObject.cardID2) : 0
 
    // Check that at least one field is valid
    if (id || cardID || cardID2) {
      staffModel.findOne({ $or : [{ _id : id }, { cardID : cardID }, { cardID2 : cardID2 }] }, (error, staff) => {
        if (error) {
          throw error
+         return
        }
 
        if (staff && Object.keys(staff).length > 0) {
-         callback({ message : 'SUCCCESS', data : staff })
+         callback({ message : 'SUCCESS', data : staff })
        } else {
          callback({ message : 'NOT_FOUND'})
        }
@@ -113,17 +114,21 @@
      manager.getStaff({
        id : id
      }, (staff) => {
-       staff.cardID = cardID ? cardID : staff.cardID
-       staff.cardID2 = cardID2 ? cardID2 : staff.cardID2
-       staff.surname = surname ? surname : staff.surname
-       staff.forenames = forenames ? forenames : staff.forenames
-       staff.staffType = staffType ? staffType : staff.staffType
-       staff.department = department ? department : staff.department
-       staff.save((error) => {
-         if (error) throw error
+       if (staff.message === 'SUCCESS') {
+         staff.data.cardID = cardID ? cardID : staff.cardID
+         staff.data.cardID2 = cardID2 ? cardID2 : staff.cardID2
+         staff.data.surname = surname ? surname : staff.surname
+         staff.data.forenames = forenames ? forenames : staff.forenames
+         staff.data.staffType = staffType ? staffType : staff.staffType
+         staff.data.department = department ? department : staff.department
+         staff.data.save((error) => {
+           if (error) throw error
 
-         callback({ message : 'SUCCESS' })
-       })
+           callback({ message : 'SUCCESS' })
+         })
+       } else {
+         callback({ message : 'NOT_FOUND'})
+       }
      })
    } else {
      throw new Error('REQUIRED_FIELDS_INVALID')
