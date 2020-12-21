@@ -54,6 +54,27 @@
    }
  }
 
+ // Get Latest Record
+ // Required Fields: parameterObject(contains: id, io), callback
+ // Optional Fields: none
+ manager.getLatestRecord = (parameterObject, callback) => {
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
+   let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
+
+   if (id && io) {
+     registerModel.findOne({ id : id, io : io }, null, { sort : { timeIn : -1, date : -1 } }, (error, record) => {
+       if (error) throw error
+
+       if (record && Object.keys(record)) {
+         callback({ message : 'SUCCESS', data : record })
+       } else {
+         callback({ message : 'NOT_FOUND' })
+       }
+     })
+   } else {
+     throw new Error('REQUIRED_FIELDS_INVALID')
+   }
+ }
 
  // Export module
  module.exports = manager
