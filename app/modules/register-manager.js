@@ -36,7 +36,7 @@
        io : io,
        yearGroup : type === 'student' && typeof(parseInt(parameterObject.yearGroup)) === 'number' && isNaN(parameterObject.yearGroup) ? parseInt(parameterObject.yearGroup) : undefined,
        tutorGrp : type === 'student' && typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp : undefined,
-       timeIn : io === 1 ? utils.time() : '',
+       timeIn : io === 1 ? utils.time() : 'N/A',
        timeOut : io === 0 ? utils.time() : '',
        date : utils.date()
      }, {
