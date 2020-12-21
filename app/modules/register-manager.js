@@ -55,14 +55,13 @@
  }
 
  // Get Latest Record
- // Required Fields: parameterObject(contains: id, io), callback
+ // Required Fields: parameterObject(contains: id), callback
  // Optional Fields: none
  manager.getLatestRecord = (parameterObject, callback) => {
    let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
-   let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
 
-   if (id && io) {
-     registerModel.findOne({ id : id, io : io }, null, { sort : { timeIn : -1, date : -1 } }, (error, record) => {
+   if (id) {
+     registerModel.findOne({ id : id }, null, { sort : { timeIn : -1, date : -1 } }, (error, record) => {
        if (error) throw error
 
        if (record && Object.keys(record)) {
@@ -70,6 +69,31 @@
        } else {
          callback({ message : 'NOT_FOUND' })
        }
+     })
+   } else {
+     throw new Error('REQUIRED_FIELDS_INVALID')
+   }
+ }
+
+ // Update Record
+ // Required Fields: parameterObject(contains: id, io), callback
+ // Optional Fields: none
+ manager.updateRecord = (parameterObject, callback) => {
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
+   let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
+
+   if (id && io) {
+     manager.getLatestRecord({
+       id : id
+     }, (record) => {
+       record.data.io = io
+       record.data.timeIn = record.data.io === io && io === 0 ? 'N/A' : utils.time()
+       record.data.timeOut = record.data.io === io && io === 1 ? 'N/A' : utils.time()
+       record.data.save((error) => {
+         if (error) throw error
+
+         callback({ message : 'SUCCESS'})
+       })
      })
    } else {
      throw new Error('REQUIRED_FIELDS_INVALID')
