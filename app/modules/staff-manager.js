@@ -131,6 +131,22 @@
  }
 
  // Remove Staff
+ manager.removeStaff = (staff_id, callback) => {
+   let id = typeof(parseInt(staff_id)) === 'number' ? parseInt(staff_id) : false
+
+   staffModel.findOneAndRemove({ '_id' : id }, (error, removed) => {
+     if (error) {
+       throw error
+       return
+     }
+
+     if (removed && Object.keys(removed).length > 0) {
+       callback({ message : 'SUCCESS' })
+     } else {
+       callback({ message : 'NOT_FOUND' })
+     }
+   })
+ }
 
  // Export Module
  module.exports = manager;
