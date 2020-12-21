@@ -120,7 +120,7 @@
        staff.staffType = staffType ? staffType : staff.staffType
        staff.department = department ? department : staff.department
        staff.save((error) => {
-         if error throw error
+         if (error) throw error
 
          callback({ message : 'SUCCESS' })
        })
