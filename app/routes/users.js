@@ -15,6 +15,7 @@
  const mailer = require('../modules/email');
  const utils = require('../modules/utilities');
  const accountManager = require('../modules/account-manager');
+ const staffManager = require('../modules/staff-manager');
  const useChecker = require('../modules/use-checker.js');
 
  // Config
@@ -462,29 +463,43 @@ router.get('/:user/staff', (req, res, next) => {
 	}else{
     let staffEdit = null;
     if (req.query.r) {
-      var id = req.query.r;
-      //console.log('id: '+ id);
-
-      staff.findOneAndRemove({'_id': id}, (error, staff) => {
-        if (err) {
-          console.error('Error: ' + err);
-        };
-          console.log('Staff was removed.');
+      try {
+        staffManager.removeStaff(req.query.r, (removed) => {
+          if (removed.message === 'SUCCESS') {
+            console.log('Staff was removed.');
+          } else {
+            console.log('Staff was not found.');
+          }
           res.redirect('/users/' + req.session.user.username + '/staff');
-      });
+        })
+      } catch (e) {
+        console.log(e)
+      }
     }
 
     if (req.query.e) {
-      staff.findOne({'_id': req.query.e}, (error, staff) => {
-        if (staff) {
-          staffEdit = staff
-        }
-      })
+      try {
+        staffManager.getStaff({
+          id : req.query.e
+        }, (staff) => {
+          if (staff.message === 'SUCCESS') {
+            staffEdit = staff.data
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
     }
 
-    staff.find({}, (err, staffs) => {
-      //console.dir(staffs);
-      res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffs, staffEdit: staffEdit });
+    staffManager.getAllStaff((staff) => {
+      let staffData = null
+      if (staff.message === 'SUCCESS') {
+        staffData = staff.data
+      } else {
+        staffData = {}
+      }
+
+      res.render('staffList', { title: 'BASignIO Admin: Staff List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, staffs: staffData, staffEdit: staffEdit });
     })
 	}
 });
@@ -513,66 +528,40 @@ router.post('/:user/staff', (req, res, next) => {
 		}
 	}else{
 		if (req.body.staffEditSubmit) {
-			var id = req.body.staffEditID;
-			var cardID = req.body.staffEditCardID;
-			var cardID2 = req.body.staffEditCardID2;
-			var surname = req.body.staffEditSurname;
-			var forenames = req.body.staffEditForenames;
-			var staffType = req.body.staffEditStaffType;
-			var department = req.body.staffEditDepartment;
-
-
-
-			staff.findOne({_id: req.query.e}, (err, doc) => {
-				if (err) {
-					console.log('Err: ' + err);
-				}
-
-				if (doc) {
-					doc._id = id;
-					doc.cardID = cardID;
-					doc.cardID2 = cardID2
-					doc.surname = surname;
-					doc.forenames = forenames;
-					doc.staffType = staffType;
-					doc.department = department;
-
-					doc.save();
-
-					var query = req.url.split('?')[1];
-					var query = query.split('&')[0];
-
-					res.redirect('/users/' + req.session.user.username + '/staff');
-				}
-			});
+      try {
+        staffManager.updateStaff({
+          id : req.body.staffEditID,
+          cardID : req.body.staffEditCardID,
+          cardID2 : req.body.staffEditCardID2,
+          surname : req.body.staffEditSurname,
+          forenames : req.body.staffEditForenames,
+          staffType : req.body.staffEditStaffType,
+          department : req.body.staffEditDepartment
+        }, (updated) => {
+          res.redirect('/users/' + req.session.user.username + '/staff');
+        })
+      } catch (e) {
+        console.log(e)
+      }
 		}
 
 		if (req.body.staffSubmit){
-
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-		    var Staff = new staff({
-		    	_id: req.body.staffid,
-		    	cardID: req.body.cardid,
-		    	cardID2: req.body.cardid2,
-				surname: req.body.surname,
-				forenames: req.body.forenames,
-				department: req.body.department,
-				staffType: req.body.staffType
-			},
-			{
-				collection: 'staff',
-				versionKey: false
-			});
-
-			Staff.save((err, Staff) => {
-				if (err) return console.error(err);
-				console.dir(Staff);
-			})
+      try {
+        staffManager.createNewStaff({
+          id : req.body.staffid,
+          cardID : req.body.cardid,
+          cardID2 : req.body.cardid2,
+          surname : req.body.surname,
+          forenames : req.body.forenames,
+          department : req.body.department,
+          staffType : req.body.staffType
+        }, (staff) => {
+          res.redirect('/users/' + req.session.user.username + '/staff');
+        })
+      } catch (e) {
+        console.log(e)
+      }
 		}
-
-    res.redirect('/users/' + req.session.user.username + '/staff');
 	}
 });
 
