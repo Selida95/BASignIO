@@ -22,7 +22,6 @@
  const fRegister = require('../models/fireRegister');
 
  // Global Variables
- var ObjectID = require('mongodb').ObjectID;
  var user;
  var inputFocus;
 
