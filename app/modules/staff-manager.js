@@ -96,7 +96,39 @@
      }
    })
  }
+
  // Update Staff
+ // Required Fields: parameterObject(contains: id, and at least one optional field), callback
+ // Optional Fields: parameterObject(contains: cardID, cardID2, surname, forenames, staffType, department)
+ manager.updateStaff = (parameterObject, callback) => {
+   let id = typeof(parseInt(parameterObject.id)) === 'number' ? parseInt(parameterObject.id) : false
+   let cardID = typeof(parseInt(parameterObject.cardID)) === 'number' ? parseInt(parameterObject.cardID) : false
+   let cardID2 = typeof(parseInt(parameterObject.cardID2)) === 'number' ? parseInt(parameterObject.cardID2) : false
+   let surname = typeof(parameterObject.surname) === 'string' && parameterObject.surname.length > 0 ? parameterObject.surname.trim() : false
+   let forenames = typeof(parameterObject.forenames) === 'string' && parameterObject.forenames.length > 0 ? parameterObject.forenames.trim() : false
+   let staffType = typeof(parameterObject.staffType) === 'string' && parameterObject.staffType.length > 0 ? parameterObject.staffType : false
+   let department = typeof(parameterObject.department) === 'string' && parameterObject.department.length > 0 ? parameterObject.department : false
+
+   if (id && (cardID || cardID2 || surname || forenames || staffType || department)) {
+     manager.getStaff({
+       id : id
+     }, (staff) => {
+       staff.cardID = cardID ? cardID : staff.cardID
+       staff.cardID2 = cardID2 ? cardID2 : staff.cardID2
+       staff.surname = surname ? surname : staff.surname
+       staff.forenames = forenames ? forenames : staff.forenames
+       staff.staffType = staffType ? staffType : staff.staffType
+       staff.department = department ? department : staff.department
+       staff.save((error) => {
+         if error throw error
+
+         callback({ message : 'SUCCESS' })
+       })
+     })
+   } else {
+     throw new Error('REQUIRED_FIELDS_INVALID')
+   }
+ }
 
  // Remove Staff
 
