@@ -75,6 +75,21 @@
    }
  }
 
+ // Get All Records
+ // Required Fields: callback
+ // Optional Fields: none
+ manager.getAllRecords = (callback) => {
+   registerModel.find({}, (error, records) => {
+     if (error) throw error
+
+     if (records && Object.keys(records).length > 0) {
+       callback({ message : 'SUCCESS', data : records })
+     } else {
+       callback({ message : 'NOT_FOUND' })
+     }
+   })
+ }
+
  // Update Record
  // Required Fields: parameterObject(contains: id, io), callback
  // Optional Fields: none
