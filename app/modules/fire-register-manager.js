@@ -108,6 +108,9 @@
          record.data.staffType = staffType ? staffType : record.data.staffType
          record.data.yearGroup = yearGroup ? yearGroup : record.data.yearGroup
          record.data.tutorGrp = tutorGrp ? tutorGrp : record.data.tutorGrp
+         record.data.timeIn = record.data.io === io && io === 0 ? 'N/A' : utils.time()
+         record.data.timeOut = record.data.io === io && io === 1 ? 'N/A' : utils.time()
+         record.data.date = utils.date()
 
          record.data.save((error) => {
            if (error) throw error
