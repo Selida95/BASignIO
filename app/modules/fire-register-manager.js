@@ -49,6 +49,21 @@
    }
  }
 
+ // Get All Records
+ // Required Fields: callback
+ // Optional Fields: none
+ manager.getAllRecords = (callback) => {
+   fireRegisterModel.find({}, (error, records) => {
+     if (error) throw error
+
+     if (records && Object.keys(records)) {
+       callback({ message : 'SUCCESS', data : records })
+     } else {
+       callback({ message : 'NOT_FOUND' })
+     }
+   })
+ }
+
  // Get Record
  // Required Fields: parameterObject(contains: id), callback
  // Optional Fields: none
