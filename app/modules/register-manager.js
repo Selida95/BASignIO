@@ -102,8 +102,8 @@
        id : id
      }, (record) => {
        record.data.io = io
-       record.data.timeIn = record.data.io === io && io === 0 ? 'N/A' : utils.time()
-       record.data.timeOut = record.data.io === io && io === 1 ? 'N/A' : utils.time()
+       record.data.timeIn = record.data.io === io && io === 0 || record.data.date !== utils.date() ? 'N/A' : utils.time()
+       record.data.timeOut = record.data.io === io && io === 1 || record.data.date !== utils.date() ? 'N/A' : utils.time()
        record.data.save((error) => {
          if (error) throw error
 
