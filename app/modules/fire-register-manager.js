@@ -5,6 +5,7 @@
  */
 
  // Dependencies
+ const utils = require('./utilities')
 
  // Database Models
  const fireRegisterModel = require('../models/fireRegister')
@@ -21,8 +22,8 @@
    let surname = typeof(parameterObject.surname) === 'string' && parameterObject.surname.length > 0 ? parameterObject.surname : false
    let type = typeof(parameterObject.type) === 'string' && parameterObject.type.length > 0 ? parameterObject.type : false
    let location = typeof(parameterObject.loc) === 'string' && parameterObject.loc.length > 0 ? parameterObject.loc : false
-   let io = typeof(parseInt(parameterObject.io)) === 'number' && isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
-
+   let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
+   
    if (id && forenames && surname && type && location && io) {
      let register = new fireRegisterModel({
        _id : id,
@@ -32,7 +33,7 @@
        staffType : type === 'staff' && typeof(parameterObject.staffType) === 'string' && parameterObject.staffType.length > 0 ? parameterObject.staffType : undefined,
        yearGroup : type === 'student' && typeof(parseInt(parameterObject.yearGroup)) === 'number' && !isNaN(parameterObject.yearGroup) ? parseInt(parameterObject.yearGroup) : undefined,
        tutorGrp : type === 'student' && typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp : undefined,
-       location : location,
+       loc : location,
        io : io,
        timeIn : io === 1 ? utils.time() : 'N/A',
        timeOut : io === 0 ? utils.time() : '',
