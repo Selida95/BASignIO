@@ -178,8 +178,8 @@
                       yearGroup : students.yearGroup,
                       tutorGrp : students.tutorGrp
                     }, (record) => {
-                      console.log("Log: " + utils.date() + " " + utils.time() + " " + exists.forenames + ' ' + exists.surname + ' was signed in!');
-                      req.flash('success', exists.forenames + ' ' + exists.surname + ' was signed in!');
+                      console.log("Log: " + utils.date() + " " + utils.time() + " " + students.forenames + ' ' + students.surname + ' was signed in!');
+                      req.flash('success', students.forenames + ' ' + students.surname + ' was signed in!');
                       res.redirect('/reg/' + req.params.location);
                     })
                   } else {
@@ -510,141 +510,6 @@
               req.flash('error', 'There was an error. Please contact admin.');
               res.redirect('/reg/' + req.params.location);
             }
-  					fRegister.findOne({'_id': req.body.scanID}, (err, exists) => {
-  						//if student exists on fire register
-  						if (exists) {
-  							//Check if student was signed in
-  								//if student was signed in
-  								if (exists.io == 1) {
-  									//Update fire register with timeOut
-  									fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeOut': utils.time(), 'io': 0}, (err, update) => {
-  										if (err) {
-  											console.log('Error: ' + err);
-  											req.flash('error', 'There was an error. Please contact admin.');
-  										};
-  									})
-                    try {
-                      //Update register record
-                      registerManager.updateRecord({
-                        id : req.body.scanID,
-                        io : 0
-                      }, (record) => {
-
-                      })
-                    } catch (e) {
-                      console.log(e)
-                      req.flash('error', 'There was an error. Please contact admin.');
-                      res.redirect('/reg/' + req.params.location);
-                    }
-  									//Print('Student was signed out')
-  									console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out.");
-  									req.flash('success', students.fullName + ' was signed out.')
-  									res.redirect('/reg/' + req.params.location);
-  								//else
-  								}else{
-  									//Check if signout button was pressed twice
-  									var currentTime = moment()
-  									var lastTime = moment(exists.timeOut, 'HH:mm:ss');
-  									var diffTime = currentTime.diff(lastTime, 'seconds');
-
-  									if (diffTime > 60) {
-  										//Update fire register with timeIn as 'N/A', new timeOut and new location
-  										fRegister.findOneAndUpdate({'_id': req.body.scanID}, {'timeIn': 'N/A','timeOut': utils.time(), 'io' : 0, 'date': utils.date(), 'loc': req.params.location.toUpperCase()}, (err, update) => {
-  											if (err) {
-  												console.log('Error: ' + err);
-  												req.flash('error', 'There was an error. Please contact admin.');
-  											};
-  										})
-                      try {
-                        // Update register record
-                        registerManager.updateRecord({
-                          id : req.body.scanID,
-                          io : 0
-                        }, (record) => {
-
-                        })
-
-                        // Create new record with current time
-                        registerManager.createNewRecord({
-                          id : req.body.scanID,
-                          surname : students.surname,
-                          forenames : students.forenames,
-                          type : 'student',
-                          yearGroup : students.yearGroup,
-                          tutorGrp : students.tutorGrp,
-                          loc : req.params.location.toUpperCase(),
-                          io : 0
-                        }, (record) => {
-
-                        })
-                      } catch (e) {
-                        console.log(e)
-                        req.flash('error', 'There was an error. Please contact admin.');
-                        res.redirect('/reg/' + req.params.location);
-                      }
-
-  										//Print('Student was signed out, but didn't sign in)
-  										console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out, but didn't sign in.");
-  										req.flash('error', students.fullName + " was signed out, but didn't sign in. Please do so in the future!")
-  										res.redirect('/reg/' + req.params.location);
-  									} else {
-  										console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out. Sign Out button was press more than once.");
-  										req.flash('success', students.fullName + ' was signed out. But you dont\'t need to spam the button.')
-  										res.redirect('/reg/' + req.params.location);
-  									}
-
-  								}
-  						//else; student doesn't exist on the fire register
-  						}else{
-  							//Create fire register record with current date and timeIn and location
-  							var fireRegister = new fRegister({
-  								_id: req.body.scanID,
-  								surname: students.surname,
-  								forenames: students.forenames,
-  								yearGroup: students.yearGroup,
-  								tutorGrp: students.tutorGrp,
-  								type: 'student',
-  								loc: req.params.location.toUpperCase(),
-  								timeIn: 'N/A',
-  								timeOut: utils.time(),
-  								io: 1,
-  								date: utils.date()
-  							},
-  							{
-  								collection: 'fireRegisters',
-  								versionKey: false
-  							});
-
-  							fireRegister.save((err, records) => {
-  								if (err) return console.error(err);
-  								//console.dir(Student);
-  							})
-
-                try {
-                  registerManager.createNewRecord({
-                    id : req.body.scanID,
-                    surname : students.surname,
-                    forenames : students.forenames,
-                    type : 'student',
-                    yearGroup : students.yearGroup,
-                    tutorGrp : students.tutorGrp,
-                    loc : req.params.location.toUpperCase(),
-                    io : 0
-                  }, (record) => {
-
-                  })
-                } catch (e) {
-                  console.log("Log: " + utils.date() + " " + utils.time() + " " + students.forenames + ' ' + students.surname + " was signed in, but didn't sign out.");
-                  req.flash('error', students.forenames + ' ' + students.surname + " was signed in, but didn't previously signout. Please do so in the future!");
-                  res.redirect('/reg/' + req.params.location);
-                }
-
-  							//Print('Student was signed out, but didn't sign in)
-  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed!");
-  							req.flash('error', students.fullName + " was signed out!")
-  							res.redirect('/reg/' + req.params.location);
-  						}
-  					})
   				//else
   				}else{
             try {
@@ -670,14 +535,14 @@
                         })
 
                         registerManager.updateRecord({
-                          id : req.body.scanID,
+                          id : staff.data._id,
                           io : 0
                         }, (record) => {
 
                         })
 
-                        console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + exists.forenames + ' ' + exists.surname + " was signed out.");
-                        req.flash('success', exists.fullName + ' was signed out.')
+                        console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out.");
+                        req.flash('success', staff.data.fullName + ' was signed out.')
                         res.redirect('/reg/' + req.params.location);
                       } else {
                         // Staff member was already signed out, so check if user pressed button twice
