@@ -6,7 +6,7 @@
 
  // Dependencies
  const ObjectID = require('mongodb').ObjectID
- const utils = require('utilties')
+ const utils = require('./utilities')
 
  // Database Models
  const registerModel = require('../models/register')
@@ -76,10 +76,16 @@
  }
 
  // Get All Records
- // Required Fields: callback
- // Optional Fields: none
+ // Required Fields: parameterObject(If not optional fields, empty object), callback
+ // Optional Fields: parameterObject(contains: date)
  manager.getAllRecords = (callback) => {
-   registerModel.find({}, (error, records) => {
+   let query = {}
+   query.date = typeof(parameterObject.date) === 'string' && parameterObject.date.length > 0 ? parameterObject.date : false
+
+   // If date is invalid, delete date key from query object
+   if (!query.date) delete query['date']
+
+   registerModel.find(query, (error, records) => {
      if (error) throw error
 
      if (records && Object.keys(records).length > 0) {
