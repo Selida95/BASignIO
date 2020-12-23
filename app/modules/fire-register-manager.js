@@ -50,10 +50,20 @@
  }
 
  // Get All Records
- // Required Fields: callback
- // Optional Fields: none
- manager.getAllRecords = (callback) => {
-   fireRegisterModel.find({}, (error, records) => {
+ // Required Fields: parameterObject(If not optional fields, empty object), callback
+ // Optional Fields: parameterObject(contains: date, io)
+ manager.getAllRecords = (parameterObject, callback) => {
+   let query = {}
+   query.date = typeof(parameterObject.date) === 'string' && parameterObject.date.length > 0 ? parameterObject.date : false
+   query.io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
+
+   // If date is invalid, delete date key from query object
+   if (!query.date) delete query['date']
+
+   // If date is invalid, delete date key from query object
+   if (!query.io) delete query['io']
+
+   fireRegisterModel.find(query, (error, records) => {
      if (error) throw error
 
      if (records && Object.keys(records)) {
