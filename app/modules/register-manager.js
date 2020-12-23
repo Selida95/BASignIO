@@ -103,10 +103,6 @@
    let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
    let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
 
-   console.log(`id: ${id}`)
-   console.log(`io: ${io}`)
-   console.log(typeof(id) === 'number' && typeof(io) === 'number')
-
    if (typeof(id) === 'number' && typeof(io) === 'number') {
      manager.getLatestRecord({
        id : id
