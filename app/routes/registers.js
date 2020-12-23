@@ -541,7 +541,7 @@
 
                         })
 
-                        console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.fullName " was signed out.");
+                        console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out.");
                         req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed out.')
                         res.redirect('/reg/' + req.params.location);
                       } else {
@@ -587,7 +587,6 @@
                           res.redirect('/reg/' + req.params.location);
                         } else {
                           console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out. Sign Out button was press more than once.");
-                          console.log(staff.data.fullName)
                           req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed out. But you dont\'t need to spam the button.')
                           res.redirect('/reg/' + req.params.location);
                         }
