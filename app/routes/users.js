@@ -15,6 +15,8 @@
  const mailer = require('../modules/email');
  const utils = require('../modules/utilities');
  const accountManager = require('../modules/account-manager');
+ const registerManager = require('../modules/register-manager')
+ const fireRegisterManager = require('../modules/fire-register-manager')
  const staffManager = require('../modules/staff-manager');
  const useChecker = require('../modules/use-checker.js');
 
@@ -24,9 +26,6 @@
 
  // Database Models
  const student = require('../models/student');
- const staff = require('../models/staff');
- const registers = require('../models/register');
- const fRegisters = require('../models/fireRegister');
 
 /* GET users listing. */
 
@@ -588,164 +587,35 @@ router.all('/:user/registers', (req, res, next) => {
 			})
 		}
 	}else{
-
-
-		//Maximum number of documents from register shown
-		var maxDocs = 15;
-		//Maximum number of pages shown.
-		var maxShownPages = 10;
-
-		//Current Page
-		var currentPage = req.query.page;
-		var prevPage = +currentPage - 1;
-		var nextPage = +currentPage + 1;
-
-		//Defines sort fields
-
-
-		var search = {};
-
-
-		if (req.query.sortLoc) {
-			search.loc = req.query.sortLoc;
-		}
-		if (req.query.sortType) {
-			search.type = req.query.sortType;
-		}
-		if (req.query.sortDate != undefined) {
-			search.date = req.query.sortDate;
-		}else{
-			search.date = utils.date();
-		}
-		if (req.query.sortYrGroup) {
-			search.yearGroup = req.query.sortYrGroup;
-		}
-
-		if (req.query.sort == 'all') {
-			registers.count(search, (err, register) => {
-				//Total number of records
-				var numRec = register;
-				console.log('Total # of Rec: ' + numRec)
-
-				//number of pages in decimal
-				var maxPages = (numRec / maxDocs)
-				console.log('maxpages: ' + maxPages)
-
-				//working out the true number of total pages
-				if ((maxPages % 1) != 0) {
-					var totalPages = (maxPages - (maxPages % 1)) + 1
-				}/*else if((maxPages % 1) < 1 && (maxPages % 1) != 0){
-					var totalPages = (maxPages - (maxPages % 1)) + 2
-				}*/else{
-					var totalPages = maxPages;
-				}
-
-				//if the current page is  1
-				if ((+currentPage - 3) < 1) {
-					//Set first visible page to 1
-					var fvp = 1;
-
-					if (totalPages <= 7) {
-						var lvp = totalPages;
-					}else{
-						var lvp = 7;
-					}
-
-				}else{
-					var fvp = +currentPage - 3;
-					if ((+currentPage + 3) < totalPages) {
-						var lvp = +currentPage + 3;
-					}else{
-						var lvp = totalPages;
-					}
-				}
-
-				console.log('fvp: ' + fvp);
-				console.log('lvp:' + lvp);
-
-				var skipDocs = maxDocs*(currentPage - 1)
-				console.log('SkipDocs: ' + skipDocs);
-
-				console.log('Totalpages: ' + totalPages)
-				registers.find(search, (err, register) => {
-					//console.dir(register);
-					var sortData = ''
-					for (var key in req.query) {
-						if(key == 'page'){
-
-						}else{
-							sortData += '&' + key + '=' + req.query[key];
-						}
-					}
-					console.log(sortData)
-
-					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort, search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
-				}).limit(maxDocs).skip(skipDocs).sort({_id: -1})
-			})
-		}else{
-			search.io = 1;
-			search.date = utils.date();
-			fRegisters.count(search, (err, fregister) => {
-				//console.log(register);
-				//Total number of records
-				var numRec = fregister;
-				console.log('Total # of Rec: ' + numRec)
-
-				//number of pages in decimal
-				var maxPages = (numRec / maxDocs)
-				console.log('maxpages: ' + maxPages)
-
-				//working out the true number of total pages
-				if ((maxPages % 1) != 0) {
-					var totalPages = (maxPages - (maxPages % 1)) + 1
-				}/*else if((maxPages % 1) < 1){
-					var totalPages = (maxPages - (maxPages % 1)) + 2
-				}*/else{
-					var totalPages = maxPages;
-				}
-
-				//if the current page is  1
-				if ((+currentPage - 3) < 1) {
-					//Set first visible page to 1
-					var fvp = 1;
-
-					if (totalPages <= 7) {
-						var lvp = totalPages;
-					}else{
-						var lvp = 7;
-					}
-
-				}else{
-					var fvp = +currentPage - 3;
-					if ((+currentPage + 3) < totalPages) {
-						var lvp = +currentPage + 3;
-					}else{
-						var lvp = totalPages;
-					}
-				}
-
-				var lastPage = totalPages
-				console.log('Totalpages: ' + totalPages)
-
-				var skipDocs = maxDocs*(currentPage - 1)
-				console.log('SkipDocs: ' + skipDocs);
-
-				fRegisters.find(search, (err, register) => {
-					var sortData = ''
-					for (var key in req.query) {
-						if(key == 'page'){
-
-						}else{
-							sortData += '&' + key + '=' + req.query[key];
-						}
-					}
-					console.log(sortData)
-					res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort,  search: sortData, totalPages: totalPages, prevPage: prevPage, nextPage: nextPage, pageNum: currentPage, fvp: fvp, lvp: lvp});
-
-				}).limit(maxDocs).skip(skipDocs).sort({surname: 1})
-
-			})
-		}
+    let register = {}
+    // Create query object with date key set to current date
+    let query = {
+      date : utils.date()
+    }
+    try {
+      if (req.query.sort == 'all') {
+        // If sortDate exists set query.date to sortDate
+        if (req.query.sortDate) query.date = req.query.sortDate
+        registerManager.getAllRecords(query, (records) => {
+          if (records.message === 'SUCCESS') {
+            register = records.data
+          }
+        })
+  		}else{
+        // Get all records that are currently signed in.
+        query.io = 1
+        fireRegisterManager.getAllRecords(query, (records) => {
+          if (records.message === 'SUCCESS') {
+            register = records.data
+          }
+        })
+  		}
+    } catch (e) {
+      console.log(e)
+      req.flash('error', 'There was an error. Please contact admin.');
+      res.redirect('/' + req.session.user.username + '/registers');
+    }
+    res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort});
 	}
 });
 
