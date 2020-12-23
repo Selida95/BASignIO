@@ -74,7 +74,7 @@
   							  mailer.send({
   				                receiver: config.manual_input.email,
   				                subject: 'BASignIO: Manual Input',
-  				                text: students.fullName + ' has used all their manual input allowance.'
+  				                text: students.forenames + ' ' + students.surname + ' has used all their manual input allowance.'
   				              }, (err, mail) => {
   				                if (err) {
   				                  console.log(err);
@@ -362,15 +362,15 @@
 
                       })
                       console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed in.")
-                      req.flash('success', staff.data.fullName + ' was signed in.')
+                      req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed in.')
                       res.redirect('/reg/' + req.params.location)
                     }
                   })
                 }
               })
             } catch (e) {
-              console.log("Log: " + utils.date() + " " + utils.time() + " " + staff.forenames + ' ' + staff.surname + " was signed in, but didn't sign out.");
-              req.flash('error', staff.forenames + ' ' + staff.surname + " was signed in, but didn't previously signout. Please do so in the future!");
+              console.log("Log: " + utils.date() + " " + utils.time() + " " + staff.data.forenames + ' ' + staff.data.surname + " was signed in, but didn't sign out.");
+              req.flash('error', staff.data.forenames + ' ' + staff.data.surname + " was signed in, but didn't previously signout. Please do so in the future!");
               res.redirect('/reg/' + req.params.location);
             }
   				}
@@ -420,7 +420,7 @@
 
                     })
                     console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out.");
-                    req.flash('success', students.fullName + ' was signed out.')
+                    req.flash('success', students.forenames + ' ' + students.surname + ' was signed out.')
                     res.redirect('/reg/' + req.params.location);
                   } else {
                     // Student was already signed out, so check if user pressed button twice
@@ -465,11 +465,11 @@
 
                       })
                       console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out, but didn't sign in.");
-  										req.flash('error', students.fullName + " was signed out, but didn't sign in. Please do so in the future!")
+  										req.flash('error', students.forenames + ' ' + students.surname + " was signed out, but didn't sign in. Please do so in the future!")
   										res.redirect('/reg/' + req.params.location);
                     } else {
                       console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out. Sign Out button was press more than once.");
-                      req.flash('success', students.fullName + ' was signed out. But you dont\'t need to spam the button.')
+                      req.flash('success', students.forenames + ' ' + students.surname + ' was signed out. But you dont\'t need to spam the button.')
                       res.redirect('/reg/' + req.params.location);
                     }
                   }
@@ -501,7 +501,7 @@
                   })
 
                   console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed!");
-    							req.flash('error', students.fullName + " was signed out!")
+    							req.flash('error', students.forenames + ' ' + students.surname + " was signed out!")
     							res.redirect('/reg/' + req.params.location);
                 }
               })
@@ -541,8 +541,8 @@
 
                         })
 
-                        console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out.");
-                        req.flash('success', staff.data.fullName + ' was signed out.')
+                        console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.fullName " was signed out.");
+                        req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed out.')
                         res.redirect('/reg/' + req.params.location);
                       } else {
                         // Staff member was already signed out, so check if user pressed button twice
@@ -583,11 +583,12 @@
 
                           })
                           console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out, but didn't sign in.");
-                          req.flash('error', staff.data.fullName + " was signed out, but didn't sign in. Please do so in the future!")
+                          req.flash('error', staff.data.forenames + ' ' + staff.data.surname + " was signed out, but didn't sign in. Please do so in the future!")
                           res.redirect('/reg/' + req.params.location);
                         } else {
                           console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out. Sign Out button was press more than once.");
-                          req.flash('success', staff.data.fullName + ' was signed out. But you dont\'t need to spam the button.')
+                          console.log(staff.data.fullName)
+                          req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed out. But you dont\'t need to spam the button.')
                           res.redirect('/reg/' + req.params.location);
                         }
                       }
@@ -616,7 +617,7 @@
 
                       })
                       console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out.");
-    									req.flash('error', staff.data.fullName + " was signed out!")
+    									req.flash('error', staff.data.forenames + ' ' + staff.data.surname + " was signed out!")
     									res.redirect('/reg/' + req.params.location);
                     }
                   })
