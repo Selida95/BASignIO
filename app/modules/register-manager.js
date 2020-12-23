@@ -23,7 +23,7 @@
    let surname = typeof(parameterObject.surname) === 'string' && parameterObject.surname.length > 0 ? parameterObject.surname : false
    let type = typeof(parameterObject.type) === 'string' && parameterObject.type.length > 0 ? parameterObject.type : false
    let location = typeof(parameterObject.loc) === 'string' && parameterObject.loc.length > 0 ? parameterObject.loc : false
-   let io = typeof(parseInt(parameterObject.io)) === 'number' && isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
+   let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
 
    if (id && forenames && surname && type && location && io) {
      let register = new registerModel({
