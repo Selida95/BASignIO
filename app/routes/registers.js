@@ -164,7 +164,9 @@
                       loc : req.params.location.toUpperCase(),
                       io : 1,
                       yearGroup : students.yearGroup,
-                      tutorGrp : students.tutorGrp
+                      tutorGrp : students.tutorGrp,
+                      timeIn : utils.time(),
+                      timeOut : ''
                     }, (record) => {
 
                     })
@@ -197,7 +199,9 @@
                         loc : req.params.location.toUpperCase(),
                         io : 1,
                         yearGroup : students.yearGroup,
-                        tutorGrp : students.tutorGrp
+                        tutorGrp : students.tutorGrp,
+                        timeIn : utils.time(),
+                        timeOut : ''
                       }, (record) => {
 
                       })
@@ -228,7 +232,9 @@
                     loc : req.params.location.toUpperCase(),
                     io : 1,
                     yearGroup : students.yearGroup,
-                    tutorGrp : students.tutorGrp
+                    tutorGrp : students.tutorGrp,
+                    timeIn : utils.time(),
+                    timeOut : ''
                   }, (record) => {
 
                   })
@@ -273,15 +279,17 @@
                           type : 'staff',
                           loc : req.params.location.toUpperCase(),
                           io : 1,
+                          timeIn : utils.time(),
+                          timeOut : '',
                           staffType : staff.data.staffType
                         }, (record) => {
 
                         })
                         // Create new register record
                         registerManager.createNewRecord({
-                          id : req.body.scanID,
-                          surname : staff.surname,
-                          forenames : staff.forenames,
+                          id : staff.data._id,
+                          surname : staff.data.surname,
+                          forenames : staff.data.forenames,
                           type : 'staff',
                           loc : req.params.location.toUpperCase(),
                           io : 1
@@ -304,6 +312,8 @@
                             type : 'staff',
                             loc : req.params.location.toUpperCase(),
                             io : 1,
+                            timeIn : utils.time(),
+                            timeOut : '',
                             staffType : staff.data.staffType
                           }, (record) => {
 
@@ -311,7 +321,7 @@
 
                           // Update last register record
                           registerManager.updateRecord({
-                            id : req.body.scanID,
+                            id : staff.data._id,
                             io : 1
                           }, (record) => {
 
@@ -319,9 +329,9 @@
 
                           //Create new register record
                           registerManager.createNewRecord({
-                            id : req.body.scanID,
-                            surname : staff.surname,
-                            forenames : staff.forenames,
+                            id : staff.data._id,
+                            surname : staff.data.surname,
+                            forenames : staff.data.forenames,
                             type : 'staff',
                             loc : req.params.location.toUpperCase(),
                             io : 1
@@ -333,7 +343,7 @@
                           res.redirect('/reg/' + req.params.location);
                         } else {
                           console.log("Log: " + utils.date() + " " + utils.time() + " " + staff.data.forenames + ' ' + staff.data.surname + " was signed in. Sign in button was press more than once.");
-                          req.flash('success', staff.forenames + ' ' + staff.surname + ' was signed in! But you dont\'t need to spam the button.');
+                          req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed in! But you dont\'t need to spam the button.');
                           res.redirect('/reg/' + req.params.location);
                         }
                       }
@@ -346,7 +356,9 @@
                         type : 'staff',
                         loc : req.params.location.toUpperCase(),
                         io : 1,
-                        staffType : staff.data.staffType
+                        staffType : staff.data.staffType,
+                        timeIn : utils.time(),
+                        timeOut : ''
                       }, (record) => {
 
                       })
@@ -409,6 +421,9 @@
                       type : 'student',
                       loc : req.params.location.toUpperCase(),
                       io : 0,
+                      timeOut: utils.time(),
+                      yearGroup : students.yearGroup,
+                      tutorGrp : students.tutorGrp
                     }, (record) => {
 
                     })
@@ -438,7 +453,9 @@
                         loc : req.params.location.toUpperCase(),
                         io : 0,
                         yearGroup : students.yearGroup,
-                        tutorGrp : students.tutorGrp
+                        tutorGrp : students.tutorGrp,
+                        timeIn : 'N/A',
+                        timeOut : utils.time()
                       }, (record) => {
 
                       })
@@ -483,7 +500,9 @@
                     loc : req.params.location.toUpperCase(),
                     io : 0,
                     yearGroup : students.yearGroup,
-                    tutorGrp : students.tutorGrp
+                    tutorGrp : students.tutorGrp,
+                    timeIn : 'N/A',
+                    timeOut : utils.time()
                   }, (record) => {
 
                   })
@@ -529,7 +548,8 @@
                           type : 'staff',
                           loc : req.params.location.toUpperCase(),
                           io : 0,
-                          staffType : staff.data.staffType
+                          staffType : staff.data.staffType,
+                          timeOut : utils.time()
                         }, (record) => {
 
                         })
@@ -560,7 +580,9 @@
                             type : 'staff',
                             loc : req.params.location.toUpperCase(),
                             io : 0,
-                            staffType : staff.data.staffType
+                            staffType : staff.data.staffType,
+                            timeIn : 'N/A',
+                            timeOut : utils.time()
                           }, (record) => {
 
                           })
@@ -586,8 +608,10 @@
                           req.flash('error', staff.data.forenames + ' ' + staff.data.surname + " was signed out, but didn't sign in. Please do so in the future!")
                           res.redirect('/reg/' + req.params.location);
                         } else {
-                          console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out. Sign Out button was press more than once.");
-                          req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed out. But you dont\'t need to spam the button.')
+                          console.log(' ')
+                          console.log(`${staff.data.forenames} ${staff.data.surname}`)
+                          req.flash('success', `${staff.data.forenames} ${staff.data.surname} was signed out. But you don't need to spam the button.`)
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed out. Sign Out button was press more than once.`)
                           res.redirect('/reg/' + req.params.location);
                         }
                       }
@@ -599,7 +623,9 @@
                         type : 'staff',
                         loc : req.params.location.toUpperCase(),
                         io : 0,
-                        staffType : staff.data.staffType
+                        staffType : staff.data.staffType,
+                        timeIn : 'N/A',
+                        timeOut : utils.time()
                       }, (record) => {
 
                       })

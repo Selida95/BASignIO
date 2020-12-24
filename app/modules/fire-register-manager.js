@@ -23,7 +23,7 @@
    let type = typeof(parameterObject.type) === 'string' && parameterObject.type.length > 0 ? parameterObject.type : false
    let location = typeof(parameterObject.loc) === 'string' && parameterObject.loc.length > 0 ? parameterObject.loc : false
    let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
-   
+
    if (id && forenames && surname && type && location && io) {
      let register = new fireRegisterModel({
        _id : id,
@@ -35,8 +35,8 @@
        tutorGrp : type === 'student' && typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp : undefined,
        loc : location,
        io : io,
-       timeIn : io === 1 ? utils.time() : 'N/A',
-       timeOut : io === 0 ? utils.time() : '',
+       timeIn : timeIn ? timeIn : '',
+       timeOut : timeOut ? timeOut : '',
        date : utils.date()
      })
 
@@ -94,19 +94,23 @@
 
  // Update Record
  // Required Fields: parameterObject(contains: id and at least one optional field), callback
- // Optional Fields: parameterObject(contains: forenames, surname, type, location, io, staffType, yearGroup, tutorGrp)
+ // Optional Fields: parameterObject(contains: forenames, surname, type, location, io, staffType, yearGroup, tutorGrp, timeIn, timeOut)
  manager.updateRecord = (parameterObject, callback) => {
    let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
    let forenames = typeof(parameterObject.forenames) === 'string' && parameterObject.forenames.length > 0 ? parameterObject.forenames : false
    let surname = typeof(parameterObject.surname) === 'string' && parameterObject.surname.length > 0 ? parameterObject.surname : false
    let type = typeof(parameterObject.type) === 'string' && parameterObject.type.length > 0 ? parameterObject.type : false
    let location = typeof(parameterObject.loc) === 'string' && parameterObject.loc.length > 0 ? parameterObject.loc : false
-   let io = typeof(parseInt(parameterObject.io)) === 'number' && isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
+   let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
    let staffType = type === 'staff' && typeof(parameterObject.staffType) === 'string' && parameterObject.staffType.length > 0 ? parameterObject.staffType : false
-   let yearGroup = type === 'student' && typeof(parseInt(parameterObject.yearGroup)) === 'number' && !isNaN(parameterObject.staffType.length) ? parseInt(parameterObject.staffType) : false
+   let yearGroup = type === 'student' && typeof(parseInt(parameterObject.yearGroup)) === 'number' && !isNaN(parameterObject.yearGroup) ? parseInt(parameterObject.staffType) : false
    let tutorGrp = type === 'student' && typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp : false
+   let timeIn = typeof(parameterObject.timeIn) === 'string' && parameterObject.timeIn.length > 0 ? parameterObject.timeIn : false
+   let timeOut = typeof(parameterObject.timeOut) === 'string' && parameterObject.timeOut.length > 0 ? parameterObject.timeOut : false
 
-   if (id && (forenames || surname || type || location || io || staffType || yearGroup || tutorGrp)) {
+   console.log(`io : ${io}`)
+
+   if (id && (forenames || surname || type || location || io || staffType || yearGroup || tutorGrp || timeIn || timeOut)) {
      try {
        manager.getRecord({
          id : id
@@ -119,8 +123,8 @@
          record.data.staffType = staffType ? staffType : record.data.staffType
          record.data.yearGroup = yearGroup ? yearGroup : record.data.yearGroup
          record.data.tutorGrp = tutorGrp ? tutorGrp : record.data.tutorGrp
-         record.data.timeIn = record.data.io === io && io === 0 ? 'N/A' : utils.time()
-         record.data.timeOut = record.data.io === io && io === 1 ? 'N/A' : utils.time()
+         record.data.timeIn = timeIn ? timeIn : record.data.timeIn
+         record.data.timeOut = timeOut ? timeOut : record.data.timeIn
          record.data.date = utils.date()
 
          record.data.save((error) => {
