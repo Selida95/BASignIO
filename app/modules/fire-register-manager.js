@@ -110,8 +110,6 @@
    let timeIn = typeof(parameterObject.timeIn) === 'string' && parameterObject.timeIn.length > 0 ? parameterObject.timeIn : false
    let timeOut = typeof(parameterObject.timeOut) === 'string' && parameterObject.timeOut.length > 0 ? parameterObject.timeOut : false
 
-   console.log(`io : ${io}`)
-
    if (id && (forenames || surname || type || location || io || staffType || yearGroup || tutorGrp || timeIn || timeOut)) {
      try {
        manager.getRecord({
