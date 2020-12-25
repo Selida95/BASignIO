@@ -206,7 +206,7 @@
 
                       })
                       // Update last register record with 'N/A' for timeOut
-                      registerManager.updateRecord({
+                      registerManager.updateLatestRecord({
                         id : req.body.scanID,
                         io : 1
                       }, (record) => {
@@ -320,7 +320,7 @@
                           })
 
                           // Update last register record
-                          registerManager.updateRecord({
+                          registerManager.updateLatestRecord({
                             id : staff.data._id,
                             io : 1
                           }, (record) => {
@@ -428,7 +428,7 @@
 
                     })
                     //Update register record
-                    registerManager.updateRecord({
+                    registerManager.updateLatestRecord({
                       id : req.body.scanID,
                       io : 0
                     }, (record) => {
@@ -461,7 +461,7 @@
                       })
 
                       // Update register record
-                      registerManager.updateRecord({
+                      registerManager.updateLatestRecord({
                         id : req.body.scanID,
                         io : 0
                       }, (record) => {
@@ -554,7 +554,7 @@
 
                         })
 
-                        registerManager.updateRecord({
+                        registerManager.updateLatestRecord({
                           id : staff.data._id,
                           io : 0
                         }, (record) => {
@@ -587,7 +587,7 @@
 
                           })
                           // Update last register record
-                          registerManager.updateRecord({
+                          registerManager.updateLatestRecord({
                             id : req.body.scanID,
                             io : 0
                           }, (record) => {

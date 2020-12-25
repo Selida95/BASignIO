@@ -98,10 +98,10 @@
    })
  }
 
- // Update Record
+ // Update Latest Record
  // Required Fields: parameterObject(contains: id, io), callback
  // Optional Fields: parameterObject(contains: timeIn, timeOut)
- manager.updateRecord = (parameterObject, callback) => {
+ manager.updateLatestRecord = (parameterObject, callback) => {
    let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
    let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
    let timeIn = typeof(parameterObject.timeIn) === 'string' && parameterObject.timeIn.length > 0 ? parameterObject.timeIn : false
