@@ -166,7 +166,7 @@
                       yearGroup : students.yearGroup,
                       tutorGrp : students.tutorGrp,
                       timeIn : utils.time(),
-                      timeOut : ''
+                      timeOut : ' '
                     }, (record) => {
 
                     })
@@ -286,7 +286,7 @@
                           loc : req.params.location.toUpperCase(),
                           io : 1,
                           timeIn : utils.time(),
-                          timeOut : '',
+                          timeOut : ' ',
                           staffType : staff.data.staffType
                         }, (record) => {
 
@@ -310,7 +310,6 @@
                         let currentTime = moment()
                         let lastTime = moment(fireRecord.data.timeIn, 'HH:mm:ss')
                         let diffTime = currentTime.diff(lastTime, 'seconds')
-
                         if (diffTime > 60) {
                           fireRegisterManager.updateRecord({
                             id : staff.data._id,
@@ -320,13 +319,15 @@
                             loc : req.params.location.toUpperCase(),
                             io : 1,
                             timeIn : utils.time(),
-                            timeOut : '',
+                            timeOut : ' ',
                             staffType : staff.data.staffType
                           }, (record) => {
 
                           })
 
-                          if (fireRecord.data.timeOut.length === 0) {
+                          console.log(fireRecord.data.timeOut.length)
+                          console.log(fireRecord.data.timeOut)
+                          if (fireRecord.data.timeOut.length === 1) {
                             // Update last register record with 'N/A' for timeOut
                             registerManager.updateLatestRecord({
                               id : staff.data._id,
@@ -369,7 +370,7 @@
                         io : 1,
                         staffType : staff.data.staffType,
                         timeIn : utils.time(),
-                        timeOut : ''
+                        timeOut : ' '
                       }, (record) => {
 
                       })
@@ -473,7 +474,7 @@
 
                       })
 
-                      if (fireRecord.data.timeOut.length === 0) {
+                      if (fireRecord.data.timeOut.length === 1) {
                         // Update last register record with 'N/A' for timeOut
                         registerManager.updateLatestRecord({
                           id : students._id,
@@ -608,7 +609,7 @@
                           }, (record) => {
 
                           })
-                          if (fireRecord.data.timeOut.length === 0) {
+                          if (fireRecord.data.timeOut.length === 1) {
                             // Update last register record with 'N/A' for timeOut
                             registerManager.updateLatestRecord({
                               id : staff.data._id,

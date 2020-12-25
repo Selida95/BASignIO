@@ -37,8 +37,8 @@
        tutorGrp : type === 'student' && typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp : undefined,
        loc : location,
        io : io,
-       timeIn : timeIn ? timeIn : '',
-       timeOut : timeOut ? timeOut : '',
+       timeIn : timeIn ? timeIn : ' ',
+       timeOut : timeOut ? timeOut : ' ',
        date : utils.date()
      })
 
