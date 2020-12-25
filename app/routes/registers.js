@@ -434,16 +434,14 @@
                     }, (record) => {
 
                     })
-                    if (fireRecord.data.timeOut.length === 0) {
-                      // Update last register record with 'N/A' for timeOut
-                      registerManager.updateLatestRecord({
-                        id : req.body.scanID,
-                        io : 1,
-                        timeOut : 'N/A'
-                      }, (record) => {
+                    // Update last register record with current time for timeOut
+                    registerManager.updateLatestRecord({
+                      id : req.body.scanID,
+                      io : 0,
+                      timeOut : utils.time()
+                    }, (record) => {
 
-                      })
-                    }
+                    })
                     console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out.");
                     req.flash('success', students.forenames + ' ' + students.surname + ' was signed out.')
                     res.redirect('/reg/' + req.params.location);
@@ -567,16 +565,14 @@
 
                         })
 
-                        if (fireRecord.data.timeOut.length === 0) {
-                          // Update last register record with 'N/A' for timeOut
-                          registerManager.updateLatestRecord({
-                            id : req.body.scanID,
-                            io : 1,
-                            timeOut : 'N/A'
-                          }, (record) => {
+                        // Update last register record with current time for timeOut
+                        registerManager.updateLatestRecord({
+                          id : req.body.scanID,
+                          io : 0,
+                          timeOut : utils.time()
+                        }, (record) => {
 
-                          })
-                        }
+                        })
 
                         console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out.");
                         req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed out.')
