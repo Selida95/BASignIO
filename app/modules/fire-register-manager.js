@@ -23,6 +23,8 @@
    let type = typeof(parameterObject.type) === 'string' && parameterObject.type.length > 0 ? parameterObject.type : false
    let location = typeof(parameterObject.loc) === 'string' && parameterObject.loc.length > 0 ? parameterObject.loc : false
    let io = typeof(parseInt(parameterObject.io)) === 'number' && !isNaN(parameterObject.io) ? parseInt(parameterObject.io) : false
+   let timeIn = typeof(parameterObject.timeIn) === 'string' && parameterObject.timeIn.length > 0 ? parameterObject.timeIn : false
+   let timeOut = typeof(parameterObject.timeOut) === 'string' && parameterObject.timeOut.length > 0 ? parameterObject.timeOut : false
 
    if (id && forenames && surname && type && location && io) {
      let register = new fireRegisterModel({
