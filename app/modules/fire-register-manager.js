@@ -121,7 +121,7 @@
          record.data.surname = surname ? surname : record.data.surname
          record.data.type = type ? type : record.data.type
          record.data.loc = location ? location : record.data.loc
-         record.data.io = io ? io : record.data.io
+         record.data.io = typeof(io) === 'number' ? io : record.data.io
          record.data.staffType = staffType ? staffType : record.data.staffType
          record.data.yearGroup = yearGroup ? yearGroup : record.data.yearGroup
          record.data.tutorGrp = tutorGrp ? tutorGrp : record.data.tutorGrp
