@@ -477,7 +477,7 @@
                         // Update last register record with 'N/A' for timeOut
                         registerManager.updateLatestRecord({
                           id : students._id,
-                          io : 1,
+                          io : 0,
                           timeOut : 'N/A'
                         }, (record) => {
 
@@ -612,7 +612,7 @@
                             // Update last register record with 'N/A' for timeOut
                             registerManager.updateLatestRecord({
                               id : staff.data._id,
-                              io : 1,
+                              io : 0,
                               timeOut : 'N/A'
                             }, (record) => {
 
