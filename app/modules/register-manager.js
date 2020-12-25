@@ -27,7 +27,7 @@
    let timeIn = typeof(parameterObject.timeIn) === 'string' && parameterObject.timeIn.length > 0 ? parameterObject.timeIn : false
    let timeOut = typeof(parameterObject.timeOut) === 'string' && parameterObject.timeOut.length > 0 ? parameterObject.timeOut : false
 
-   if (id && forenames && surname && type && location && io) {
+   if (id && forenames && surname && type && location && typeof(parseInt(io)) === 'number') {
      let register = new registerModel({
        _id : new ObjectID(),
        id : id,
@@ -38,8 +38,8 @@
        io : io,
        yearGroup : type === 'student' && typeof(parseInt(parameterObject.yearGroup)) === 'number' && isNaN(parameterObject.yearGroup) ? parseInt(parameterObject.yearGroup) : undefined,
        tutorGrp : type === 'student' && typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp : undefined,
-       timeIn : timeIn ? timeIn : '',
-       timeOut : timeOut ? timeOut : '',
+       timeIn : timeIn ? timeIn : ' ',
+       timeOut : timeOut ? timeOut : ' ',
        date : utils.date()
      }, {
        collection: 'registers',
