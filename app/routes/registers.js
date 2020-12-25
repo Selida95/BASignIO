@@ -205,10 +205,15 @@
                       }, (record) => {
 
                       })
+
+                      if (fireRecord.data.timeOut.length === 0) {
+
+                      }
                       // Update last register record with 'N/A' for timeOut
                       registerManager.updateLatestRecord({
                         id : req.body.scanID,
-                        io : 1
+                        io : 1,
+                        timeOut : 'N/A'
                       }, (record) => {
 
                       })
@@ -322,7 +327,8 @@
                           // Update last register record
                           registerManager.updateLatestRecord({
                             id : staff.data._id,
-                            io : 1
+                            io : 1,
+                            timeOut : 'N/A'
                           }, (record) => {
 
                           })
@@ -430,7 +436,8 @@
                     //Update register record
                     registerManager.updateLatestRecord({
                       id : req.body.scanID,
-                      io : 0
+                      io : 0,
+                      timeOut : 'N/A'
                     }, (record) => {
 
                     })
@@ -463,7 +470,8 @@
                       // Update register record
                       registerManager.updateLatestRecord({
                         id : req.body.scanID,
-                        io : 0
+                        io : 0,
+                        timeOut : 'N/A'
                       }, (record) => {
 
                       })
@@ -556,7 +564,8 @@
 
                         registerManager.updateLatestRecord({
                           id : staff.data._id,
-                          io : 0
+                          io : 0,
+                          timeOut : 'N/A'
                         }, (record) => {
 
                         })
@@ -589,7 +598,8 @@
                           // Update last register record
                           registerManager.updateLatestRecord({
                             id : req.body.scanID,
-                            io : 0
+                            io : 0,
+                            timeOut : 'N/A'
                           }, (record) => {
 
                           })
