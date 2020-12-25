@@ -178,7 +178,8 @@
                       loc : req.params.location.toUpperCase(),
                       io : 1,
                       yearGroup : students.yearGroup,
-                      tutorGrp : students.tutorGrp
+                      tutorGrp : students.tutorGrp,
+                      timeIn : utils.time()
                     }, (record) => {
                       console.log("Log: " + utils.date() + " " + utils.time() + " " + students.forenames + ' ' + students.surname + ' was signed in!');
                       req.flash('success', students.forenames + ' ' + students.surname + ' was signed in!');
@@ -251,7 +252,8 @@
                     yearGroup : students.yearGroup,
                     tutorGrp : students.tutorGrp,
                     loc : req.params.location.toUpperCase(),
-                    io : 1
+                    io : 1,
+                    timeIn : utils.time()
                   }, (record) => {
 
                   })
@@ -296,7 +298,8 @@
                           forenames : staff.data.forenames,
                           type : 'staff',
                           loc : req.params.location.toUpperCase(),
-                          io : 1
+                          io : 1,
+                          timeIn : utils.time()
                         }, (record) => {
 
                         })
@@ -341,7 +344,8 @@
                             forenames : staff.data.forenames,
                             type : 'staff',
                             loc : req.params.location.toUpperCase(),
-                            io : 1
+                            io : 1,
+                            timeIn : utils.time()
                           }, (record) => {
 
                           })
@@ -376,7 +380,8 @@
                         forenames : staff.data.forenames,
                         type : 'staff',
                         loc : req.params.location.toUpperCase(),
-                        io : 1
+                        io : 1,
+                        timeIn : utils.time()
                       }, (record) => {
 
                       })
@@ -488,7 +493,9 @@
                         yearGroup : students.yearGroup,
                         tutorGrp : students.tutorGrp,
                         loc : req.params.location.toUpperCase(),
-                        io : 0
+                        io : 0,
+                        timeIn : 'N/A',
+                        timeOut : utils.time()
                       }, (record) => {
 
                       })
@@ -525,7 +532,9 @@
                     yearGroup : students.yearGroup,
                     tutorGrp : students.tutorGrp,
                     loc : req.params.location.toUpperCase(),
-                    io : 0
+                    io : 0,
+                    timeIn : 'N/A',
+                    timeOut : utils.time()
                   }, (record) => {
 
                   })
@@ -616,7 +625,9 @@
                             forenames : staff.forenames,
                             type : 'staff',
                             loc : req.params.location.toUpperCase(),
-                            io : 0
+                            io : 0,
+                            timeIn : 'N/A',
+                            timeOut : utils.time()
                           }, (record) => {
 
                           })
@@ -653,7 +664,9 @@
                         forenames : staff.forenames,
                         type : 'staff',
                         loc : req.params.location.toUpperCase(),
-                        io : 0
+                        io : 0,
+                        timeIn : 'N/A',
+                        timeOut : utils.time()
                       }, (record) => {
 
                       })
