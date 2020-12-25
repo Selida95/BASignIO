@@ -587,7 +587,6 @@ router.all('/:user/registers', (req, res, next) => {
 			})
 		}
 	}else{
-    let register = {}
     // Create query object with date key set to current date
     let query = {
       date : utils.date()
@@ -598,7 +597,9 @@ router.all('/:user/registers', (req, res, next) => {
         if (req.query.sortDate) query.date = req.query.sortDate
         registerManager.getAllRecords(query, (records) => {
           if (records.message === 'SUCCESS') {
-            register = records.data
+            res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: records.data, sort: req.query.sort});
+          } else {
+            res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: {}, sort: req.query.sort});
           }
         })
   		}else{
@@ -606,7 +607,9 @@ router.all('/:user/registers', (req, res, next) => {
         query.io = 1
         fireRegisterManager.getAllRecords(query, (records) => {
           if (records.message === 'SUCCESS') {
-            register = records.data
+            res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: records.data, sort: req.query.sort});
+          } else {
+            res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: {}, sort: req.query.sort});
           }
         })
   		}
@@ -615,7 +618,6 @@ router.all('/:user/registers', (req, res, next) => {
       req.flash('error', 'There was an error. Please contact admin.');
       res.redirect('/' + req.session.user.username + '/registers');
     }
-    res.render('regList', { title: 'BASignIO Admin: Registers',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, registers: register, sort: req.query.sort});
 	}
 });
 
