@@ -157,7 +157,7 @@
                 if (fireRecord.message === 'SUCCESS') {
                   if (fireRecord.data.io === 0) {
                     fireRegisterManager.updateRecord({
-                      id : fireRecord.data.id,
+                      id : students._id,
                       forenames : students.forenames,
                       surname : students.surname,
                       type : 'student',
@@ -193,7 +193,7 @@
 
                     if (diffTime > 60) {
                       fireRegisterManager.updateRecord({
-                        id : fireRecord.data.id,
+                        id : students._id,
                         forenames : students.forenames,
                         surname : students.surname,
                         type : 'student',
@@ -210,7 +210,7 @@
                       if (fireRecord.data.timeOut.length === 0) {
                         // Update last register record with 'N/A' for timeOut
                         registerManager.updateLatestRecord({
-                          id : req.body.scanID,
+                          id : students._id,
                           io : 1,
                           timeOut : 'N/A'
                         }, (record) => {
@@ -245,7 +245,7 @@
                   })
                   // Create new register record
                   registerManager.createNewRecord({
-                    id : req.body.scanID,
+                    id : students._id,
                     surname : students.surname,
                     forenames : students.forenames,
                     type : 'student',
@@ -329,7 +329,7 @@
                           if (fireRecord.data.timeOut.length === 0) {
                             // Update last register record with 'N/A' for timeOut
                             registerManager.updateLatestRecord({
-                              id : req.body.scanID,
+                              id : staff.data._id,
                               io : 1,
                               timeOut : 'N/A'
                             }, (record) => {
@@ -441,7 +441,7 @@
                     })
                     // Update last register record with current time for timeOut
                     registerManager.updateLatestRecord({
-                      id : req.body.scanID,
+                      id : students._id,
                       io : 0,
                       timeOut : utils.time()
                     }, (record) => {
@@ -476,7 +476,7 @@
                       if (fireRecord.data.timeOut.length === 0) {
                         // Update last register record with 'N/A' for timeOut
                         registerManager.updateLatestRecord({
-                          id : req.body.scanID,
+                          id : students._id,
                           io : 1,
                           timeOut : 'N/A'
                         }, (record) => {
@@ -486,7 +486,7 @@
 
                       // Create new record with current time
                       registerManager.createNewRecord({
-                        id : req.body.scanID,
+                        id : students._id,
                         surname : students.surname,
                         forenames : students.forenames,
                         type : 'student',
@@ -525,7 +525,7 @@
 
                   })
                   registerManager.createNewRecord({
-                    id : req.body.scanID,
+                    id : students._id,
                     surname : students.surname,
                     forenames : students.forenames,
                     type : 'student',
@@ -576,7 +576,7 @@
 
                         // Update last register record with current time for timeOut
                         registerManager.updateLatestRecord({
-                          id : req.body.scanID,
+                          id : staff.data._id,
                           io : 0,
                           timeOut : utils.time()
                         }, (record) => {
@@ -611,7 +611,7 @@
                           if (fireRecord.data.timeOut.length === 0) {
                             // Update last register record with 'N/A' for timeOut
                             registerManager.updateLatestRecord({
-                              id : req.body.scanID,
+                              id : staff.data._id,
                               io : 1,
                               timeOut : 'N/A'
                             }, (record) => {
@@ -620,9 +620,9 @@
                           }
                           //Create new register record
                           registerManager.createNewRecord({
-                            id : req.body.scanID,
-                            surname : staff.surname,
-                            forenames : staff.forenames,
+                            id : staff.data._id,
+                            surname : staff.data.surname,
+                            forenames : staff.data.forenames,
                             type : 'staff',
                             loc : req.params.location.toUpperCase(),
                             io : 0,
@@ -659,9 +659,9 @@
 
                       //Create new register record
                       registerManager.createNewRecord({
-                        id : req.body.scanID,
-                        surname : staff.surname,
-                        forenames : staff.forenames,
+                        id : staff.data._id,
+                        surname : staff.data.surname,
+                        forenames : staff.data.forenames,
                         type : 'staff',
                         loc : req.params.location.toUpperCase(),
                         io : 0,
