@@ -459,7 +459,7 @@
 
                     if (diffTime > 60) {
                       // Student didn't sign in, update fire register and register records with timeIn as 'N/A'
-                      fireRegisterModel.updateRecord({
+                      fireRegisterManager.updateRecord({
                         id : students._id,
                         forenames : students.forenames,
                         surname : students.surname,
