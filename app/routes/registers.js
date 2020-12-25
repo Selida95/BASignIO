@@ -202,7 +202,7 @@
                         yearGroup : students.yearGroup,
                         tutorGrp : students.tutorGrp,
                         timeIn : utils.time(),
-                        timeOut : ''
+                        timeOut : ' '
                       }, (record) => {
 
                       })
@@ -239,7 +239,7 @@
                     yearGroup : students.yearGroup,
                     tutorGrp : students.tutorGrp,
                     timeIn : utils.time(),
-                    timeOut : ''
+                    timeOut : ' '
                   }, (record) => {
 
                   })
