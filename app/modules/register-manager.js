@@ -111,14 +111,18 @@
      manager.getLatestRecord({
        id : id
      }, (record) => {
-       record.data.io = io
-       record.data.timeIn = timeIn ? timeIn : record.data.timeIn
-       record.data.timeOut = timeOut ? timeOut : record.data.timeOut
-       record.data.save((error) => {
-         if (error) throw error
-
-         callback({ message : 'SUCCESS'})
-       })
+       if (record.message === 'SUCCESS') {
+         record.data.io = io
+         record.data.timeIn = timeIn ? timeIn : record.data.timeIn
+         record.data.timeOut = timeOut ? timeOut : 'ERROR'//record.data.timeOut
+         record.data.save((error) => {
+           if (error) throw error
+           console.log('SUCCESS')
+           callback({ message : 'SUCCESS'})
+         })
+       } else {
+         callback({ message : 'NOT_FOUND'})
+       }
      })
    } else {
      throw new Error('REQUIRED_FIELDS_INVALID')
