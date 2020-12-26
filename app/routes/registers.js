@@ -45,9 +45,8 @@
   		//if scanID is empty
   		if (!req.body.scanID) {
   			//Print("Please scan your id")
-  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
+        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ID wasn't scanned.`)
   			req.flash('error', 'Please enter/scan your id.');
-
   			res.redirect('/reg/' + req.params.location);
   		//else
   		}else{
@@ -89,29 +88,29 @@
 
   							var msg = 'You have used all of your manual input allowance.';
   						}else{
-  							var msg = 'You have used ' + students.manualCount + '/'+ config.manual_input.max_uses + ' of your manual input allowance.';
+                var msg = `You have used ${students.manualCount}/${config.manual_input.max_uses} of your manual input allowance.`
   						}
   						//Get student forename and surname
   						user = students;
-  						console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname +  'just scanned/entered their id. They have' + students.manualCount + '/'+ config.manual_input.max_uses + ' of their manual input allowance.');
+              console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${user.forenames} ${user.surname} justed scanned/entered their id. They have ${students.manualCount}/${config.manual_input.max_uses} of their manual input allowance.`)
   						res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus, warning: msg});
   					}else{
   						if (req.body.scanID == students._id) {
   							//Manual Input was used.
   							//Get student forename and surname
   							user = students;
-  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id. Manual Input was used.");
+                console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${user.forenames} ${user.surname} just scanned/endered their id. Manual Input was used.`)
   							res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus});
   						}else{
   							//Get student forename and surname
   							user = students;
-  							console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + user.forenames + " " + user.surname + " just scanned/entered their id.");
+                console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${user.forenames} ${user.surname} just scanned/entered their id.`)
   							res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: user, id: students._id, inputFocus: inputFocus});
   						}
   					}
   				//else
   				}else{
-  					console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() +" Scanning ID: User isn't student checking if staff member.");
+            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Scanning ID: User isn't student, checking if user is a staff member`)
   					//Check if staff exists
             staffManager.getStaff({
               id : req.body.scanID,
@@ -119,7 +118,7 @@
               cardID2 : req.body.scanID
             }, (staff) => {
               if (staff.message === 'SUCCESS') {
-                console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " " + staff.data.forenames + " " + staff.data.surname + " just scanned/entered their id.");
+                console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} just scanned/entered their id.`)
                 res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: staff.data, id: staff.data._id, inputFocus: inputFocus});
               } else {
                 //if user doesn't exist.
@@ -138,14 +137,14 @@
   		//if scanID is empty
   		if (!req.body.scanID) {
   			//Print("Please scan your id")
-  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
+        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ID wasn't scanned.`)
   			req.flash('error', 'Please enter/scan your id.');
 
   			res.redirect('/reg/' + req.params.location);
   		//else
   		}else{
   			//Print('Checking ID')
-  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | Checking ID: " + req.body.scanID)
+        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Checking ID: ${req.body.scanID}`)
   			//Removes focus from scan input
   			inputFocus = false;
   			//check if student exists
@@ -168,7 +167,7 @@
                       timeIn : utils.time(),
                       timeOut : ' '
                     }, (record) => {
-
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Student fire register record was updated.`)
                     })
                     registerManager.createNewRecord({
                       id : students._id,
@@ -181,10 +180,11 @@
                       tutorGrp : students.tutorGrp,
                       timeIn : utils.time()
                     }, (record) => {
-                      console.log("Log: " + utils.date() + " " + utils.time() + " " + students.forenames + ' ' + students.surname + ' was signed in!');
-                      req.flash('success', students.forenames + ' ' + students.surname + ' was signed in!');
-                      res.redirect('/reg/' + req.params.location);
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student register record was created.`)
                     })
+                    console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed in!`)
+                    req.flash('success', `${students.forenames} ${students.surname} was signed in!`)
+                    res.redirect('/reg/' + req.params.location);
                   } else {
                     // Check if signin button was pressed twice
                     let currentTime = moment()
@@ -204,26 +204,43 @@
                         timeIn : utils.time(),
                         timeOut : ' '
                       }, (record) => {
-
+                        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Student fire register record was updated.`)
                       })
 
-                      if (fireRecord.data.timeOut.length === 0) {
-                        // Update last register record with 'N/A' for timeOut
-                        registerManager.updateLatestRecord({
+                      // Update last register record with 'N/A' for timeOut
+                      registerManager.updateLatestRecord({
+                        id : students._id,
+                        io : 1,
+                        timeOut : 'N/A'
+                      }, (record) => {
+                        if (record.message === 'SUCCESS') {
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Student register record was updated with timeOut: N/A`)
+                        } else {
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Register record could not be found with that student id.`)
+                        }
+
+                        //Create new register record
+                        registerManager.createNewRecord({
                           id : students._id,
+                          surname : students.surname,
+                          forenames : students.forenames,
+                          type : 'student',
+                          loc : req.params.location.toUpperCase(),
+                          yearGroup : students.yearGroup,
+                          tutorGrp : students.tutorGrp,
                           io : 1,
-                          timeOut : 'N/A'
+                          timeIn : utils.time()
                         }, (record) => {
-
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student register record was created.`)
                         })
-                      }
+                      })
 
-                      console.log("Log: " + utils.date() + " " + utils.time() + " " + students.forenames + ' ' + students.surname + " was signed in, but didn't sign out.");
-                      req.flash('error', students.forenames + ' ' + students.surname + " was signed in, but didn't previously signout. Please do so in the future!");
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed in, but didn't sign out.`)
+                      req.flash('error', `${students.forenames} ${students.surname} was signed in, but didn't previously signout. Please do so in the future!`)
                       res.redirect('/reg/' + req.params.location);
                     } else {
-                      console.log("Log: " + utils.date() + " " + utils.time() + " " + students.forenames + ' ' + students.surname + " was signed in. Sign in button was press more than once.");
-                      req.flash('success', students.forenames + ' ' + students.surname + ' was signed in! But you dont\'t need to spam the button.');
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed in. Sign in button was pressed more than once.`)
+                      req.flash('success', `${students.forenames} ${students.surname} was signed in! But you don't need to spam the button.`)
                       res.redirect('/reg/' + req.params.location);
                     }
                   }
@@ -241,7 +258,7 @@
                     timeIn : utils.time(),
                     timeOut : ' '
                   }, (record) => {
-
+                    console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student fire register record was created.`)
                   })
                   // Create new register record
                   registerManager.createNewRecord({
@@ -255,10 +272,10 @@
                     io : 1,
                     timeIn : utils.time()
                   }, (record) => {
-
+                    console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student register record was created.`)
                   })
-                  console.log("Log: " + utils.date() + " " + utils.time() + " " + students.forenames + ' ' + students.surname + ' was signed in!');
-  								req.flash('success', students.forenames + ' ' + students.surname + ' was signed in!');
+                  console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${student.surname} was signed in!`)
+                  req.flash('success', `${students.forenames} ${students.surname} was signed in!`)
   								res.redirect('/reg/' + req.params.location);
                 }
               })
@@ -289,7 +306,7 @@
                           timeOut : ' ',
                           staffType : staff.data.staffType
                         }, (record) => {
-
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Staff fire register record was updated.`)
                         })
                         // Create new register record
                         registerManager.createNewRecord({
@@ -301,10 +318,10 @@
                           io : 1,
                           timeIn : utils.time()
                         }, (record) => {
-
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New staff register record was created.`)
                         })
-                        console.log("Log: " + utils.date() + " " + utils.time() + " " + staff.data.forenames + ' ' + staff.data.surname + ' was signed in!');
-                        req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed in!');
+                        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed in!`)
+                        req.flash('success', `${staff.data.forenames} ${staff.data.surname} was signed in!`)
                         res.redirect('/reg/' + req.params.location);
                       } else {
                         let currentTime = moment()
@@ -322,40 +339,36 @@
                             timeOut : ' ',
                             staffType : staff.data.staffType
                           }, (record) => {
-
+                            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Staff fire register record was updated.`)
                           })
-
-                          console.log(fireRecord.data.timeOut.length)
-                          console.log(fireRecord.data.timeOut)
-                          if (fireRecord.data.timeOut.length === 1) {
-                            // Update last register record with 'N/A' for timeOut
-                            registerManager.updateLatestRecord({
-                              id : staff.data._id,
-                              io : 1,
-                              timeOut : 'N/A'
-                            }, (record) => {
-
-                            })
-                          }
-
-                          //Create new register record
-                          registerManager.createNewRecord({
+                          // Update last register record with 'N/A' for timeOut
+                          registerManager.updateLatestRecord({
                             id : staff.data._id,
-                            surname : staff.data.surname,
-                            forenames : staff.data.forenames,
-                            type : 'staff',
-                            loc : req.params.location.toUpperCase(),
                             io : 1,
-                            timeIn : utils.time()
+                            timeOut : 'N/A'
                           }, (record) => {
+                            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Staff register record was updated.`)
 
+                            //Create new register record
+                            registerManager.createNewRecord({
+                              id : staff.data._id,
+                              surname : staff.data.surname,
+                              forenames : staff.data.forenames,
+                              type : 'staff',
+                              loc : req.params.location.toUpperCase(),
+                              io : 1,
+                              timeIn : utils.time()
+                            }, (record) => {
+                              console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New staff register record was created.`)
+                            })
                           })
-                          console.log("Log: " + utils.date() + " " + utils.time() + " " + staff.data.forenames + ' ' + staff.data.surname + " was signed in, but didn't sign out.");
-                          req.flash('error', staff.data.forenames + ' ' + staff.data.surname + " was signed in, but didn't previously signout. Please do so in the future!");
+
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed in, but didn't sign out.`)
+                          req.flash('error', `${staff.data.forenames} ${staff.data.surname} was signed in, but didn't previously sign out. Please do so in the future!`)
                           res.redirect('/reg/' + req.params.location);
                         } else {
-                          console.log("Log: " + utils.date() + " " + utils.time() + " " + staff.data.forenames + ' ' + staff.data.surname + " was signed in. Sign in button was press more than once.");
-                          req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed in! But you dont\'t need to spam the button.');
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed in. The sign in button was pressed more than once.`)
+                          req.flash('success', `${staff.data.forenames} ${staff.data.surname} was signed in! But you don't need to spam the button.`)
                           res.redirect('/reg/' + req.params.location);
                         }
                       }
@@ -372,7 +385,7 @@
                         timeIn : utils.time(),
                         timeOut : ' '
                       }, (record) => {
-
+                        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New staff fire register record was created.`)
                       })
                       //Create new register record
                       registerManager.createNewRecord({
@@ -384,18 +397,19 @@
                         io : 1,
                         timeIn : utils.time()
                       }, (record) => {
-
+                        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New staff register record was created.`)
                       })
-                      console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed in.")
-                      req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed in.')
+
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed in.`)
+                      req.flash('success', `${staff.data.forenames} ${staff.data.surname} was signed in.`)
                       res.redirect('/reg/' + req.params.location)
                     }
                   })
                 }
               })
             } catch (e) {
-              console.log("Log: " + utils.date() + " " + utils.time() + " " + staff.data.forenames + ' ' + staff.data.surname + " was signed in, but didn't sign out.");
-              req.flash('error', staff.data.forenames + ' ' + staff.data.surname + " was signed in, but didn't previously signout. Please do so in the future!");
+              console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed in, but didn't sign out.`)
+              req.flash('error', `${staff.data.forenames} ${staff.data.surname} was signed in, but didn't previously sign out. Please do so in the future!`)
               res.redirect('/reg/' + req.params.location);
             }
   				}
@@ -406,14 +420,13 @@
   		//if scanID is empty
   		if (!req.body.scanID) {
   			//Print("Please scan your id")
-  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | ID wasn't scanned.");
+        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ID wasn't scanned.`)
   			req.flash('error', 'Please enter/scan your id.');
-
   			res.redirect('/reg/' + req.params.location);
   		//else
   		}else{
   			//Print('Checking ID')
-  			console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | Checking ID: " + req.body.scanID)
+        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Checking ID: ${req.body.scanID}`)
   			//Removes focus from scan input
   			inputFocus = false;
   			//Check if student exists
@@ -438,7 +451,9 @@
                       yearGroup : students.yearGroup,
                       tutorGrp : students.tutorGrp
                     }, (record) => {
-
+                      if (record.message === 'SUCCESS') {
+                        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | IO state and timeOut fields were updated for student fire register record.`)
+                      }
                     })
                     // Update last register record with current time for timeOut
                     registerManager.updateLatestRecord({
@@ -446,10 +461,14 @@
                       io : 0,
                       timeOut : utils.time()
                     }, (record) => {
-
+                      if (record.message === 'SUCCESS') {
+                        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | IO state and timeOut fields were updated for student register record.`)
+                      } else {
+                        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Last register record could not be found.`)
+                      }
                     })
-                    console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out.");
-                    req.flash('success', students.forenames + ' ' + students.surname + ' was signed out.')
+                    console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${student.forenames} ${student.surname} was signed out.`)
+                    req.flash('success', `${students.forenames} ${students.surname} was signed out.`)
                     res.redirect('/reg/' + req.params.location);
                   } else {
                     // Student was already signed out, so check if user pressed button twice
@@ -471,7 +490,11 @@
                         timeIn : 'N/A',
                         timeOut : utils.time()
                       }, (record) => {
-
+                        if (record.message === 'SUCCESS') {
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | IO state, timeIn and timeOut fields were updated for student fire register record.`)
+                        } else {
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Student's fire register record could not be found.`)
+                        }
                       })
 
                       if (fireRecord.data.timeOut.length === 1) {
@@ -481,7 +504,11 @@
                           io : 0,
                           timeOut : 'N/A'
                         }, (record) => {
-
+                          if (record.message === 'SUCCESS') {
+                            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | IO state and timeOut fields were updated for student register record.`)
+                          } else {
+                            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Last register record could not be found.`)
+                          }
                         })
                       }
 
@@ -498,14 +525,16 @@
                         timeIn : 'N/A',
                         timeOut : utils.time()
                       }, (record) => {
-
+                        if (record.message === 'SUCCESS') {
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student register record was created with timeIn set to 'N/A and timeOut as current time.'`)
+                        }
                       })
-                      console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out, but didn't sign in.");
-  										req.flash('error', students.forenames + ' ' + students.surname + " was signed out, but didn't sign in. Please do so in the future!")
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed out, but didn't sign in.`)
+                      req.flash('error', `${students.forenames} ${students.surname} was signed out, but didn't sign in. Please do so in the future!`)
   										res.redirect('/reg/' + req.params.location);
                     } else {
-                      console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed out. Sign Out button was press more than once.");
-                      req.flash('success', students.forenames + ' ' + students.surname + ' was signed out. But you dont\'t need to spam the button.')
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed out. Sign Out button was pressed more than once`)
+                      req.flash('success', `${students.forenames} ${students.surname} was signed out. But you don't need to spam the button.`)
                       res.redirect('/reg/' + req.params.location);
                     }
                   }
@@ -523,7 +552,9 @@
                     timeIn : 'N/A',
                     timeOut : utils.time()
                   }, (record) => {
-
+                    if (record.message === 'SUCCESS') {
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student fire register record was created with timeIn set to 'N/A and timeOut as current time.'`)
+                    }
                   })
                   registerManager.createNewRecord({
                     id : students._id,
@@ -537,11 +568,13 @@
                     timeIn : 'N/A',
                     timeOut : utils.time()
                   }, (record) => {
-
+                    if (record.message === 'SUCCESS') {
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student register record was created with timeIn set to 'N/A and timeOut as current time.'`)
+                    }
                   })
 
-                  console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + students.forenames + ' ' + students.surname + " was signed!");
-    							req.flash('error', students.forenames + ' ' + students.surname + " was signed out!")
+                  console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed out!`)
+                  req.flash('success', `${students.forenames} ${students.surname} was signed out!`)
     							res.redirect('/reg/' + req.params.location);
                 }
               })
@@ -572,7 +605,11 @@
                           staffType : staff.data.staffType,
                           timeOut : utils.time()
                         }, (record) => {
-
+                          if (record.message === 'SUCCESS') {
+                            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | IO state and timeOut fields were updated for staff fire register record.`)
+                          } else {
+                            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Staff member's fire register record could not be found.`)
+                          }
                         })
 
                         // Update last register record with current time for timeOut
@@ -581,11 +618,15 @@
                           io : 0,
                           timeOut : utils.time()
                         }, (record) => {
-
+                          if (record.message === 'SUCCESS') {
+                            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | IO state and timeOut fields were updated for staff register record.`)
+                          } else {
+                            console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Staff member's register record could not be found.`)
+                          }
                         })
 
-                        console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out.");
-                        req.flash('success', staff.data.forenames + ' ' + staff.data.surname + ' was signed out.')
+                        console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed out.`)
+                        req.flash('success', `${staff.data.forenames} ${staff.data.surname} was signed out.`)
                         res.redirect('/reg/' + req.params.location);
                       } else {
                         // Staff member was already signed out, so check if user pressed button twice
@@ -607,7 +648,11 @@
                             timeIn : 'N/A',
                             timeOut : utils.time()
                           }, (record) => {
-
+                            if (record.message === 'SUCCESS') {
+                              console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | IO state, timeIn and timeOut fields were updated for staff fire register record.`)
+                            } else {
+                              console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Staff member's fire register record could not be found.`)
+                            }
                           })
                           if (fireRecord.data.timeOut.length === 1) {
                             // Update last register record with 'N/A' for timeOut
@@ -616,7 +661,11 @@
                               io : 0,
                               timeOut : 'N/A'
                             }, (record) => {
-
+                              if (record.message === 'SUCCESS') {
+                                console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | IO state and timeOut fields were updated for staff register record.`)
+                              } else {
+                                console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Staff member's register record could not be found.`)
+                              }
                             })
                           }
                           //Create new register record
@@ -630,16 +679,17 @@
                             timeIn : 'N/A',
                             timeOut : utils.time()
                           }, (record) => {
-
+                            if (record.message === 'SUCCESS') {
+                              console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New staff register record was created with timeIn set to 'NA' and timeOut set to current time.`)
+                            }
                           })
-                          console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out, but didn't sign in.");
-                          req.flash('error', staff.data.forenames + ' ' + staff.data.surname + " was signed out, but didn't sign in. Please do so in the future!")
+
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed out, but didn't sign in.`)
+                          req.flash('error', `${staff.data.forenames} ${staff.data.surname} was signed out, but didn't sign in. Please do so in the future!`)
                           res.redirect('/reg/' + req.params.location);
                         } else {
-                          console.log(' ')
-                          console.log(`${staff.data.forenames} ${staff.data.surname}`)
-                          req.flash('success', `${staff.data.forenames} ${staff.data.surname} was signed out. But you don't need to spam the button.`)
                           console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed out. Sign Out button was press more than once.`)
+                          req.flash('success', `${staff.data.forenames} ${staff.data.surname} was signed out. But you don't need to spam the button.`)
                           res.redirect('/reg/' + req.params.location);
                         }
                       }
@@ -655,7 +705,9 @@
                         timeIn : 'N/A',
                         timeOut : utils.time()
                       }, (record) => {
-
+                        if (record.message === 'SUCCESS') {
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New staff fire register record was created with timeIn set to 'NA' and timeOut set to current time.`)
+                        }
                       })
 
                       //Create new register record
@@ -669,16 +721,18 @@
                         timeIn : 'N/A',
                         timeOut : utils.time()
                       }, (record) => {
-
+                        if (record.message === 'SUCCESS') {
+                          console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New staff register record was created with timeIn set to 'NA' and timeOut set to current time.`)
+                        }
                       })
-                      console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | " + staff.data.forenames + ' ' + staff.data.surname + " was signed out.");
-    									req.flash('error', staff.data.forenames + ' ' + staff.data.surname + " was signed out!")
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${staff.data.forenames} ${staff.data.surname} was signed out.`)
+                      req.flash('success', `${staff.data.forenames} ${staff.data.surname} was signed out!`)
     									res.redirect('/reg/' + req.params.location);
                     }
                   })
                 } else {
-                  console.log("Log: " + utils.date() + " " + utils.time() + " " + req.params.location.toUpperCase() + " | User tried to enter ID: " + req.body.scanID);
-                  req.flash('error', "ID: " + req.body.scanID + " doesn't exist. Please contact admin.")
+                  console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | User tried to enter ID: ${req.body.scanID}`)
+                  req.flash('error', `ID: ${req.body.scanID} doesn't exist. Please contact admin.`)
                   res.redirect('/reg/' + req.params.location);
                 }
               })
