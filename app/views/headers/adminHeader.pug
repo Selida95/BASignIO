@@ -21,6 +21,9 @@ html
 		script.
 			$(document).ready(function () {
 				$('#staffTable').DataTable();
+				$('#regTable').DataTable({
+					"ordering": false
+				});
 			});
 			
 			$( function() {

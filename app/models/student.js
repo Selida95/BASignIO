@@ -14,11 +14,6 @@ var student = new Schema({
 	manualCount: {type: Number}
 });
 
-student.virtual('fullName').get(function () {
-  return this.forenames + ' ' + this.surname;
-});
-
-
 // the schema is useless so far
 // we need to create a model using it
 var Student = mongoose.model('Student', student);

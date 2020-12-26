@@ -19,11 +19,8 @@ block content
 
 		div-col-md-8
 		div-col-md-2
-			button(id="filter" type="button" class="btn btn-primary" data-toggle="modal" data-target="#regFilterModal")
-				span.glyphicon.glyphicon-filter(aria-hidden="true")
-				| Filter
 
-
+	br
 	table(id='regTable').table.table-hover
 		thead
 			tr.header
@@ -48,7 +45,3 @@ block content
 					td.center= register.timeIn
 					td.center= register.timeOut
 					td.center= register.date
-
-
-
-	include ./pagination/regPaginate

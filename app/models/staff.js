@@ -13,11 +13,6 @@ var staff = new Schema({
 	department: {type: String, required: true}
 });
 
-staff.virtual('fullName').get(function () {
-  return this.forenames + ' ' + this.surname;
-});
-
-
 // the schema is useless so far
 // we need to create a model using it
 var Staff = mongoose.model('Staff', staff);
