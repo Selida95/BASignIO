@@ -125,6 +125,23 @@
    }
  }
 
+ // Remove Student
+ // Required Fields: parameterObject(contains: id ), callback
+ // Optional Fields: none
+ manager.removeStudent = (parameterObject, callback) => {
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
+
+   studentModel.findOneAndRemove({ '_id' : id }, (error, removed) => {
+     if (error) throw error
+
+     if (removed && Object.keys(removed).length > 0) {
+       callback({ message : 'SUCCESS' })
+     } else {
+       callback({ message : 'NOT_FOUND' })
+     }
+   })
+ }
+
  // Increment Manual Input Counter
  // Required Fields: id, callback
  // Optional Fields: None
