@@ -463,7 +463,7 @@ router.get('/:user/staff', (req, res, next) => {
     let staffEdit = null;
     if (req.query.r) {
       try {
-        staffManager.removeStaff(req.query.r, (removed) => {
+        staffManager.removeStaff({ id : req.query.r }, (removed) => {
           if (removed.message === 'SUCCESS') {
             console.log('Staff was removed.');
           } else {

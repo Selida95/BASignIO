@@ -136,8 +136,10 @@
  }
 
  // Remove Staff
- manager.removeStaff = (staff_id, callback) => {
-   let id = typeof(parseInt(staff_id)) === 'number' ? parseInt(staff_id) : false
+ // Required Fields: parameterObject(contains: id ), callback
+ // Optional Fields: none
+ manager.removeStaff = (parameterObject, callback) => {
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
 
    staffModel.findOneAndRemove({ '_id' : id }, (error, removed) => {
      if (error) {
