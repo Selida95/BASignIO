@@ -15,6 +15,42 @@
  // Define manager object
  var manager = {};
 
+ // Create New Student
+ // Require Fields: parameterObject(contains: id, cardID, forenames, surname, yearGroup), callback
+ // Optional Fields: parameterObject(contains: tutorGrp, house)
+ manager.createNewStudent = (parameterObject, callback) => {
+   // Validate fields
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false
+   let cardID = typeof(parseInt(parameterObject.cardID)) === 'number' && !isNaN(parameterObject.cardID) ? parseInt(parameterObject.cardID) : false
+   let forenames = typeof(parameterObject.forenames) === 'string' && parameterObject.forenames.length > 0 ? parameterObject.forenames.trim() : false
+   let surname = typeof(parameterObject.surname) === 'string' && parameterObject.surname.length > 0 ? parameterObject.surname.trim() : false
+   let yearGroup = typeof(parseInt(parameterObject.yearGroup)) === 'number' && !isNaN(parameterObject.yearGroup) ? parseInt(parameterObject.yearGroup) : false
+   let tutorGrp = typeof(parseInt(parameterObject.tutorGrp)) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp.trim() : false
+   let house = typeof(parameterObject.house) === 'string' && parameterObject.house.length > 0 ? parameterObject.house.trim() : false
+
+   // Check if required fields are valid
+   if (id !== false && cardID !== false && forenames, surname, yearGroup !== false) {
+     let student = new studentModel({
+       _id : id,
+       cardID : cardID,
+       forenames : forenames,
+       surname : surname,
+       yearGroup : yearGroup,
+       tutorGrp : tutorGrp ? tutorGrp : '',
+       house : house ? house : '',
+       manualCount : 0
+     })
+
+     student.save((error) => {
+       if (error) throw error
+
+       callback({ message : 'SUCCESS' })
+     })
+   } else {
+     throw new Error('REQUIRED_FIELD_INVALID')
+   }
+ }
+
  // Get Student
  // Required Fields: id (Candidate Number, Card Id), callback
  // Optional Fields: None
