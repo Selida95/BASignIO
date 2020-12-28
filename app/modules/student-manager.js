@@ -78,6 +78,22 @@
 
  }
 
+
+ // Get All Students
+ // Required Fields: callback
+ // Optional Fields: none
+ manager.getAllStudents = (callback) => {
+   studentModel.find({}, (error, students) => {
+     if (error) throw error
+
+     if (students && Object.keys(students).length > 0) {
+       callback({ message : 'SUCCESS', data : students })
+     } else {
+       callback({ message : 'NOT_FOUND' })
+     }
+   })
+ }
+
  // Update Student
  // Required Fields: parameterObject (Must contain the id and at least one optional field to update), result variable
  // Optional Fields: cardID, forenames, surname, tutorGrp, yearGroup, manualCount
