@@ -44,7 +44,7 @@
      student.save((error) => {
        if (error) throw error
 
-       callback({ message : 'SUCCESS' })
+       callback({ message : 'SUCCESS', data : student })
      })
    } else {
      throw new Error('REQUIRED_FIELD_INVALID')
@@ -117,7 +117,7 @@
        result.data.manualCount = typeof(parameterObject.manualCount) === 'number' & parameterObject.manualCount.toString().length > 0 ? parameterObject.manualCount : result.data.manualCount;
        result.data.save();
 
-       callback({ message : 'SUCCESS'})
+       callback({ message : 'SUCCESS', data : result.data })
      })
    } catch (e) {
      throw e;
@@ -134,7 +134,7 @@
      if (error) throw error
 
      if (removed && Object.keys(removed).length > 0) {
-       callback({ message : 'SUCCESS' })
+       callback({ message : 'SUCCESS', data : removed })
      } else {
        callback({ message : 'NOT_FOUND' })
      }
