@@ -18,14 +18,12 @@
  const registerManager = require('../modules/register-manager')
  const fireRegisterManager = require('../modules/fire-register-manager')
  const staffManager = require('../modules/staff-manager');
+ const studentManager = require('../modules/student-manager')
  const useChecker = require('../modules/use-checker.js');
 
  // Config
  const config = require('../config')
  const secret = config.crypto.secret;
-
- // Database Models
- const student = require('../models/student');
 
 /* GET users listing. */
 
@@ -267,52 +265,50 @@ router.get('/:user/students', (req, res, next) => {
 			})
 		}
 	}else{
+    let stuEdit = null;
+    if (req.query.r) {
+      try {
+        studentManager.removeStudent({ id : req.query.r }, (student) => {
+          if (students.message === 'SUCCESS') {
+            console.log(`Log: ${utils.date()} ${utils.time()} | ${student.data._id}: ${student.data.forenames} ${student.data.surname} was removed`)
+          } else {
+            console.log(`Log: ${utils.date()} ${utils.time()} | Failed to remove student with id: ${req.query.r}`)
+          }
+          res.redirect('/users/' + req.session.user.username + '/students');
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    }
 
-		if (req.query.r) {
-			var id = req.query.r;
-			//console.log('id: '+ id);
+    if (req.query.e) {
+      try {
+        studentManager.getStudent({
+          id : req.query.e
+        }, (student) => {
+          if (student.message === 'SUCCESS') {
+            stuEdit = student.data
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    }
 
-			student.findOneAndRemove({'_id': id}, (err, students) => {
-				if (err) {
-					console.error('Error: ' + err);
-				};
-					console.log('Student was removed.');
-					res.redirect('/users/' + req.session.user.username + '/students');
-			});
-		}else if(req.query.e){
-			var query = req.url.split('?')[1]
-			console.log(query);
+    try {
+      studentManager.getAllStudent((student) => {
+        let stuData = null
+        if (staff.message === 'SUCCESS') {
+          stuData = stu.data
+        } else {
+          stuData = {}
+        }
 
-			//Current Page
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(student, currentPage, search, (err, params) => {
-				student.find(search, (err, students) => {
-					student.findOne({'_id': req.query.e}, (err, stuEdit) => {
-						res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, stuEdit: stuEdit, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
-					})
-				}).limit(params.maxDocs).skip(params.skipPages).sort({yearGroup: 1})
-			})
-
-		}else{
-
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-			//Current Page
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(student, currentPage, search, (err, params) => {
-				student.find(search, (err, students) => {
-					//console.dir(students);
-					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
-				}).limit(params.maxDocs).skip(params.skipPages).sort({yearGroup: 1})
-			})
-		}
+        res.render('staffList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: stuData, stuEdit: stuEdit });
+      })
+    } catch (e) {
+      console.log(e)
+    }
 	}
 });
 
@@ -340,100 +336,51 @@ router.post('/:user/students', (req, res, next) => {
 		}
 	}else{
 		if (req.body.stuEditSubmit) {
-			var id = req.body.stuEditCadid;
-			var cardID = req.body.stuEditCardid;
-			var surname = req.body.stuEditSurname;
-			var forenames = req.body.stuEditForenames;
-			var yearGroup = req.body.stuEditYearGroup;
-			var house = req.body.stuEditHouse;
-			var tutorGrp = req.body.stuEditTutorGrp;
-
-
-
-			student.findOne({_id: req.query.e}, (err, doc) => {
-				if (err) {
-					console.log('Err: ' + err);
-				}
-
-				if (doc) {
-					doc._id = id;
-					doc.cardID = cardID;
-					doc.surname = surname;
-					doc.forenames = forenames;
-					doc.tutorGrp = tutorGrp;
-					doc.house = house;
-					doc.yearGroup = yearGroup;
-
-
-					doc.save();
-
-					var query = req.url.split('?')[1];
-					var query = query.split('&')[0];
-
-					res.redirect('/users/' + req.session.user.username + '/students?' + query);
-				}
-			});
+      try {
+        studentManager.updateStudent({
+          id : req.body.stuEditCadid,
+          cardID : req.body.stuEditCardid,
+          forenames : req.body.stuEditForenames,
+          surname : req.body.stuEditSurname,
+          yearGroup : req.body.stuEditYearGroup,
+          house : req.body.stuEditHouse,
+          tutorGrp : req.body.stuEditTutorGrp
+        }, (student) => {
+          if (student.message === 'SUCCESS') {
+            console.log(`Log: ${utils.date()} ${utils.time()} | ${student.data._id}: ${student.data.forenames} ${student.data.surname} was updated.`)
+          } else {
+            console.log(`Log: ${utils.date()} ${utils.time()} | Failed to update student with id: ${req.query.r}`)
+          }
+          res.redirect('/users/' + req.session.user.username + '/students');
+        })
+      } catch (e) {
+        console.log(e)
+      }
 		}
 
+    if (req.body.stuStudent) {
+      try {
+        studentManager.createNewStudent({
+          id : req.body.cadid,
+          cardID : req.body.cardid,
+          forenames : req.body.forenames,
+          surname : req.body.surname,
+          yearGroup : req.body.yearGroup,
+          house : req.body.house,
+          tutorGrp : req.body.tutorGrp
+        }, (student) => {
+          if (student.message === 'SUCCESS') {
+            console.log(`Log: ${utils.date()} ${utils.time()} | New student, ${student.data.forenames} ${student.data.surname}, was created.`)
+          } else {
+            console.log(`Log: ${utils.date()} ${utils.time()} | Failed to create new student.`)
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    }
 
-		if (req.body.stuSubmit){
-			var id = req.body.cadid;
-			var cardID = req.body.cardid;
-			var surname = req.body.surname;
-			var forenames = req.body.forenames;
-			var yearGroup = req.body.yearGroup;
-			var house = req.body.house;
-			var tutorGrp = req.body.tutorGrp;
-
-			if (id == "") {
-				res.redirect('/users/' + req.session.user.username + '/' +  'students');
-			}
-			if (surname == "") {
-				res.redirect('/users/' + req.session.user.username + '/' + 'students');
-			}
-			if (forenames == "") {
-				res.redirect('/users/' + req.session.user.username + '/' +  'students');
-			}
-			if (yearGroup == "") {
-				res.redirect('/users/' + req.session.user.username + '/' +  'students');
-			}
-
-
-		    var Student = new student({
-		    	_id: id,
-		    	cardID: cardID,
-				surname: surname,
-				forenames: forenames,
-				yearGroup: yearGroup,
-				house: house,
-				tutorGrp: tutorGrp,
-				manualCount: 0
-			},
-			{
-				collection: 'students',
-				versionKey: false
-			});
-
-			Student.save((err, Student) => {
-				if (err) return console.error(err);
-				console.dir(Student);
-			})
-			res.redirect('/users/' + req.session.user.username + '/students');
-		}else{
-			var query = req.url.split('?')[1]
-			console.log(query);
-
-			var currentPage = req.query.page;
-
-			var search = {};
-
-			pag.pagination(student, currentPage, search, (err, params) => {
-				student.find(search, (err, students) => {
-					//console.dir(students);
-					res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: students, sort: req.query.sort, search: search, totalPages: params.totalPages, prevPage: params.prevPage, nextPage: params.nextPage, pageNum: params.currentPage, fvp: params.fvp, lvp: params.lvp, query: query});
-				}).limit(params.maxDocs).skip(params.skipPages).sort({surname: 1})
-			})
-		}
+    res.redirect('/users/' + req.session.user.username + '/students');
 	}
 });
 
