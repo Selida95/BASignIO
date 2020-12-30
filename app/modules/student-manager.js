@@ -25,7 +25,7 @@
    let forenames = typeof(parameterObject.forenames) === 'string' && parameterObject.forenames.length > 0 ? parameterObject.forenames.trim() : false
    let surname = typeof(parameterObject.surname) === 'string' && parameterObject.surname.length > 0 ? parameterObject.surname.trim() : false
    let yearGroup = typeof(parseInt(parameterObject.yearGroup)) === 'number' && !isNaN(parameterObject.yearGroup) ? parseInt(parameterObject.yearGroup) : false
-   let tutorGrp = typeof(parseInt(parameterObject.tutorGrp)) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp.trim() : false
+   let tutorGrp = typeof(parameterObject.tutorGrp) === 'string' && parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp.trim() : false
    let house = typeof(parameterObject.house) === 'string' && parameterObject.house.length > 0 ? parameterObject.house.trim() : false
 
    // Check if required fields are valid
@@ -52,13 +52,13 @@
  }
 
  // Get Student
- // Required Fields: id (Candidate Number, Card Id), callback
+ // Required Fields: parameterObject(contains: id (Candidate Number or Card Id)), callback
  // Optional Fields: None
- manager.getStudent = (student_id, callback) => {
+ manager.getStudent = (parameterObject, callback) => {
    // Validate id
-   let id = typeof(parseInt(student_id)) === 'number' && student_id.toString().length > 0 ? parseInt(student_id) : false;
-
-   if (!id) {
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false;
+   
+   if (typeof(id) !== 'number') {
      throw new Error("REQUIRED_FIELD_INVALID");
    }
 
@@ -98,12 +98,12 @@
  // Optional Fields: cardID, forenames, surname, tutorGrp, yearGroup, manualCount
  manager.updateStudent = (parameterObject, callback) => {
    // Validate id
-   let id = typeof(parameterObject.id) === 'string' && parameterObject.id.length > 0 ? parameterObject.id.trim() : false;
-   if (id !== true) {
-     throw "REQUIRED_FIELD_INVALID";
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false;
+   if (typeof(id) !== 'number') {
+     throw new Error("REQUIRED_FIELD_INVALID");
    }
    try {
-     manager.getStudent(id, (result) => {
+     manager.getStudent({ id : id }, (result) => {
 
        if (result.message === 'NOT_FOUND') {
          callback({ message : 'NOT_FOUND' })
@@ -113,8 +113,8 @@
        result.data.forenames = typeof(parameterObject.forenames) === 'string' & parameterObject.forenames.length > 0 ? parameterObject.forenames.trim() : result.data.forenames;
        result.data.surname = typeof(parameterObject.surname) === 'string' & parameterObject.surname.length > 0 ? parameterObject.surname.trim() : result.data.surname;
        result.data.tutorGrp = typeof(parameterObject.tutorGrp) === 'string' & parameterObject.tutorGrp.length > 0 ? parameterObject.tutorGrp.trim() : result.data.tutorGrp;
-       result.data.yearGroup = typeof(parameterObject.yearGroup) === 'number' & parameterObject.yearGroup.toString().length > 0 ? parameterObject.yearGroup : result.data.yearGroup;
-       result.data.manualCount = typeof(parameterObject.manualCount) === 'number' & parameterObject.manualCount.toString().length > 0 ? parameterObject.manualCount : result.data.manualCount;
+       result.data.yearGroup = typeof(parameterObject.yearGroup) === 'number' & !isNaN(parameterObject.yearGroup) ? parameterObject.yearGroup : result.data.yearGroup;
+       result.data.manualCount = typeof(parameterObject.manualCount) === 'number' & !isNaN(parameterObject.manualCount) ? parameterObject.manualCount : result.data.manualCount;
        result.data.save();
 
        callback({ message : 'SUCCESS', data : result.data })
