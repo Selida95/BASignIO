@@ -3,13 +3,14 @@ extends layouts/adminLayout
 block content
 
 	div.row
+
 		if stuEdit
 			div.panel.panel-default
 				div.panel-heading
 					h3.panel-title
 						| Edit Student
 				div.panel-body
-					form(id="stuEditInput" name="stuEditInput" method="POST" action="/users/" + user + "/students?" + query).form-group.form-inline
+					form(id="stuEditInput" name="stuEditInput" method="POST" action="/users/" + user.username + "/students").form-group.form-inline
 						input(type="number" class="input-sm" placeholder="CadID" name="stuEditCadid" value=stuEdit._id required).form-control
 						input(type="number" class="input-sm" placeholder="CardID" name="stuEditCardid" value=stuEdit.cardID required).form-control
 						input(type="text" class="input-sm" placeholder="Surname" name="stuEditSurname" value=stuEdit.surname required).form-control
@@ -131,9 +132,9 @@ block content
 							if stuEdit.yearGroup == 11
 								option(value=11 selected) Year 11
 							else
-								option(value=11 selected) Year 11
+								option(value=11) Year 11
 							if stuEdit.yearGroup == 12
-								option(value=12) Year 12
+								option(value=12 selected) Year 12
 							else
 								option(value=12) Year 12
 							if stuEdit.yearGroup == 13
@@ -147,7 +148,7 @@ block content
 					h3.panel-title
 						| Add Student
 				div.panel-body
-					form(id="stuInput" name="stuInput" method="POST" action="/users/" + user + "/students").form-inline
+					form(id="stuInput" name="stuInput" method="POST" action="/users/" + user.username + "/students").form-inline
 						input(type="number" class="input-sm" placeholder="CadID" name="cadid" style="width: 75px;" required).form-control
 						input(type="number" class="input-sm" placeholder="CardID" name="cardid" required).form-control
 						input(type="text" class="input-sm" placeholder="Surname" name="surname" required).form-control
@@ -225,8 +226,8 @@ block content
 								td(style="text-align: center; width: 100px;")= student.yearGroup
 								td(style="text-align: center; max-width: 25px; overflow: hidden;")= student.cardID
 								td(style="text-align: center; width: 10px; border-left: 1px solid #ddd;")
-									a(href='/users/' + user + '/students?page=' + pageNum + '&e=' + student._id)
+									a(href='/users/' + user.username + '/students?e=' + student._id)
 										| Edit
 								td(style="text-align: center; width: 25px; border-left: 1px solid #ddd;")
-									a(href='/users/' + user + '/students?page=' + pageNum + '&r=' + student._id)
+									a(href='/users/' + user.username + '/students?r=' + student._id)
 										| Remove

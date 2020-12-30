@@ -269,7 +269,7 @@ router.get('/:user/students', (req, res, next) => {
     if (req.query.r) {
       try {
         studentManager.removeStudent({ id : req.query.r }, (student) => {
-          if (students.message === 'SUCCESS') {
+          if (student.message === 'SUCCESS') {
             console.log(`Log: ${utils.date()} ${utils.time()} | ${student.data._id}: ${student.data.forenames} ${student.data.surname} was removed`)
           } else {
             console.log(`Log: ${utils.date()} ${utils.time()} | Failed to remove student with id: ${req.query.r}`)
@@ -295,25 +295,25 @@ router.get('/:user/students', (req, res, next) => {
       }
     }
 
-    try {
-      studentManager.getAllStudent((student) => {
-        let stuData = null
-        if (staff.message === 'SUCCESS') {
-          stuData = stu.data
-        } else {
-          stuData = {}
-        }
-
-        res.render('staffList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: stuData, stuEdit: stuEdit });
-      })
-    } catch (e) {
-      console.log(e)
+    if (!req.query.r) {
+      try {
+        studentManager.getAllStudents((student) => {
+          let stuData = null
+          if (student.message === 'SUCCESS') {
+            stuData = student.data
+          } else {
+            stuData = {}
+          }
+          res.render('stuList', { title: 'BASignIO Admin: Student List',  user: req.session.user, cDate: utils.date(), role: req.session.user.role, students: stuData, stuEdit: stuEdit });
+        })
+      } catch (e) {
+        console.log(e)
+      }
     }
 	}
 });
 
 router.post('/:user/students', (req, res, next) => {
-
 	if (!req.session.user) {
 		if (req.cookies.basio_user == undefined || req.cookies.basio_pass == undefined) {
 			res.redirect('/admin');
@@ -351,14 +351,13 @@ router.post('/:user/students', (req, res, next) => {
           } else {
             console.log(`Log: ${utils.date()} ${utils.time()} | Failed to update student with id: ${req.query.r}`)
           }
-          res.redirect('/users/' + req.session.user.username + '/students');
         })
       } catch (e) {
         console.log(e)
       }
 		}
 
-    if (req.body.stuStudent) {
+    if (req.body.stuSubmit) {
       try {
         studentManager.createNewStudent({
           id : req.body.cadid,
@@ -478,7 +477,7 @@ router.post('/:user/staff', (req, res, next) => {
         staffManager.updateStaff({
           id : req.body.staffEditID,
           cardID : req.body.staffEditCardID,
-          cardID2 : req.body.staffEditCardID2,
+          cardID2 : req.body.staffEditCardID,
           surname : req.body.staffEditSurname,
           forenames : req.body.staffEditForenames,
           staffType : req.body.staffEditStaffType,
@@ -496,7 +495,7 @@ router.post('/:user/staff', (req, res, next) => {
         staffManager.createNewStaff({
           id : req.body.staffid,
           cardID : req.body.cardid,
-          cardID2 : req.body.cardid2,
+          cardID2 : req.body.cardid,
           surname : req.body.surname,
           forenames : req.body.forenames,
           department : req.body.department,

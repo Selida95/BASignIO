@@ -12,7 +12,7 @@ block content
 					form(id="staffEditInput" name="staffEditInput" method="POST" action="/users/" + user + "/staff").form-group.form-inline
 						input(type="number" class="input-sm" placeholder="ID" name="staffEditID" value=staffEdit._id required).form-control
 						input(type="number" class="input-sm" placeholder="CardID" name="staffEditCardID" value=staffEdit.cardID required).form-control
-						input(type="number" class="input-sm" placeholder="CardID2" name="staffEditCardID2" value=staffEdit.cardID2).form-control
+						//input(type="number" class="input-sm" placeholder="CardID2" name="staffEditCardID2" value=staffEdit.cardID2).form-control
 						input(type="text" class="input-sm" placeholder="Surname" name="staffEditSurname" value=staffEdit.surname required).form-control
 						input(type="text" class="input-sm" placeholder="Forenames" name="staffEditForenames" value=staffEdit.forenames required).form-control
 						select(placeholder="Staff Type" name="staffEditStaffType" required).form-control
@@ -33,7 +33,7 @@ block content
 					form(id="staffInput" name="staffInput" method="POST" action="/users/" + user + "/staff").form-group.form-inline
 						input(type="number" class="input-sm" placeholder="ID" name="staffid" required).form-control.form-group.form-inline
 						input(type="number" class="input-sm" placeholder="CardID" name="cardid" required).form-control
-						input(type="number" class="input-sm" placeholder="CardID2" name="cardid2" required).form-control
+						//input(type="number" class="input-sm" placeholder="CardID2" name="cardid2" required).form-control
 						input(type="text" class="input-sm" placeholder="Surname" name="surname" required).form-control
 						input(type="text" class="input-sm" placeholder="Forenames" name="forenames" required).form-control
 						select(placeholder="Staff Type" name="staffType" required).form-control
