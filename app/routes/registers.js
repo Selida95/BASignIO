@@ -72,7 +72,7 @@
                       msg = `You have used ${student.data.manualCount}/${config.manual_input.max_uses} of your manual input allowance.`
                     }
 
-                    console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${student.data.forenames} ${student.data.surname} justed scanned/entered their id. They have ${students.manualCount}/${config.manual_input.max_uses} of their manual input allowance.`)
+                    console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${student.data.forenames} ${student.data.surname} justed scanned/entered their id. They have ${student.data.manualCount}/${config.manual_input.max_uses} of their manual input allowance.`)
                     res.render('registers', { title: 'BASignIO: ' + req.params.location.toUpperCase(), user: student.data, id: student.data._id, inputFocus: inputFocus, warning: msg});
                   })
                 } catch (e) {
@@ -153,20 +153,20 @@
                       console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | Student fire register record was updated.`)
                     })
                     registerManager.createNewRecord({
-                      id : students._id,
-                      forenames : students.forenames,
-                      surname : students.surname,
+                      id : student.data._id,
+                      forenames : student.data.forenames,
+                      surname : student.data.surname,
                       type : 'student',
                       loc : req.params.location.toUpperCase(),
                       io : 1,
-                      yearGroup : students.yearGroup,
-                      tutorGrp : students.tutorGrp,
+                      yearGroup : student.data.yearGroup,
+                      tutorGrp : student.data.tutorGrp,
                       timeIn : utils.time()
                     }, (record) => {
                       console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student register record was created.`)
                     })
-                    console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed in!`)
-                    req.flash('success', `${students.forenames} ${students.surname} was signed in!`)
+                    console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${student.data.forenames} ${student.data.surname} was signed in!`)
+                    req.flash('success', `${student.data.forenames} ${student.data.surname} was signed in!`)
                     res.redirect('/reg/' + req.params.location);
                   } else {
                     // Check if signin button was pressed twice
@@ -176,14 +176,14 @@
 
                     if (diffTime > 60) {
                       fireRegisterManager.updateRecord({
-                        id : students._id,
-                        forenames : students.forenames,
-                        surname : students.surname,
+                        id : student.data._id,
+                        forenames : student.data.forenames,
+                        surname : student.data.surname,
                         type : 'student',
                         loc : req.params.location.toUpperCase(),
                         io : 1,
-                        yearGroup : students.yearGroup,
-                        tutorGrp : students.tutorGrp,
+                        yearGroup : student.data.yearGroup,
+                        tutorGrp : student.data.tutorGrp,
                         timeIn : utils.time(),
                         timeOut : ' '
                       }, (record) => {
@@ -192,7 +192,7 @@
 
                       // Update last register record with 'N/A' for timeOut
                       registerManager.updateLatestRecord({
-                        id : students._id,
+                        id : student.data._id,
                         io : 1,
                         timeOut : 'N/A'
                       }, (record) => {
@@ -204,13 +204,13 @@
 
                         //Create new register record
                         registerManager.createNewRecord({
-                          id : students._id,
-                          surname : students.surname,
-                          forenames : students.forenames,
+                          id : student.data._id,
+                          surname : student.data.surname,
+                          forenames : student.data.forenames,
                           type : 'student',
                           loc : req.params.location.toUpperCase(),
-                          yearGroup : students.yearGroup,
-                          tutorGrp : students.tutorGrp,
+                          yearGroup : student.data.yearGroup,
+                          tutorGrp : student.data.tutorGrp,
                           io : 1,
                           timeIn : utils.time()
                         }, (record) => {
@@ -218,26 +218,26 @@
                         })
                       })
 
-                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed in, but didn't sign out.`)
-                      req.flash('error', `${students.forenames} ${students.surname} was signed in, but didn't previously signout. Please do so in the future!`)
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${student.data.forenames} ${student.data.surname} was signed in, but didn't sign out.`)
+                      req.flash('error', `${student.data.forenames} ${student.data.surname} was signed in, but didn't previously signout. Please do so in the future!`)
                       res.redirect('/reg/' + req.params.location);
                     } else {
-                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${students.surname} was signed in. Sign in button was pressed more than once.`)
-                      req.flash('success', `${students.forenames} ${students.surname} was signed in! But you don't need to spam the button.`)
+                      console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${student.data.forenames} ${student.data.surname} was signed in. Sign in button was pressed more than once.`)
+                      req.flash('success', `${student.data.forenames} ${student.data.surname} was signed in! But you don't need to spam the button.`)
                       res.redirect('/reg/' + req.params.location);
                     }
                   }
                 } else {
                   // Create fire register record
                   fireRegisterManager.createNewRecord({
-                    id : students._id,
-                    forenames : students.forenames,
-                    surname : students.surname,
+                    id : student.data._id,
+                    forenames : student.data.forenames,
+                    surname : student.data.surname,
                     type : 'student',
                     loc : req.params.location.toUpperCase(),
                     io : 1,
-                    yearGroup : students.yearGroup,
-                    tutorGrp : students.tutorGrp,
+                    yearGroup : student.data.yearGroup,
+                    tutorGrp : student.data.tutorGrp,
                     timeIn : utils.time(),
                     timeOut : ' '
                   }, (record) => {
@@ -245,20 +245,20 @@
                   })
                   // Create new register record
                   registerManager.createNewRecord({
-                    id : students._id,
-                    surname : students.surname,
-                    forenames : students.forenames,
+                    id : student.data._id,
+                    surname : student.data.surname,
+                    forenames : student.data.forenames,
                     type : 'student',
-                    yearGroup : students.yearGroup,
-                    tutorGrp : students.tutorGrp,
+                    yearGroup : student.data.yearGroup,
+                    tutorGrp : student.data.tutorGrp,
                     loc : req.params.location.toUpperCase(),
                     io : 1,
                     timeIn : utils.time()
                   }, (record) => {
                     console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | New student register record was created.`)
                   })
-                  console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${students.forenames} ${student.surname} was signed in!`)
-                  req.flash('success', `${students.forenames} ${students.surname} was signed in!`)
+                  console.log(`Log: ${utils.date()} ${utils.time()} ${req.params.location.toUpperCase()} | ${student.data.forenames} ${student.data.surname} was signed in!`)
+                  req.flash('success', `${student.data.forenames} ${student.data.surname} was signed in!`)
   								res.redirect('/reg/' + req.params.location);
                 }
               })
