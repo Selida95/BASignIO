@@ -52,12 +52,7 @@
   			inputFocus = false;
   			//Check if student exists
         try {
-          studentManager.getStudent({ id : req.body.scanID }, (error, student) => {
-            if (error) {
-              req.flash('error', 'There was an error. Please contact admin.');
-              res.redirect('/reg/' + req.params.location);
-              throw error
-            }
+          studentManager.getStudent({ id : req.body.scanID }, (student) => {
 
             if (student.message === 'SUCCESS') {
               let msg = null;
