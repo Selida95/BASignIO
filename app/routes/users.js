@@ -11,7 +11,6 @@
  const fs = require('fs');
  const puppeteer = require('puppeteer');
  const path = require('path');
- const pag = require('../modules/pagination');
  const mailer = require('../modules/email');
  const utils = require('../modules/utilities');
  const accountManager = require('../modules/account-manager');
