@@ -57,7 +57,7 @@
  manager.getStudent = (parameterObject, callback) => {
    // Validate id
    let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false;
-   
+
    if (typeof(id) !== 'number') {
      throw new Error("REQUIRED_FIELD_INVALID");
    }
@@ -142,39 +142,45 @@
  }
 
  // Increment Manual Input Counter
- // Required Fields: id, callback
+ // Required Fields: parameterObject(contains: id), callback
  // Optional Fields: None
- manager.incrementMICounter = (id, callback) => {
-   try {
-     manager.getStudent(id, (results) => {
-       if (results.message === 'SUCCESS') {
-         let counter = results.data.manualCount + 1;
-         let message;
-         if (counter === config.manual_input.max_uses) {
-           // Reset counter if max uses has been hit
-           counter = 0;
-           message = 'MAX_REACHED_RESET';
-         } else {
-           message = 'COUNTER_INCREMENTED';
+ manager.incrementMICounter = (parameterObject, callback) => {
+   let id = typeof(parseInt(parameterObject.id)) === 'number' && !isNaN(parameterObject.id) ? parseInt(parameterObject.id) : false;
+
+   if (typeof(id) === 'number') {
+     try {
+       manager.getStudent({ id : id }, (results) => {
+         if (results.message === 'SUCCESS') {
+           let counter = results.data.manualCount + 1;
+           let message;
+           if (counter === config.manual_input.max_uses) {
+             // Reset counter if max uses has been hit
+             counter = 0;
+             message = 'MAX_REACHED_RESET';
+           } else {
+             message = 'COUNTER_INCREMENTED';
+           }
+           try {
+             manager.updateStudent({
+               id : id,
+               manualCount : counter
+             }, (results) => {
+               if (results.message === 'SUCCESS') {
+                 callback({ message : message, data : counter })
+               } else {
+                 throw 'ERROR_INCREMENTING_COUNTER'
+               }
+             })
+           } catch (e) {
+             throw e;
+           }
          }
-         try {
-           manager.updateStudent({
-             id : id,
-             manualCount : counter
-           }, (results) => {
-             if (results.message === 'SUCCESS') {
-               callback({ message : message, data : counter })
-             } else {
-               throw 'ERROR_INCREMENTING_COUNTER'
-             }
-           })
-         } catch (e) {
-           throw e;
-         }
-       }
-     });
-   } catch (e) {
-     throw e;
+       });
+     } catch (e) {
+       throw e;
+     }
+   } else {
+     throw new Error('REQUIRED_FIELD_INVALID')
    }
  }
 
